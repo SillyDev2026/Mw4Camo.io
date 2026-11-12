@@ -391,6 +391,40 @@ function renderMyBuilds(){
   ${items.length?`<div class="build-archive">${items.map(x=>`<article class="build-preset"><div>${tag(x.mode,'blue')} ${tag(x.goal,'lime')}<strong>${esc(x.w.name)} / ${esc(x.b.name)}</strong><small>${Object.values(x.b.slots||{}).filter(Boolean).length} filled attachment slots · ${x.b.savedAt?esc(new Date(x.b.savedAt).toLocaleDateString()):'Imported build'}</small></div><div class="build-actions"><button class="btn btn-outline small" data-action="open-saved" data-key="${esc(x.key)}">EDIT ↗</button><button class="btn btn-danger small" data-action="delete-build" data-key="${esc(x.key)}">DELETE</button></div></article>`).join('')}</div>`:'<div class="empty section">You have not saved a blueprint yet. Pick a weapon in the Loadout Lab and select a performance goal.</div>'}`;
 }
 function renderGoalComparison(goal,other){const a=GOAL_METRICS[goal],b=GOAL_METRICS[other];return `<div class="compare-columns"><div><span class="smallcaps">CURRENT PROFILE</span><h3>${esc(goal)}</h3></div><div><span class="smallcaps">COMPARE WITH</span><h3>${esc(other)}</h3></div></div><div class="compare-metrics">${GOAL_LABELS.map((label,i)=>`<div class="compare-row"><span>${esc(label)}</span><div class="compare-duo"><span class="compare-bar primary"><i style="width:${a[i]*20}%"></i></span><b>${a[i]}</b><span class="compare-bar secondary"><i style="width:${b[i]*20}%"></i></span><b>${b[i]}</b></div></div>`).join('')}</div><p class="micro">Priority estimates are editorial strategy weights (1–5), not measured in-game weapon stats. Your actual recoil and damage depend on the selected attachments and current patch.</p>`;}
+
+function sharePreview(w,b){
+  try{return {code:window.MW4_SHARE.encode({weapon:w.id,mode:state.mode,goal:activeGoal(w),apex:!!b.apex,slots:b.slots})};}
+  catch(error){return {code:'',error:String(error.message||error)};}
+}
+function savedGameCode(w,b){
+  if(!b?.gameCode||!b.gameFingerprint||!window.MW4_SHARE.gameCodeLooksPlausible(b.gameCode))return '';
+  try{return window.MW4_SHARE.fingerprint({weapon:w.id,mode:state.mode,apex:!!b.apex,slots:b.slots})===b.gameFingerprint?b.gameCode:'';}catch{return '';}
+}
+function shareLinkFor(code){const url=new URL(location.href);url.searchParams.set('share',code);url.hash='#/loadouts';return url.toString();}
+function importSharedBuild(input){
+  const b=window.MW4_SHARE.decode(window.MW4_SHARE.extract(input)),w=WEAPONS.find(w=>w.id===b.weapon);
+  if(!w)throw Error('Weapon missing from current catalog');
+  const k=b.weapon+'|'+b.mode;
+  state.mode=b.mode;state.activeGoals[k]=b.goal;
+  builderDrafts[k+'|'+b.goal]={name:w.name+' · Shared build',template:b.goal,slots:b.slots,apex:b.apex,perks:'',tactical:'',lethal:'',notes:'Imported from MW4Camo share code',userSaved:false};
+  persist();location.hash='#/build/'+w.id;render();notify('Share code loaded. Save blueprint to keep it.');
+}
+function renderSharePanel(w,b){
+  const p=sharePreview(w,b),game=savedGameCode(w,b),valid=!!p.code;
+  return '<section class="share-panel" aria-label="Share weapon attachments">'+
+  '<div class="eyebrow">03 / SHARE THIS EXACT BUILD</div><h3>WEAPON SHARE CODE</h3>'+
+  '<p class="micro">Generated from the exact compatible named attachments above. MW4C1 codes work on this site, NOT in the game.</p>'+
+  '<div class="share-value" aria-label="MW4Camo share code">'+esc(valid?p.code:p.error||'Select valid attachments')+'</div>'+
+  '<div class="share-actions"><button class="btn btn-primary" data-action="share-build" data-weapon="'+esc(w.id)+'" '+(valid?'':'disabled')+'>COPY WEBSITE CODE</button>'+
+  '<button class="btn btn-outline" data-action="share-link" data-weapon="'+esc(w.id)+'" '+(valid?'':'disabled')+'>COPY SHARE LINK</button></div>'+
+  '<div class="share-game"><strong>IN-GAME MW4 IMPORT CODE</strong><p class="micro">The MW4 encoder and attachment IDs are not verified. Paste a real code displayed by the game for this exact build. It is saved as user-supplied, not verified; changing attachments invalidates its association.</p>'+
+  '<label class="gs-mini-label" for="gameImportCode">CODE COPIED FROM MW4 GUNSMITH</label>'+
+  '<input class="field" id="gameImportCode" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Paste your in-game code" value="'+esc(game)+'">'+
+  '<div class="share-actions"><button class="btn btn-outline" data-action="save-game-code" data-weapon="'+esc(w.id)+'" '+(valid?'':'disabled')+'>SAVE GAME CODE</button>'+
+  '<button class="btn btn-outline" data-action="copy-game-code" data-weapon="'+esc(w.id)+'" '+(game?'':'disabled')+'>COPY SAVED GAME CODE</button></div>'+
+  '<p class="micro">'+(game?'User-supplied code matches these saved attachments':'No matching in-game code saved for these attachments')+'</p></div></section>';
+}
+
 function renderBuild(w){
  if(!w)return renderNotFound();
  const goal=activeGoal(w),b=currentBuild(w),spec=gunSpec(w),seed=getSeed(w,state.mode),custom=b.userSaved===true,mentions=weaponPatchMentions(w),count=Object.values(b.slots||{}).filter(Boolean).length,provisional=spec.source!=='official';
@@ -405,6 +439,7 @@ function renderBuild(w){
  <div class="gs-save-actions"><button class="btn btn-primary" data-action="save-build" data-weapon="${w.id}">✓ SAVE BLUEPRINT</button><button class="btn btn-outline" data-action="copy-build" data-weapon="${w.id}">COPY SETUP</button>${seed?`<button class="btn btn-quiet" data-action="restore-seed" data-weapon="${w.id}">RESTORE PUBLISHED EXAMPLE</button>`:''}</div><p class="gs-terms">Up to five standard attachments, each from a different category. Apex sits outside those five; incompatible categories are removed when Apex is enabled.</p></div>
  <aside class="gs-aside"><div class="gs-status-panel"><div class="eyebrow">BLUEPRINT TELEMETRY</div><h3>${esc(goal.toUpperCase())}</h3><p>${esc(TEMPLATES[goal])}</p><div class="gs-priorities">${GOAL_LABELS.map((label,i)=>`<div><div><span>${esc(label)}</span><b>${GOAL_METRICS[goal][i]} / 5</b></div><span class="gs-hbar"><i style="width:${GOAL_METRICS[goal][i]*20}%"></i></span></div>`).join('')}</div><p class="gs-status-foot">Editorial priority scores, not measured weapon stats or guaranteed kill time.</p></div>
  <div class="gs-info-panel"><div class="eyebrow">WEAPON DATA / SOURCE</div><h3>${esc(w.name)}</h3><div class="gs-info-metrics"><span>${spec.types.length} available attachment categories</span><span>${namedOptionsForWeapon(w)} reported named choices · ${GUNSMITH.arsenalSynced?'expanded catalog':'starter catalog'}</span><span>${spec.apex?'1 weapon-specific Apex':'Apex not verified'}</span></div><a href="${esc(GUNSMITH.officialSource)}" target="_blank" rel="noopener noreferrer" class="source-link">Official MW4 Gunsmith rules ↗</a><a href="${esc(GUNSMITH.communitySource)}" target="_blank" rel="noopener noreferrer" class="source-link">Reported attachment catalog ↗</a><p>Named attachments from community reports are not a complete, publisher-verified inventory. Availability can change with patches and unlocks.</p></div>
+ ${renderSharePanel(w,b)}
  ${renderBuildAdvisor(w,b)}
  <div class="gs-info-panel"><div class="eyebrow">PATCH CONTEXT</div>${mentions.length?mentions.map(p=>`<a class="gs-patch-link" href="#/patch/${p.id}">${esc(p.title)} ↗</a>`).join(''):'<p>No weapon-specific patch summary matches found in the local archive.</p>'}<a class="btn btn-outline gs-camo-link" href="#/weapon/${w.id}">VIEW CAMO CHALLENGES</a></div></aside></section>
  <section class="compare-panel gs-compare"><div class="compare-title"><div><div class="eyebrow">03 / TRADEOFF PLANNING</div><h2 class="section-title">COMPARE TWO BUILD GOALS</h2></div><label>COMPARE AGAINST<select class="select" id="compareGoal">${Object.keys(TEMPLATES).map(t=>`<option value="${esc(t)}" ${comparisonGoal===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label></div><div id="comparisonBody">${renderGoalComparison(goal,comparisonGoal)}</div></section>`;
