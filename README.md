@@ -6,6 +6,10 @@
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
+## v1.7.0 — Arsenal expansion
+
+The site retains all 35 weapons and all saved progress. The Gunsmith now accepts a validated local snapshot of 615 community-reported attachments, organized by weapon and attachment slot, plus existing curated attachments. Names and mappings are unverified and not official Activision data. The original curated choices remain when offline or before snapshot sync. The Apex + five-standard-slot rules remain unchanged. A separate daily GitHub Actions sync refreshes `data/attachments-community.json` from the public COD Loadout source; the existing official patch sync remains independent. Use `python -m unittest discover -s tests -p 'test_arsenal_v17.py'` for catalog checks.
+
 ## v1.6.1 — Comprehensive stability and data-correctness patch
 
 - **Weapon Compare:** fixed an important false-zero bug: missing personal ADS, TTK, recoil, and range values now remain **Not tested** after saving one field, instead of appearing as `0`.
