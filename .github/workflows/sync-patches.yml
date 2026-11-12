@@ -1,0 +1,40 @@
+name: Daily MW4 and Warzone official patch refresh
+on:
+  schedule:
+    - cron: '23 16 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/sync_patches.py'
+      - '.github/workflows/sync-patches.yml'
+permissions:
+  contents: write
+concurrency:
+  group: mw4camo-official-patch-monitor
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install HTML parser
+        run: python -m pip install beautifulsoup4==4.12.3
+      - name: Fetch official index, discover articles and record changes
+        run: python scripts/sync_patches.py
+      - name: Validate generated catalog and update files
+        run: python -m unittest discover -s tests -v
+      - name: Commit updated intelligence, if different
+        run: |
+          git config user.name 'mw4camo-patch-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add data/patches.json data/patches.js data/update-status.json data/update-status.js data/source-state.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: daily official MW4 and Warzone intel refresh'
+            git push origin HEAD:"${GITHUB_REF_NAME}"
+          fi

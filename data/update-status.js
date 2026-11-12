@@ -1,0 +1,1 @@
+window.MW4_UPDATE_STATUS = {"lastCheckedAt":null,"lastSuccessfulAt":null,"discoveredSources":2,"newEntries":0,"sources":[],"note":"Automated checks begin after GitHub Actions is enabled."};

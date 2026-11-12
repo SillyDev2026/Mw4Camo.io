@@ -1,0 +1,90 @@
+[
+  {
+    "weapon": "iso-nightshade",
+    "mode": "MW4",
+    "name": "Balanced SMG · published example",
+    "updated": "2026-11-10",
+    "source": "https://neuralboost.gg/blog/guides/mw4/loadouts/iso-nightshade",
+    "slots": {
+      "Muzzle": "XRK Herder 40",
+      "Barrel": "ZLR Carbon-900",
+      "Underbarrel": "FSS Tac90 Grip",
+      "Rear Grip": "Demo STP-1",
+      "Laser": "Schlager Visiv-5"
+    },
+    "notes": "Consensus community build for close- and mid-range multiplayer. Review after balance patches."
+  },
+  {
+    "weapon": "iso-nightshade",
+    "mode": "Warzone",
+    "name": "Close-range Warzone · published example",
+    "updated": "2026-11-07",
+    "source": "https://mw4intel.app/loadouts/warzone-iso-nightshade",
+    "slots": {
+      "Barrel": "ZLR Mag-Z 9\"",
+      "Stock": "EXP G2-44 Stock",
+      "Rear Grip": "Demo STP-1",
+      "Magazine": "40 Round Mag",
+      "Ammunition": "9mm Parabellum High Velocity"
+    },
+    "notes": "Warzone squad-fight magazine and mobility setup; third-party published example."
+  },
+  {
+    "weapon": "x-58-nyx",
+    "mode": "MW4",
+    "name": "Mobility flanker · published example",
+    "updated": "2026-11-04",
+    "source": "https://codloadout.gitlab.io/mw4/weapons/x-58-nyx/best-build/",
+    "slots": {
+      "Barrel": "Doksa 4F 305mm",
+      "Magazine": "60 Round Mag",
+      "Rear Grip": "Mugi-X Wrap",
+      "Stock": "No Stock",
+      "Laser": "Schlager VISIV-5"
+    },
+    "notes": "Built-in suppressor means no separate muzzle choice. Community example predating Season 1."
+  },
+  {
+    "weapon": "x-58-nyx",
+    "mode": "Warzone",
+    "name": "Warzone flanker · published example",
+    "updated": "2026-11-07",
+    "source": "https://mw4intel.app/loadouts/warzone-x-58-nyx",
+    "slots": {
+      "Barrel": "Doksa 4F 305mm",
+      "Stock": "Mugi HUL-73.M Stock",
+      "Rear Grip": "BOK-980",
+      "Magazine": "60 Round Mag",
+      "Underbarrel": "Mire-50 Tac Grip"
+    },
+    "notes": "Warzone close-range example prioritizing mobility and a large magazine."
+  },
+  {
+    "weapon": "m4",
+    "mode": "MW4",
+    "name": "All-round rifle · published example",
+    "updated": "2026-10-27",
+    "source": "https://mw4camos.com/loadouts",
+    "slots": {
+      "Muzzle": "FSS IS300",
+      "Underbarrel": "FSS Fireline Grip",
+      "Laser": "SA LAZ-500",
+      "Stock": "PF1 Fixed Stock",
+      "Rear Grip": "Brace DX Grip"
+    },
+    "notes": "Older community baseline; check compatibility and new balance changes in-game."
+  },
+  {
+    "weapon": "kg-7-vulcan",
+    "mode": "MW4",
+    "name": "Precision sniper · published example",
+    "updated": "2026-10-27",
+    "source": "https://mw4camos.com/loadouts",
+    "slots": {
+      "Barrel": "Haebang Naseon v.5 26\"",
+      "Comb": "Haebang YNC-45",
+      "Muzzle": "DS RKT-90"
+    },
+    "notes": "Three named recommendations with two open slots for your preference."
+  }
+]
