@@ -1,87 +1,88 @@
-# MW4Camo.io · v1.1.0
+# MW4Camo.io — MW4 & Warzone Camo Tracker / Loadout Lab
 
-**A responsive MW4 + Warzone camo tracker, gunsmith workbench, personal blueprint vault, and daily official patch intelligence monitor.** Independent fan project; no account, advertising, telemetry, API token, or npm build required.
+[![Daily patch refresh](https://github.com/SillyDev2026/Mw4Camo.io/actions/workflows/sync-patches.yml/badge.svg)](https://github.com/SillyDev2026/Mw4Camo.io/actions/workflows/sync-patches.yml)
 
-## Screens & features
+MW4Camo.io is a **free, local-first fan tracker** for Call of Duty: Modern Warfare 4 / Warzone, hosted on GitHub Pages. It tracks camos and your actual progress, allows individual objective-oriented loadout presets, and maintains an indexed archive of official patch notes.
 
-| Area | Functionality |
-| --- | --- |
-| Command Center | Dashboard progress, class completion, mastery overview, recent official patches and tactical briefing |
-| Weapons & Camos | 35 MW4 weapons (33 launch plus two Season 1); class/status/favorite filters, weapon levels, 18 camo checkboxes per weapon |
-| Mastery Roadmap | Gold, Platinum, Harmonic Break and account-wide camo goals with completion tracking |
-| Loadout Lab | Weapon-specific builder for all 35 MW4 weapons and Warzone / MW4 / DMZ modes |
-| Tuning profiles | **Balanced, Fast TTK, Low Recoil, Aggressive, Long Range, Hipfire, Stealth, Quickscope, Squad Support** |
-| Strategy guidance | Per-slot attachment priority advice, class-specific weapon tactics and strategy emphasis meters (not fabricated performance stats) |
-| Blueprint Vault | Multiple named builds **per weapon + mode + goal**, saved, edited, copied or deleted locally |
-| Patch Intelligence | Separate official MW4 / Warzone patch archives, detailed change pages, categorized notes, source links and detected weapon mentions |
-| Automated refresh | GitHub Actions, **daily at 16:23 UTC** plus manual button; discovers new official patch article links and checks dated revisions |
-| Update health | Date of last check, date of last successful check, monitored source count and warnings in the patch feed |
-| Device support | Fluid CSS `%`, `minmax`, `clamp`, `vw` and responsive grids; desktop/tablet/mobile; menu drawer, focus states and reduced-motion support |
-| Offline & backup | PWA service worker, JSON import/export, localStorage save; offline after one successful HTTP(S) visit |
+**Live website:** https://sillydev2026.github.io/Mw4Camo.io/  
+**Official patch notes:** https://www.callofduty.com/patchnotes
 
-This initial roster intentionally contains **MW4 weapons only**, including those usable in Warzone. Older legacy Warzone guns are **not** yet indexed; adding them requires an independently verified catalog and compatible camo challenge mapping. Weapon names and camo data may change following game updates.
+## Features in v1.2
 
-### Loadout performance accuracy
+- **Weapon Arsenal:** 35 current MW4 weapons (33 at launch plus Cronen Osprey and CSG-35); searchable and filterable by class, progress, and favorites.
+- **Camo Tracker:** 8 Military, 3 Special, 3 Completionist, and 4 Weapon Prestige slots per weapon. Tracks additional account-wide mastery. Each challenge has a provenance label where possible.
+- **Challenge Counters:** on Special and Completionist tiles, enter a manual **Done** count and **Target** count; the counter is informative and does not automatically mark the camo as unlocked.
+- **Grind Planner:** highlights a focus weapon, recommends nine next missions, and lets you filter all weapons by proximity to Gold, favorites, or no progress.
+- **Loadout Lab:** nine tactical objectives (Balanced, Fast TTK, Low Recoil, Aggressive, Long Range, Hipfire, Stealth, Quickscope, Squad Support); individual saves by game mode, weapon, and profile.
+- **Goal Comparison:** compare the intended tuning *priorities* of different builds. The 1–5 priority values are editorial, **not** measured weapon statistics.
+- **Patch Intelligence:** dedicated MW4 and Warzone changelogs, searchable by weapon/date/patch bullet, with categorized sections and source links.
+- **Automatic Daily Refresh:** GitHub Actions fetches official MW4 and Warzone patch article pages and discovers newly linked official sources. It preserves existing data on source failure, writes status data, and fails when it cannot verify any official source.
+- **Personal Vault:** no account required; progress is saved in browser localStorage, supports JSON export/import, and refreshes when another tab changes the data.
+- **Installable & Responsive:** fluid `%` / `clamp()` layouts, app manifest, accessible mobile navigation, animation with reduced-motion support, service-worker offline shell.
 
-The nine goals help players select *types* of attachments that suit a weapon's purpose. **They do not simulate the Gunsmith or measure true TTK, recoil, handling, magazine count, or weapon performance.** Exact attachment names appear when sourced from a published build or provided by you. Sourced starter builds contain their own source/date and may become outdated after balance changes. The “Low Recoil” profile cannot guarantee zero recoil, and “Fast TTK” does not claim a mathematically optimal setup.
+## Quick start
 
-## Deploy to the existing GitHub repository
+### Live GitHub Pages
 
-Repository: **`SillyDev2026/Mw4Camo.io`** (public). Put all source files in the **repository root**, keeping `.github/workflows` and the other folders. `index.html` must be at the top level.
+The GitHub repository's `main` branch is published to GitHub Pages. Open the [live website](https://sillydev2026.github.io/Mw4Camo.io/) to begin.
 
-1. In repository **Settings → Pages**, select **Deploy from a branch**, `main` and `/ (root)`. Save.
-2. In **Actions**, enable scheduled workflows if prompted. Open **Daily MW4 and Warzone official patch refresh → Run workflow** to trigger the first manual check. The daily schedule is `23 16 * * *` (16:23 UTC); GitHub does not guarantee minute-exact runs. Schedule jobs may be delayed or disabled after prolonged repository inactivity.
-3. Ensure **Settings → Actions → General → Workflow permissions** permit the job to write to repository contents. If organizational restrictions prevent it, request repository owner changes. Check the Actions run logs before assuming synchronization succeeded.
-4. Open `https://sillydev2026.github.io/Mw4Camo.io/` after Pages finishes its deployment. A custom `mw4camo.io` address requires domain ownership and GitHub Pages DNS configuration; `CNAME.example` is not active.
-
-For local development: `python -m http.server 8000` from the project root, then open `http://localhost:8000`.
-
-## How the daily feed works
-
-- `scripts/sync_patches.py` fetches the [official patch index](https://www.callofduty.com/patchnotes) and finds relevant, allowlisted MW4 and Warzone dated article URLs. It always monitors the known Season 1 articles, even if index discovery fails.
-- It parses dated headings, organizes compact excerpts into sections, stores a **stable source+game+date hash**, and updates a patch entry when a dated section changes rather than endlessly duplicating revisions.
-- The update job writes `data/patches.json`, `data/patches.js`, `data/source-state.json`, `data/update-status.json`, and `data/update-status.js`. The website consumes local JavaScript data for GitHub Pages compatibility. The full official article is always linked.
-- When the official publisher is unreachable, the job records a warning and retains all prior entries. If a page's HTML structure changes, the parser may need maintenance. The feed does **not** automatically verify new weapon catalogs, historical legacy arsenal entries, camo challenges or untrusted loadout claims.
-- No sensitive tokens are required: the workflow uses the scoped GitHub Actions `GITHUB_TOKEN` provided by the platform for the same repository.
-
-## Data compatibility
-
-Progress uses the original `mw4camo-io-v1` browser localStorage key, preserving v1 camo checklists, favorites, weapon levels and existing saved builds on upgrade. New per-goal blueprints use keys in the form `weapon-id|Warzone|Low Recoil`. Old two-part blueprint keys remain readable as Balanced configurations. Exported v1 backups remain importable; v1.1 exports also include active tuning goals. Deleting a blueprint requires confirmation. This app does not communicate with an Activision account.
-
-## Files
-
-```text
-index.html                  Responsive app shell
-styles.css                  Legacy foundation styles (retained for compatibility)
-ui-v2.css                   Fluid, tactical responsive UI and accessible animations
-app.js                      Router, trackers, nine-goal Gunsmith, blueprint vault and storage
-manifest.webmanifest        Installable web app manifest
-service-worker.js           Offline cache, network-first updates
-data/weapons.json           Human-readable 35-weapon roster
- data/weapons.js            Browser weapon/camo catalog and starter builds
- data/builds.json           Sourced starter loadout records
- data/patches.json          Official update history
- data/patches.js            Browser patch history
- data/update-status.json    Latest check health
- data/update-status.js      Browser check health
-scripts/sync_patches.py     Daily official-source monitor
-.github/workflows/          Daily scheduled patch refresh
-assets/favicon.svg          Original project icon
-tests/                      Data integrity, patch discovery and failure tests
-LICENSE, ATTRIBUTION.md     Licensing and data sources
-```
-
-## Verification
+### Local development
 
 ```bash
-python -m pip install beautifulsoup4==4.12.3
-python -m unittest discover -s tests -v
-node --check app.js
-python scripts/sync_patches.py --dry-run  # Requires access to official site
+python -m http.server 8000
 ```
 
-Browser smoke tests cover dashboard, the 35-weapon arsenal, a 9-profile builder, local preset saving, patch details and camo completion on desktop and mobile viewport sizes. Text sources follow `ATTRIBUTION.md`.
+Then open `http://localhost:8000/`.
 
-### Network reliability
+No build step, API key, server, or npm dependencies are required for the site. `app.js`, `styles.css`, `ui-v2.css`, and `ui-v3.css` are plain browser assets.
 
-The daily bot tries the official Call of Duty patch pages directly first. When a GitHub-hosted runner times out on that publisher, it can try a public reader mirror of the *same official URL*. It validates the mirror’s declared URL before parsing. The site continues to link to the original official source. Readers and mirrors can be unavailable or stale; the bot retains the last known patch archive and exposes health status rather than silently clearing updates. Check the Actions run and the Intelligence page for the last successful source check.
+### Running tests
+
+```bash
+python -m unittest discover -s tests -v
+node --check app.js
+```
+
+## Daily patch updates
+
+Workflow: `.github/workflows/sync-patches.yml`  
+Updater: `scripts/sync_patches.py`
+
+Runs on a UTC schedule and can be started manually from GitHub Actions → **Daily MW4 and Warzone official patch refresh** → Run workflow.
+
+The action discovers official patch-note pages from the Call of Duty hub, checks existing official article sources, and updates `data/patches.json`, `data/patches.js`, `data/update-status.json`, `data/update-status.js`, and `data/source-state.json` when changes are detected. Source checks fall back to a public reader mirror of the **same official URL** if the publisher times out.
+
+**Limitations:** this is a monitored patch archive, not an official API. Text parsing can miss details or require manual verification. Newly announced weapons and updated camo requirements are **not** auto-added to `data/weapons.json` without source review.
+
+## Data integrity
+
+- Data is stored in `localStorage` under `mw4camo-io-v1`. The v1 key and v1 backup schema are kept intentionally so earlier users retain existing progress.
+- New optional fields: `counters` (per challenge manual progress and target) and `focusWeapon`.
+- Selecting a weapon level does **not** check off Military camo: only manually checked tiles count as completed.
+- Import validates known weapon IDs, camo IDs, build slots, modes and numeric fields. Export before clearing browser data.
+- There is no Activision account linkage or cross-device cloud sync; data remains on your device unless exported.
+- “Fast TTK” and “Low Recoil” prioritize sensible attachment attributes but do **not** guarantee a measured fastest TTK or zero recoil. Check attachment availability and performance in the current game patch.
+
+## Repo layout
+
+```text
+index.html
+app.js
+styles.css
+ui-v2.css
+ui-v3.css
+manifest.webmanifest
+service-worker.js
+assets/favicon.svg
+data/weapons.json  # weapon catalog (reviewed manually)
+data/weapons.js
+data/builds.json   # sourced baseline configurations
+/data/patches.json # generated + manually curated patch archive
+scripts/sync_patches.py
+tests/
+.github/workflows/sync-patches.yml
+```
+
+## Official sources & licensing
+
+See [ATTRIBUTION.md](ATTRIBUTION.md) for third-party source and attribution details. This is an independent fan project and is not affiliated with Activision, Infinity Ward, or Raven Software. The website's source code is covered by the included license; external game names, product names, artwork and other protected marks remain with their owners.
