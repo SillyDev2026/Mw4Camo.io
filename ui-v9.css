@@ -1,0 +1,227 @@
+/* MW4Camo v1.8 — unified, responsive visual system.
+   Presentation-only overrides. Existing routes, controls and local saves are unchanged. */
+:root {
+  --v9-canvas:#0a1014;
+  --v9-surface:#141e23;
+  --v9-surface-2:#19272c;
+  --v9-surface-raised:#202f32;
+  --v9-line:#314044;
+  --v9-line-soft:#28393c;
+  --v9-text:#eaf3ee;
+  --v9-muted:#a7b9b5;
+  --v9-accent:#d4ff72;
+  --v9-accent-soft:rgba(212,255,114,.10);
+  --v9-blue:#8bd1f5;
+  --v9-shadow:0 16px 46px rgba(0,0,0,.15);
+  --v9-radius:14px;
+  --v9-radius-sm:10px;
+  --v9-gap:clamp(12px,1.4vw,20px);
+  --v9-gutter:clamp(16px,2.8vw,38px);
+  --lime:var(--v9-accent);
+  --sub:var(--v9-muted);
+  color-scheme:dark;
+}
+html{scroll-padding-top:84px}
+body{color:var(--v9-text);background:var(--v9-canvas);font-size:14px;line-height:1.55}
+button,input,select,textarea{font-size:inherit}
+:where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--v9-accent);outline-offset:3px}
+:where(button,input,select,textarea):disabled{cursor:not-allowed;opacity:.65}
+::selection{color:#081116;background:#d4ff72}
+*{scrollbar-width:thin;scrollbar-color:#466057 transparent}
+.main-panel{min-width:0;background:radial-gradient(ellipse at 100% 0%,rgba(95,139,119,.095),transparent 40%),linear-gradient(180deg,#0c1417,#0a1014 45%)}
+.sidebar{width:clamp(236px,18.4vw,270px);flex-basis:clamp(236px,18.4vw,270px);background:linear-gradient(170deg,#111c1f,#0b1215 86%);border-right:1px solid var(--v9-line-soft);box-shadow:none}
+.sidebar .brand{padding:22px 17px 26px;gap:12px}
+.brand-mark{width:41px;height:41px;border-radius:9px;transform:none;box-shadow:0 5px 24px rgba(212,255,114,.10)}
+.brand strong{font-size:24px}
+.brand small{font-size:9px;letter-spacing:.95px}
+.sidebar .side-label{padding:9px 19px 8px;color:#8daba1;letter-spacing:1.5px;font-size:10px}
+.sidebar .side-label-2{margin-top:14px}
+.sidebar .side-nav{padding:0 10px;gap:3px}
+.sidebar .side-nav a{height:auto;min-height:43px;border-radius:9px;gap:11px;padding:9px 12px;color:#b6c5c1;font-size:12px;line-height:1.3;font-weight:650;letter-spacing:.01em}
+.sidebar .side-nav a:before{display:none}
+.sidebar .side-nav a:hover{color:#f4fff6;background:rgba(118,155,146,.105)}
+.sidebar .side-nav a.active{color:#edffce;background:linear-gradient(90deg,rgba(212,255,114,.125),rgba(212,255,114,.035));border-color:rgba(212,255,114,.25)}
+.sidebar .side-nav a.active .nav-icon{color:var(--v9-accent)}
+.sidebar .nav-icon{width:22px;flex:0 0 22px;font-size:18px;color:#a5bab0}
+.sidebar .nav-count{background:rgba(212,255,114,.08);color:#c9eab1;border:1px solid rgba(212,255,114,.15);border-radius:6px}
+.sidebar .side-bottom{margin:17px 17px 20px;padding-top:14px;color:#c5e3c8;border-color:var(--v9-line-soft);line-height:1.65}
+.sidebar .side-bottom small{color:#91a9a3}
+.sidebar-close{border-radius:10px}
+.topbar{min-height:64px;height:auto;padding:9px var(--v9-gutter);background:rgba(13,21,24,.93);border-bottom:1px solid var(--v9-line-soft);gap:16px;box-shadow:0 4px 24px rgba(0,0,0,.12);backdrop-filter:blur(14px)}
+.breadcrumb{font-size:10px;letter-spacing:1.02px;color:#c1cfca;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.breadcrumb span{color:#738a83}
+.top-actions{gap:9px;flex:0 0 auto;min-width:0}
+.top-utility,.mode-button,.mobile-menu{background:var(--v9-surface);border:1px solid var(--v9-line);color:#eaf3ee;border-radius:10px;box-shadow:none;transition:background .18s,border-color .18s}
+.top-utility:hover,.mode-button:hover,.mobile-menu:hover{background:#233338;border-color:#637a62}
+.top-utility,.mode-button{min-height:39px}
+.mode-button{padding-inline:12px;letter-spacing:.6px}
+.topbar .refresh-status{font-size:10px;color:#cae4d4;letter-spacing:.3px;white-space:nowrap;background:rgba(112,169,132,.075);border:1px solid rgba(112,169,132,.18);border-radius:999px;padding:8px 10px}
+.topbar .refresh-status.stale{color:#f5cea4;background:rgba(221,150,73,.10);border-color:rgba(221,150,73,.30)}
+.topbar .refresh-status i{width:7px;height:7px}
+#app{max-width:1500px;padding:clamp(22px,2.5vw,34px) var(--v9-gutter) clamp(52px,5vw,76px)}
+#app>*{min-width:0}
+.footer{padding:17px var(--v9-gutter);color:#92a39f;border-color:var(--v9-line-soft);line-height:1.6}
+.footer a{color:#c6e3c1}
+.page-title{font-size:clamp(38px,4.7vw,66px);letter-spacing:.012em;line-height:1.02;margin:8px 0 13px;overflow-wrap:break-word}
+.eyebrow{font-size:10px;color:#cafa8a;letter-spacing:1.5px}
+.lede{font-size:13px;line-height:1.72;color:#b8c9c3;max-width:72ch}
+.section{margin-top:clamp(22px,2.4vw,34px)}
+.section-head{gap:14px;margin-bottom:13px;align-items:center}
+.section-title{line-height:1.1;letter-spacing:.015em}
+.section-sub,.micro{color:#afbfba;line-height:1.5}
+#app .stats,#app .grid-2,#app .weapon-grid,#app .mission-grid,#app .camo-grid,#app .milestone-grid,#app .settings-grid,#app .patch-layout{gap:var(--v9-gap)}
+#app :where(.card,.stat,.weapon-card,.mission-card,.class-card,.patch-card,.patch-article,.milestone,.v16-task,.v16-hub-card,.v15-doctor-card,.v15-focus,.v15-patch-row){border-radius:var(--v9-radius);border-color:var(--v9-line-soft);background:linear-gradient(150deg,rgba(28,42,45,.97),rgba(17,28,32,.99));box-shadow:0 3px 18px rgba(0,0,0,.08)}
+#app .card{padding:clamp(17px,1.8vw,24px);margin-bottom:0}
+#app .card-title{color:#ecf7e9;font-size:clamp(19px,1.45vw,24px);line-height:1.18;letter-spacing:.02em}
+#app .stat{padding:clamp(16px,1.6vw,22px);min-height:116px}
+#app .stat-value{font-size:clamp(32px,3.5vw,52px);line-height:1.08;color:#eaf4ec}
+#app .stat .stat-label{font-size:10px;line-height:1.45;letter-spacing:.7px;color:#abc1b8}
+#app .stat-foot{margin-top:6px;font-size:11px;color:#a6b9b0}
+#app .hero{min-height:0;padding:clamp(22px,3.3vw,45px);border:1px solid #425553;border-radius:18px;background:radial-gradient(ellipse at 90% 12%,rgba(212,255,114,.09),transparent 48%),linear-gradient(116deg,#1c302e,#111e23 73%);box-shadow:var(--v9-shadow)}
+#app .hero:before{font-size:clamp(140px,17vw,270px);color:rgba(212,255,114,.03)}
+#app .hero .lede{color:#bdcfc5}
+#app .command-banner,#app .focus-brief{border-radius:var(--v9-radius);border:1px solid #40564c;background:linear-gradient(125deg,#1e322e,#17262a);box-shadow:0 7px 26px rgba(0,0,0,.10)}
+#app :where(.mission-card,.weapon-card,.patch-card,.v16-hub-card,.gs-goal,.template-card){transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}
+@media(hover:hover){#app :where(.mission-card,.weapon-card,.patch-card,.v16-hub-card):hover{border-color:#748e73;box-shadow:0 8px 25px rgba(0,0,0,.17);transform:translateY(-2px)}}
+#app .weapon-card{padding:clamp(16px,2vw,24px);min-height:184px}
+#app .weapon-name{line-height:1.04;font-size:clamp(22px,2.3vw,32px)}
+#app .weapon-info,#app .weapon-top,#app .weapon-bottom{gap:9px}
+#app .patch-card{gap:clamp(12px,1.7vw,22px);padding:clamp(16px,1.8vw,24px);align-items:center;min-width:0}
+#app .patch-card h3{color:#ecf6eb;line-height:1.16;font-size:clamp(20px,1.6vw,26px)}
+#app .patch-card p{color:#afc0b8;font-size:12px}
+#app .patch-date{color:#d2fba4}
+#app .patch-article{padding:clamp(18px,2.1vw,30px)}
+#app .patch-article li{line-height:1.65}
+#app :where(.camo-tile,.build-slot,.gs-slot-row,.v16-loadout-weapon,.v15-task,.v15-patch-row,.v16-delta-row,.share-panel,.gs-info-panel,.gs-status-panel){border-radius:var(--v9-radius-sm);border-color:var(--v9-line);overflow-wrap:anywhere}
+#app .v16-hub-card{padding:clamp(17px,2vw,24px);min-height:195px}
+#app .v16-hub-card h2{font-size:clamp(18px,1.65vw,23px);letter-spacing:.018em}
+#app .v16-hub-card p{font-size:13px;color:#bbcdc2}
+#app .v16-hub-icon{border-radius:11px}
+#app .v16-task{gap:11px;padding:clamp(13px,1.6vw,20px)}
+#app .divider{height:1px;background:#344746;margin-block:17px}
+#app .field-label{font-size:11px;letter-spacing:.03em;line-height:1.45;color:#bbd3c4}
+#app :where(.field,.select,.search,.text-area,input:not([type="checkbox"]),textarea){min-width:0;border-radius:var(--v9-radius-sm);border-color:#435755;background-color:#122025;color:#edf5ef;min-height:44px;line-height:1.4;box-shadow:inset 0 1px 2px rgba(0,0,0,.06)}
+#app :where(.field,.select,.search,.text-area,input:not([type="checkbox"]),textarea)::placeholder{color:#8fa8a0;opacity:1}
+#app :where(.field,.select,.search,.text-area,input:not([type="checkbox"]),textarea):focus-visible{border-color:#c7f18b;outline-offset:2px}
+#app :where(.field,.select,.search,.text-area,input:not([type="checkbox"]),textarea):disabled{background:#121c20}
+#app :where(.btn,.chip,.gs-goal,.gs-remove){border-radius:var(--v9-radius-sm);touch-action:manipulation}
+#app .btn{min-height:43px;padding:10px 16px;font-size:11px;line-height:1.25;font-weight:800;letter-spacing:.035em;border-color:#435956;background:#233239;color:#ebf6f1;box-shadow:none;white-space:normal;text-align:center;transition:background .16s,border-color .16s,color .16s,transform .16s}
+#app .btn:hover:not(:disabled){filter:none;background:#304349;border-color:#648477}
+#app .btn.btn-primary{background:#d4ff72;color:#112019;border-color:#d4ff72}
+#app .btn.btn-primary:hover:not(:disabled){background:#e4ff9d;border-color:#e4ff9d}
+#app .btn.btn-outline,#app .btn.btn-quiet{background:#17262c;border-color:#465c56}
+#app .btn.btn-danger{color:#ffadad;border-color:#815452;background:#34272a}
+#app .chip{min-height:37px;padding:9px 13px;background:#18282d;border:1px solid #435550;color:#c8d8d1;font-size:11px;line-height:1.25}
+#app .chip.active{color:#eaffbb;background:#324530;border-color:#94b16a}
+#app .filters,#app .patch-toolbar,#app .v16-toolbar{gap:12px}
+#app .filter-chips{gap:7px}
+#app .patch-search-label{max-width:100%}
+#app .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+#app .settings-grid>.card{min-width:0;display:flex;flex-direction:column;gap:10px}
+#app .settings-grid>.card>h2{margin:0 0 3px}
+#app .settings-grid>.card>.lede{margin:0 0 5px}
+#app .settings-grid p{font-size:12px;line-height:1.62;color:#b5c6bf;max-width:none}
+#app .settings-grid .field-label{display:grid;gap:8px;max-width:100%;min-width:0}
+#app .settings-grid select{width:100%;min-width:0}
+#app .settings-grid .btn{align-self:flex-start}
+#app #refreshSettings{grid-column:1/-1;padding:clamp(18px,2.4vw,31px);background:linear-gradient(140deg,#1c302c,#131f25 85%);border:1px solid #506b57;gap:17px}
+#refreshSettings .refresh-settings-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+#refreshSettings .refresh-settings-head .card-title{margin:0 0 7px}
+#refreshSettings .refresh-settings-head .lede{max-width:70ch}
+#refreshSettings .refresh-pill{display:inline-flex;align-items:center;gap:8px;color:#d9f6bf;background:rgba(212,255,114,.08);border:1px solid rgba(212,255,114,.22);border-radius:999px;padding:7px 12px;font-weight:700;font-size:10px;white-space:nowrap}
+#refreshSettings .refresh-pill:before{content:'';width:7px;height:7px;background:#bded8d;border-radius:50%}
+#refreshSettings .refresh-settings-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:12px}
+#refreshSettings .refresh-settings-row .field-label{max-width:420px}
+#refreshSettings .refresh-settings-row .btn{align-self:end;min-width:180px}
+#refreshSettings .refresh-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:2px 0}
+#refreshSettings .refresh-detail{display:grid;gap:6px;background:#102025;border:1px solid #364d45;border-radius:10px;padding:13px;min-width:0}
+#refreshSettings .refresh-detail small{color:#a6c1b2;font-size:10px;line-height:1.35;font-weight:750;letter-spacing:.03em;text-transform:uppercase}
+#refreshSettings .refresh-detail strong{color:#e5f5e5;font-size:12px;font-weight:650;line-height:1.45;overflow-wrap:anywhere}
+#refreshSettings .refresh-caveat{margin:0;color:#aabdb3;font-size:11px;line-height:1.55}
+#refreshSettings #refreshMessage{margin:0;padding:10px 12px;background:rgba(132,173,148,.075);border:1px solid rgba(132,173,148,.18);border-radius:9px;min-height:40px}
+#app .visual-settings{border-color:#41574c}
+#app .visual-settings .select{max-width:100%}
+#app .note,#app .storage-warning{border-radius:10px}
+#app .share-actions{gap:9px}
+#app .gs-goal-picker{gap:10px}
+#app .gs-goal{border-radius:10px;padding:clamp(12px,1.3vw,17px)}
+#app .gs-goal.is-active{border-color:#d4ff72;box-shadow:inset 0 0 0 1px rgba(212,255,114,.12)}
+#app .gs-slot-row{margin-bottom:7px}
+#app .gs-main,#app .gs-info-panel,#app .gs-status-panel{border-radius:var(--v9-radius);min-width:0}
+#app .gs-save-actions,#app .gs-slot-actions,#app .v16-inline-actions{gap:9px}
+#app .v16-delta-row>strong{line-height:1.35}
+.quick-overlay{background:rgba(3,8,10,.75)}
+.quick-panel{background:#142125;border:1px solid #577363;border-radius:16px;box-shadow:0 26px 90px rgba(0,0,0,.48)}
+.quick-search-row{background:#152428;border-radius:16px 16px 0 0}
+.quick-result{border-radius:9px}
+.quick-result.selected,.quick-result:hover,.quick-result:focus-visible{background:#253b31;border-color:#657f65}
+.toast{border-radius:11px;max-width:min(92vw,400px)}
+.back-top{border-radius:14px}
+@media(max-width:1180px){
+  .sidebar{width:236px;flex-basis:236px}
+  .topbar .refresh-status{display:none}
+  #app .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #app .v16-hub-grid{gap:13px}
+}
+@media(max-width:900px){
+  .sidebar{width:min(315px,86vw);flex-basis:auto;height:100dvh;min-height:0;transform:translate3d(-105%,0,0);box-shadow:20px 0 50px rgba(0,0,0,.45)}
+  .sidebar.open{transform:translate3d(0,0,0)}
+  .sidebar .brand{padding-right:64px}
+  .sidebar .side-bottom{margin-top:20px}
+  .topbar{padding-inline:clamp(13px,3vw,24px)}
+  .mobile-menu{display:flex;align-items:center;justify-content:center;min-height:43px;min-width:43px}
+  #app .grid-2,#app .patch-layout,#app .gs-workspace{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:700px){
+  :root{--v9-gutter:clamp(13px,3vw,20px);--v9-gap:11px}
+  .topbar{min-height:58px;padding-block:7px;gap:8px}
+  .topbar .breadcrumb{font-size:9px;letter-spacing:.25px}
+  .topbar .mode-button{min-height:40px;font-size:9px;padding-inline:9px;gap:5px}
+  #app{padding-top:22px}
+  #app .page-title{font-size:clamp(34px,8.6vw,53px);line-height:1.03}
+  #app .hero{padding:clamp(19px,4.4vw,27px)}
+  #app .settings-grid{grid-template-columns:minmax(0,1fr)}
+  #app #refreshSettings{grid-column:auto}
+  #refreshSettings .refresh-settings-row{grid-template-columns:minmax(0,1fr)}
+  #refreshSettings .refresh-settings-row .btn{width:100%}
+  #refreshSettings .refresh-settings-row .field-label{max-width:none}
+  #refreshSettings .refresh-details{grid-template-columns:minmax(0,1fr)}
+  #refreshSettings .refresh-detail{gap:3px;padding:11px 13px}
+  #app .patch-card{grid-template-columns:minmax(0,1fr) auto;gap:10px}
+  #app .patch-card .patch-date{grid-column:1/-1}
+  #app .v16-hub-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:480px){
+  .top-actions{gap:5px}
+  .topbar .breadcrumb{max-width:32vw;min-width:0}
+  .topbar .quality-utility{display:none}
+  .topbar .top-utility{min-width:41px;min-height:41px;padding:8px}
+  #app .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  #app .stat{padding:13px;min-height:98px}
+  #app .stat-value{font-size:clamp(30px,8vw,39px)}
+  #app .weapon-grid,#app .mission-grid{grid-template-columns:minmax(0,1fr)}
+  #app .settings-grid>.card{padding:16px}
+  #app #refreshSettings{padding:18px}
+  #app .filters{gap:9px}
+  #app .filter-chips{flex-wrap:wrap}
+  #app .v16-task-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #app .gs-goal-picker{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .toast{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:none}
+}
+@media(max-width:360px){
+  .topbar .breadcrumb{display:none}
+  .top-actions{margin-left:auto}
+  #app .page-title{font-size:clamp(30px,9vw,38px)}
+  #app .stats{gap:7px}
+  #app .stat{padding:11px}
+  #app .v16-task-controls{grid-template-columns:minmax(0,1fr)}
+  #app .camo-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(hover:none){
+  #app :where(.mission-card,.weapon-card,.patch-card,.v16-hub-card):hover{transform:none;box-shadow:0 3px 18px rgba(0,0,0,.08)}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  #app :where(.mission-card,.weapon-card,.patch-card,.v16-hub-card,.gs-goal,.template-card),.top-utility,.mode-button,.mobile-menu{transition:none!important}
+}
+[data-quality="lite"] #app :where(.card,.stat,.weapon-card,.patch-card,.v16-hub-card){box-shadow:none!important}
