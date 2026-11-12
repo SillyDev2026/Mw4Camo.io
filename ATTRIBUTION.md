@@ -38,3 +38,9 @@ Official game client text supersedes any community data. When adding new changes
 - **Official mentions of individual attachment names:** [MW4 Beta Patch Notes](https://www.callofduty.com/patchnotes/2026/08/call-of-duty-modern-warfare-4-beta-patch-notes) and [M4 Inner Circuit blueprint](https://news.blizzard.com/en-us/article/24302092/mw4-pre-purchase-bonus-inner-circuit-m4-blueprint). Names mentioned in official publications are labelled **official name**, but weapon-specific availability still requires in-game confirmation.
 - **Community-reported names and weapon assignments:** [COD Loadout MW4 attachment reference](https://codloadout.gitlab.io/mw4/attachments/) and the individually credited starter builds in `data/builds.json`. The curated catalog is a conservative subset of published community reports, not a complete or verified full attachment inventory. All compatibility suggestions are tagged as reported and are subject to correction.
 - **Performance goals:** nine suggested loadout styles are editorial heuristics—not damage, accuracy, mobility or TTK measurements. The goal engine never claims measured gains.
+
+## v1.5 source additions
+
+- Warzone Season 1 perk slot names, tactical equipment and lethal equipment: https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes (Activision/Raven Software, November 2026).
+- Rezi 12 post-patch damage and range figures: https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes (Activision/Infinity Ward, November 2026).
+- Data does not include measured per-attachment ADS/recoil or verified weapon-wide TTK values.

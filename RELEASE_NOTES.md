@@ -1,3 +1,41 @@
+# MW4Camo.io v1.5.0 — Smart Arsenal Intel
+
+**Release date:** November 11, 2026
+
+### New features
+
+- Source-aware side-by-side weapon comparison with optional personal game-test measurements (TTK, ADS, recoil and range), clearly separated from verified publisher data.
+- Patch-aware Loadout Doctor with per-build review queue and acknowledgements. Matching patch text is informational, not an automatic nerf or meta claim.
+- Camo Assistant with three-objective plan, manual counter increments, completion marking and Undo.
+- Complete class builder with primary/secondary slots and official Warzone Season 1 perk slots, lethal/tactical lists, three one-click Warzone playstyle presets, and mode-separated local saves.
+- Gunsmith advisor: explains selected attachment source quality and strategy match, with patch review shortcuts.
+- Extended Ctrl+K Quick Jump and main sidebar navigation for the four new pages.
+- v1.5 responsive styles and versioned offline assets. Existing local browser key remains compatible.
+
+### Fixes and safeguards
+
+- v1 legacy blueprint import preserves valid save timestamps, allowing precise patch review dating.
+- Edited blueprints reset previous patch acknowledgements for that specific build, so new revisions can be checked.
+- Numeric input validation rejects out-of-range personal measurements; unmeasured fields remain unavailable, never zero.
+- Camo Assistant recommends a mix of level and trackable challenges rather than displaying only the first three Military camos.
+- Duplicate weapon comparison is rejected.
+- Mode-specific class loadouts and personal measurements cannot overwrite each other's data.
+- Official patch-feed updater and dynamically refreshed patch archive are not overwritten by the release commit.
+
+### Data-source limitations
+
+- Warzone equipment/perk catalog is official for Season 1. MW4/DMZ equipment options remain partial and are displayed as such.
+- Only the Rezi 12 has publisher-verified weapon-specific numerical values in the curated dataset; unsupported weapon TTK/damage/recoil values are **not estimated**.
+- Class builder covers the MW4 roster, not legacy Warzone guns, and does not link to Activision accounts.
+- The Doctor identifies note matches, not true balance effect size or perfect attachment compatibility.
+
+### Tests
+
+- 35 regression tests in the Python stdlib suite.
+- Chromium test harness: 14 routes at 320, 390, 768 and 1440px with primary save, measurement, camo +1 and Undo, and Gunsmith save behavior.
+
+---
+
 # MW4Camo.io v1.4.0 — HUD Motion, LOD & UX Reliability
 
 **Release date:** November 11, 2026

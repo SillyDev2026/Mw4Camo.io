@@ -6,6 +6,17 @@
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
+## v1.5 — Smart Arsenal Intelligence & full loadouts
+
+- **Patch Loadout Doctor** (`#/doctor`): cross-references saved weapon blueprints against source-linked MW4 and Warzone patch records since a blueprint was saved. Review each matching record and mark it acknowledged. It never presumes a buff/nerf from ambiguous language and does not automatically rewrite loadouts.
+- **Weapon Compare** (`#/compare`): side-by-side selected weapons, their game category, maximum level and attachment-catalog coverage. Publisher-confirmed numeric values are displayed with dates and links **only when sourced**; otherwise shown as unavailable. Optional user-entered TTK (ms), ADS (ms), recoil (0–10) and effective range (m) are saved separately per weapon and active mode and explicitly marked personal measurements, not official stats.
+- **Full Loadout Creator** (`#/class-builder`): select a primary and secondary from the 35 MW4 weapons and Warzone's source-verified perk slots and tactical/lethal equipment; save classes independently for Warzone, MW4 and DMZ. Includes one-click Warzone Aggressive, Stealth and Squad Support perk/equipment presets sourced from the same official choices. When no official option list is available in a mode, empty slots are shown without invented items. Add field upgrades where names have been verified. Attachments remain weapon-specific in the separate Gunsmith page.
+- **Camo Assistant** (`#/assistant`): dynamic personal objectives using checked camo milestones, pinned focus and manual challenge counters. Mark unlocks and increment challenge counts with an Undo action. A counter increment never auto-marks a camo complete.
+- **Gunsmith Advisor**: each weapon builder now explains the compatibility and reported goal match for selected attachments, and links to pending patch review.
+- **Quality, responsiveness & safety**: `ui-v7.css` adds predictable spacing, constrained cards and tap targets. All new state uses the existing `mw4camo-io-v1` storage key; v1 backup import/export includes class configs, patch acknowledgements and personal test numbers. Core weapon and attachment data and the daily official patch sync workflow are unchanged.
+
+The Warzone perks/equipment options were cross-checked against the [official 2026 Season 1 Warzone patch notes](https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes). The Rezi 12 damage/range facts are cited to the [official MW4 Season 1 notes](https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes). Availability, unlocked status and numeric performance should be verified in-game. No unofficial data is represented as measured TTK.
+
 ## v1.4 — restored animations, performance modes & quality-of-life
 
 - **UI animations restored:** route-entry fades and slide-in HUD cards, small button presses, progress-bar filling, navigation highlight, status glow, and an animated notification. Page-entry animation only fires when changing routes, not on every camo checkbox update.
@@ -41,7 +52,7 @@ A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Tr
 python -m http.server 8000
 ```
 
-Visit `http://localhost:8000/`. All frontend JavaScript is plain browser code. The main files are `index.html`, `app.js`, `styles.css`, `ui-v2.css`, `ui-v3.css`, `ui-v4.css`, `ui-v5.css`, `ui-v6.css`, `ui-experience.js`, `data/weapons.js` and `data/attachments.js`.
+Visit `http://localhost:8000/`. All frontend JavaScript is plain browser code. The main files are `index.html`, `app.js`, `styles.css`, `ui-v2.css`, `ui-v3.css`, `ui-v4.css`, `ui-v5.css`, `ui-v6.css`, `ui-v7.css`, `ui-experience.js`, `data/intel-v15.js`, `data/weapons.js` and `data/attachments.js`.
 
 ## Testing
 
@@ -86,3 +97,14 @@ tests/                      Regression suite
 
 ### v1.3.1 interface fix
 The left navigation drawer is interactive on narrow screens. Use the top-left menu control to open it; close with ×, the dark backdrop, Escape, or a navigation selection. No game data was changed.
+
+## v1.5 development checks
+
+```bash
+node --check app.js
+python -m unittest discover -s tests -p 'test_*.py' -q
+# Optional interactive Chromium smoke test (requires Playwright and Chromium):
+python tests/browser_v15_smoke.py
+```
+
+The browser smoke harness injects local assets into a sandboxed page to run without external network dependencies. Production use is through HTTPS/GitHub Pages.
