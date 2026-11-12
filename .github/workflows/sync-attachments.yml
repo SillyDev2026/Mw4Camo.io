@@ -6,7 +6,7 @@ on:
       - ".github/workflows/sync-attachments.yml"
       - "scripts/sync_attachments.py"
   schedule:
-    - cron: "17 9 * * *"
+    - cron: "43 * * * *"
   workflow_dispatch:
 
 permissions:
