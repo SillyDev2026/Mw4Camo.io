@@ -53,3 +53,20 @@
 
 /* Persistent save-failure signal, unaffected by the transient toast system. */
 .storage-warning:not([hidden]){display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:clamp(.6rem,1.6vw,1.2rem);padding:.85rem 1rem;border:1px solid #efad4d;border-radius:10px;background:#30241b;color:#fff0d2;font-size:.875rem;line-height:1.45}.storage-warning a{color:#f7d387;text-decoration:underline;font-weight:750}
+
+/* Loadout Lab share codes */
+.share-panel{display:grid;gap:12px;margin:20px 0 8px;padding:clamp(14px,2.5vw,22px);background:rgba(120,255,170,.035);border:1px solid rgba(157,221,194,.22);border-radius:14px;min-width:0}
+.share-panel h3{margin:0;font-size:clamp(17px,2vw,23px);letter-spacing:.035em}
+.share-value{display:block;min-width:0;max-width:100%;max-height:140px;overflow:auto;padding:13px 14px;border-radius:9px;border:1px solid var(--border,#384543);background:rgba(0,0,0,.24);font:500 12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere;word-break:break-word;user-select:all}
+.share-actions{display:flex;flex-wrap:wrap;gap:9px;min-width:0}
+.share-actions .btn{max-width:100%;white-space:normal;text-align:center}
+.share-game{display:grid;gap:10px;margin-top:4px;padding-top:16px;border-top:1px solid rgba(157,221,194,.15);min-width:0}
+.share-game strong{font-size:13px;letter-spacing:.04em}
+.share-game .field,.share-import .field{min-width:0;width:100%;max-width:100%;box-sizing:border-box}
+.share-game p{margin:0}
+.share-import{margin-top:18px;margin-bottom:18px;display:grid;gap:12px;min-width:0}
+.share-import .card-title{margin:0}
+.share-import p{margin:0;line-height:1.6}
+.share-import-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;min-width:0;align-items:center}
+.share-import-actions .btn{white-space:normal}
+@media(max-width:640px){.share-import-actions{grid-template-columns:1fr}.share-import-actions .btn,.share-actions .btn{width:100%}.share-actions{display:grid;grid-template-columns:1fr}.share-value{font-size:11px}}
