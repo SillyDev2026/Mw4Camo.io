@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Daily official-source change monitor for GitHub Pages.
+"""Hourly official-source change monitor for GitHub Pages.
 
 Discover patch articles from the Call of Duty patch index; read dated change sections;
 retain short sourced excerpts and link to full notes. Never invent balance values.
