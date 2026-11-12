@@ -98,7 +98,7 @@ function extract(input) {
 }
 
 function gameCodeLooksPlausible(value) {
-  return /^[A-Z0-9]{1,5}(?:-[A-Z0-9]{1,10}){1,4}$/.test(String(value || '').trim().toUpperCase());
+  return /^[A-Z][0-9]{2}(?:-[A-Z0-9]{1,10}){1,4}$/.test(String(value || '').trim().toUpperCase());
 }
 
 window.MW4_SHARE = Object.freeze({encode,decode,normalize,fingerprint,extract,gameCodeLooksPlausible});
