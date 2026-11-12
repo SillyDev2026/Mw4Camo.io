@@ -3,13 +3,14 @@
 const catalog = window.MW4_ATTACHMENTS;
 if (!catalog || !catalog.specs || !Array.isArray(catalog.items)) return;
 const remote = 'https://codloadout.gitlab.io/data/mw4-community-attachments.json';
+const starterItems = catalog.items.map(item=>({...item,weapons:[...(item.weapons||[])],goals:[...(item.goals||[])]}));
 const typeNames = ['Optic','Muzzle','Barrel','Underbarrel','Magazine','Rear Grip','Stock','Laser','Ammunition','Comb','Bolt','Trigger Action','Guard','Cylinder','Fire Mods'];
 const types = Object.fromEntries(typeNames.map(name => [name.toLowerCase().replace(/[^a-z0-9]/g,''),name]));
 const norm = value => String(value || '').normalize('NFKC').trim().toLowerCase();
 function merge(data) {
   if (!data || data.meta?.status !== 'community-reported' || !Array.isArray(data.attachments) || data.attachments.length < 500) return false;
   const entries = new Map();
-  for (const item of catalog.items) {
+  for (const item of starterItems) {
     if (!item || typeof item.name !== 'string' || typeof item.type !== 'string') continue;
     const weapons = (Array.isArray(item.weapons) ? item.weapons : []).filter(id => catalog.specs[id]?.types?.includes(item.type));
     if (weapons.length) entries.set(item.type + '|' + norm(item.name),{...item,weapons,goals:Array.isArray(item.goals)?item.goals:[]});
@@ -32,13 +33,15 @@ function merge(data) {
   }
   if (accepted < 500) return false;
   const merged = [...entries.values()].sort((a,b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
+  const changed = JSON.stringify(catalog.items) !== JSON.stringify(merged);
   catalog.items.splice(0,catalog.items.length,...merged);
   catalog.arsenalSynced = true;
   catalog.communityReportedCount = accepted;
   catalog.communityUpdated = String(data.meta.updated || '2026-10-28');
-  window.dispatchEvent(new Event('mw4:arsenal-ready'));
+  if (changed) window.dispatchEvent(new Event('mw4:arsenal-ready'));
   return true;
 }
+window.MW4_ApplyCommunityCatalog = merge;
 async function load(url) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(),6000);
