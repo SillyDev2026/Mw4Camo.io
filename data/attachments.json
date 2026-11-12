@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
+  "version": "1.7.1",
   "updated": "2026-11-11",
   "officialSource": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class",
   "communitySource": "https://codloadout.gitlab.io/mw4/attachments/",
@@ -168,8 +168,8 @@
         "Laser",
         "Ammunition"
       ],
-      "source": "provisional",
-      "apex": null,
+      "source": "official",
+      "apex": "Cronen Helix Mk. II",
       "blocked": []
     },
     "iso-nightshade": {
@@ -271,16 +271,16 @@
       "types": [
         "Optic",
         "Muzzle",
-        "Barrel",
         "Underbarrel",
         "Magazine",
         "Rear Grip",
         "Stock",
         "Laser",
-        "Ammunition"
+        "Ammunition",
+        "Guard"
       ],
-      "source": "provisional",
-      "apex": null,
+      "source": "community-augmented",
+      "apex": "CSG Crossfire",
       "blocked": []
     },
     "rezi-12": {
@@ -708,7 +708,8 @@
       "weapons": [
         "finn-lmg",
         "han-86",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Squad Support"
@@ -722,7 +723,8 @@
       "weapons": [
         "finn-lmg",
         "han-86",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced"
@@ -736,7 +738,8 @@
       "weapons": [
         "finn-lmg",
         "han-86",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Long Range",
@@ -751,7 +754,8 @@
       "weapons": [
         "finn-lmg",
         "han-86",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Fast TTK"
@@ -765,7 +769,8 @@
       "weapons": [
         "finn-lmg",
         "han-86",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Fast TTK"
@@ -1132,7 +1137,8 @@
       "type": "Ammunition",
       "name": "9mm Parabellum High Velocity",
       "weapons": [
-        "iso-nightshade"
+        "iso-nightshade",
+        "csg-35"
       ],
       "goals": [
         "Balanced"
@@ -1651,7 +1657,9 @@
         "m4",
         "mar-9",
         "patriot-xmr",
-        "warlord"
+        "warlord",
+        "cronen-osprey",
+        "csg-35"
       ],
       "goals": [
         "Balanced",
@@ -1713,7 +1721,9 @@
         "m4",
         "mar-9",
         "patriot-xmr",
-        "warlord"
+        "warlord",
+        "cronen-osprey",
+        "csg-35"
       ],
       "goals": [
         "Aggressive"
@@ -1885,7 +1895,8 @@
       "weapons": [
         "axion",
         "hyeon-burst",
-        "iso-nightshade"
+        "iso-nightshade",
+        "csg-35"
       ],
       "goals": [
         "Balanced",
@@ -1936,7 +1947,8 @@
       "type": "Magazine",
       "name": "60 Round Mag",
       "weapons": [
-        "x-58-nyx"
+        "x-58-nyx",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced"
@@ -1988,7 +2000,8 @@
         "finn-lmg",
         "han-86",
         "hyeon-burst",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced",
@@ -2033,7 +2046,8 @@
         "finn-lmg",
         "han-86",
         "hyeon-burst",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Low Recoil",
@@ -2171,7 +2185,8 @@
         "finn-lmg",
         "han-86",
         "hyeon-burst",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Stealth",
@@ -2251,7 +2266,8 @@
         "finn-lmg",
         "han-86",
         "hyeon-burst",
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Low Recoil"
@@ -2321,7 +2337,8 @@
         "vel-46",
         "warlord",
         "wz-55-striga",
-        "x-58-nyx"
+        "x-58-nyx",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced",
@@ -2367,7 +2384,8 @@
         "oris-8-6",
         "patriot-xmr",
         "signal-50",
-        "type-73"
+        "type-73",
+        "cronen-osprey"
       ],
       "goals": [
         "Long Range",
@@ -2419,7 +2437,8 @@
         "vel-46",
         "warlord",
         "wz-55-striga",
-        "x-58-nyx"
+        "x-58-nyx",
+        "cronen-osprey"
       ],
       "goals": [
         "Long Range",
@@ -2467,7 +2486,8 @@
       "type": "Optic",
       "name": "SZ Prima-4 Dot",
       "weapons": [
-        "m4"
+        "m4",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced",
@@ -2480,7 +2500,8 @@
       "type": "Optic",
       "name": "ZLR Type C",
       "weapons": [
-        "han-86"
+        "han-86",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced",
@@ -3205,7 +3226,8 @@
         "oden",
         "oris-8-6",
         "patriot-xmr",
-        "signal-50"
+        "signal-50",
+        "cronen-osprey"
       ],
       "goals": [
         "Long Range",
@@ -3242,7 +3264,8 @@
         "oden",
         "oris-8-6",
         "patriot-xmr",
-        "signal-50"
+        "signal-50",
+        "cronen-osprey"
       ],
       "goals": [
         "Low Recoil"
@@ -3272,7 +3295,8 @@
         "vel-46",
         "warlord",
         "wz-55-striga",
-        "x-58-nyx"
+        "x-58-nyx",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced",
@@ -3303,7 +3327,8 @@
         "vel-46",
         "warlord",
         "wz-55-striga",
-        "x-58-nyx"
+        "x-58-nyx",
+        "cronen-osprey"
       ],
       "goals": [
         "Aggressive",
@@ -3329,13 +3354,683 @@
       "type": "Underbarrel",
       "name": "Mire-50 Tac Grip",
       "weapons": [
-        "x-58-nyx"
+        "x-58-nyx",
+        "cronen-osprey"
       ],
       "goals": [
         "Balanced"
       ],
       "sourceType": "community",
       "source": "https://mw4intel.app/loadouts/warzone-x-58-nyx"
+    },
+    {
+      "type": "Magazine",
+      "name": "100 Round Drum",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Magazine",
+      "name": "120 Round Drum",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Rear Grip",
+      "name": "A56 Stout",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Rear Grip",
+      "name": "Cronen 56",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Rear Grip",
+      "name": "Cronen Shear-56",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Underbarrel",
+      "name": "GW Domi-9",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Underbarrel",
+      "name": "Miri 40mm",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Underbarrel",
+      "name": "TV Judicator",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Muzzle",
+      "name": "B16 Helical",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Muzzle",
+      "name": "Corvus LVL-40",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Muzzle",
+      "name": "FSS IS40",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Muzzle",
+      "name": "TZL-110 V1",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Laser",
+      "name": "Bruen 22-LPW",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Laser",
+      "name": "Corio 4DV-3",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Laser",
+      "name": "Corio ODSPR+",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Laser",
+      "name": "Expedite Intra-5b",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Laser",
+      "name": "STOVL IRX-6",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "Bruen THRM-60 Optic",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "FJX 708 PRO",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "GL K230",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "IOTA-D",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "KV Corsac Holo",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "Locus PX3 Canted",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "RVX9 Thermo",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "Schlager Dogfight GI",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "Slimline Elite",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "SZ Echelon Holo",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "SZ Helios Holo",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "SZ Lonewolf Holo",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "SZ Micro D-3",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "SZ SRE-7",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "VLK Rize-40",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Optic",
+      "name": "VLK Trimmer",
+      "weapons": [
+        "cronen-osprey",
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Barrel",
+      "name": "GKL-700 14\"",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Barrel",
+      "name": "IO-556 Tac 18\"",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Barrel",
+      "name": "RG5 Hark 10\"",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Stock",
+      "name": "Fade Tac 9L",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Stock",
+      "name": "FT Stalwart MK2",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Stock",
+      "name": "SPAN-10 Stock",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Stock",
+      "name": "XR-9 Tac V2",
+      "weapons": [
+        "cronen-osprey"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/cronen-osprey"
+    },
+    {
+      "type": "Ammunition",
+      "name": "9mm Parabellum Armor Piercing",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Ammunition",
+      "name": "9mm Parabellum Frangible",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Ammunition",
+      "name": "9mm Parabellum Hollow Point",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Ammunition",
+      "name": "9mm Parabellum Overpressured",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Optic",
+      "name": "Bruen Clash-40",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Optic",
+      "name": "Cronen Zero-K",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Optic",
+      "name": "Z-Dot 9",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Underbarrel",
+      "name": "CQC Stop",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Underbarrel",
+      "name": "Grip Strap",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Underbarrel",
+      "name": "IV-M Hand Stop",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "EXP Forage-Hvy",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "EXP Forage-LGT",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "EXP Forage-Tac",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "Matuzek Recourse 7",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "NIL-RISE 90 Comp",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "OCR-9F",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "RTR-8 Pro",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Muzzle",
+      "name": "ZLR TKO-35",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Rear Grip",
+      "name": "Matuzek Fire-Pro",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Rear Grip",
+      "name": "Sakin Contour-7",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Rear Grip",
+      "name": "XRK TAC Grip",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Stock",
+      "name": "RASH-90 Heavy Stock",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Stock",
+      "name": "XRK Fury-8",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Stock",
+      "name": "XRK Slight Stock",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Guard",
+      "name": "TA Operator-6",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
+    },
+    {
+      "type": "Guard",
+      "name": "TA Ration-424",
+      "weapons": [
+        "csg-35"
+      ],
+      "goals": [],
+      "sourceType": "community",
+      "source": "https://codmunity.gg/weapon/mw4/csg-35"
     }
   ]
 }

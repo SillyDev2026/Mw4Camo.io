@@ -381,16 +381,16 @@
     "name": "Cronen Osprey",
     "category": "Assault Rifles",
     "military": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      9,
+      13,
+      16,
+      20,
+      23,
+      26,
+      29,
+      33
     ],
-    "maxLevel": null,
+    "maxLevel": 70,
     "season": "Season 1",
     "specials": [
       {
@@ -664,16 +664,16 @@
     "name": "CSG-35",
     "category": "Submachine Guns",
     "military": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      8,
+      10,
+      14,
+      17,
+      19,
+      23,
+      27,
+      29
     ],
-    "maxLevel": null,
+    "maxLevel": 42,
     "season": "Season 1",
     "specials": [
       {

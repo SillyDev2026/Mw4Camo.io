@@ -6,6 +6,10 @@
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
+### v1.7.1 — Season 1 guns complete
+
+Added 62 reported standard-attachment choices for the Cronen Osprey and 39 for the CSG-35 (63 and 40 total including their separate Apex attachments). Official levels, Apex names, and weapon-type categories are recorded. The community lists an additional Guard category for the CSG-35, shown provisionally. Corrected the CSG-35's unsupported Barrel slot. Named attachments remain third-party reported until verified in-game. No existing camo progress or blueprint storage is reset.
+
 ## v1.7.0 — Arsenal expansion
 
 The site retains all 35 weapons and all saved progress. The Gunsmith now accepts a validated local snapshot of 615 community-reported attachments, organized by weapon and attachment slot, plus existing curated attachments. Names and mappings are unverified and not official Activision data. The original curated choices remain when offline or before snapshot sync. The Apex + five-standard-slot rules remain unchanged. A separate daily GitHub Actions sync refreshes `data/attachments-community.json` from the public COD Loadout source; the existing official patch sync remains independent. Use `python -m unittest discover -s tests -p 'test_arsenal_v17.py'` for catalog checks.
