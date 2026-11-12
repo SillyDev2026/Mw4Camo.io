@@ -136,3 +136,22 @@ body::before {content:'';pointer-events:none;position:fixed;inset:0;opacity:.15;
 @media(max-width:380px){.camo-grid{grid-template-columns:1fr}.templates{grid-template-columns:1fr}.topbar{gap:7px}.breadcrumb{font-size:8px}.stat-value{font-size:32px}.brand strong{font-size:23px}}
 @media(hover:none){.weapon-card:hover,.milestone:hover,.patch-card:hover,.btn:hover:not(:disabled),.template-card:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){.page-enter,.loading:before{animation:none!important}.btn:after{display:none}html{scroll-behavior:auto}}
+/* Narrow viewport guardrails — preserve readable content without horizontal page scrolling. */
+.page-title {max-width:100%;overflow-wrap:anywhere;word-break:normal}
+.detail-grid,.grid-2,.card,.section-head,.build-slot,.build-slots,.goal-intro,.patch-layout,.patch-article,.patch-card,.command-banner {min-width:0}
+.summary-mini .tag,.build-slot label,.build-slot label *, .command-banner strong {overflow-wrap:anywhere;min-width:0}
+.patch-layout,.patch-card {max-width:100%}
+.patch-article,.patch-article li,.patch-card h3 {overflow-wrap:anywhere}
+@media(max-width:640px){
+  .patch-layout,.detail-grid,.grid-2 {grid-template-columns:minmax(0,1fr)}
+  .build-slots {grid-template-columns:minmax(0,1fr)}
+  .section-head {flex-wrap:wrap}
+  .summary-mini .tag {max-width:100%;white-space:normal}
+  .patch-card {grid-template-columns:minmax(0,1fr) auto}
+  .page-title {font-size:clamp(32px,10.1vw,53px)}
+}
+@media(max-width:380px){
+  .page-title {font-size:clamp(29px,9.6vw,38px);letter-spacing:0}
+  .build-actions .btn {white-space:normal}
+  .command-banner h2 {overflow-wrap:anywhere}
+}
