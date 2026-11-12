@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#080c0e",
   "theme_color": "#080c0e",
-  "description": "MW4 & Warzone tactical camo planner, loadout lab and official patch archive",
+  "description": "MW4 camo progression, verified Gunsmith attachment categories, selectable loadout builder and official patch tracker",
   "icons": [
     {
       "src": "assets/favicon.svg",

@@ -1,5 +1,5 @@
-const CACHE = 'mw4camo-v1.2-static';
-const ASSETS = ['./','./index.html','./styles.css','./ui-v2.css','./ui-v3.css','./app.js','./data/weapons.js','./data/patches.js','./data/update-status.js','./manifest.webmanifest','./assets/favicon.svg'];
+const CACHE = 'mw4camo-v1.3-static';
+const ASSETS = ['./','./index.html','./styles.css','./ui-v2.css','./ui-v3.css','./ui-v4.css','./app.js','./data/weapons.js','./data/patches.js','./data/attachments.js','./data/update-status.js','./manifest.webmanifest','./assets/favicon.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{

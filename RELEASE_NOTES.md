@@ -1,26 +1,27 @@
-# MW4Camo.io v1.2.0 — Operations Upgrade
+# MW4Camo.io v1.3.0 — Real Gunsmith Controls & UI Overhaul
 
-Release date: November 11, 2026
+**Release date:** November 11, 2026
 
-## New features
+## Features
 
-- **Grind Planner:** a dedicated next-objective page that ranks unfinished weapons by progress toward the eleven base camos. Recommended shows nine actionable picks; All, Favorites, Near Gold and Not Started offer alternative filters.
-- **Pinned focus weapon:** choose one weapon to keep at the front of the mission queue and surface its next unchecked challenge on the home dashboard.
-- **Challenge counters:** track your own numeric count and goal for Special and Completionist camo challenges without artificially marking the camo complete. These counters are manual because published targets differ by mode or are not yet verified.
-- **Gunsmith strategy comparison:** compare two of nine build goals across five clearly labelled *editorial priority weights*, not simulated damage, weapon recoil or time-to-kill.
-- **Searchable patch archive:** search all indexed patch titles, dates, section headings, and categorized bullets; retain MW4/Warzone filters.
-- **Keyboard and mobile navigation:** accessible skip button, Escape-to-close navigation, mobile drawer backdrop, improved focus rings and responsive grids.
+- Replaced manual attachment-name text fields with **weapon-specific attachment-category and named-attachment dropdowns**.
+- Added **199 distinct named catalog items** with source type and reported compatible weapon IDs. Names may be incomplete or community-reported; see in-app source links and ATTRIBUTION.md.
+- Mapped official Gunsmith categories for **28 launch weapons**, marked **two Season 1 weapons as provisional**, and disabled the traditional attachment workbench for **five launchers/melee**.
+- Introduced **Build for [goal]** recommendations for all **nine** goals. Recommendations remain a *strategy* and do not assert measured recoil/TTK improvements.
+- Enforced **five standard attachments**, a single selection per category, and weapon-specific Apex category conflicts. Adding, changing, replacing and clearing attachments are all selectable without typing names.
+- Preserved saved builds and imported legacy manual attachment selections with clear unverified labels.
+- Redesigned the Gunsmith using compact, responsive slot rows, clearer category/source indicators, better spacing, fluid layouts and keyboard/mobile focus improvements.
+- Updated the service worker asset manifest and application version to v1.3.0.
 
-## Fixes
+## Checks
 
-- Entering a weapon level now only saves that level; **it no longer incorrectly claims Military camos are completed.** Camo checkmarks require explicit player confirmation.
-- Cross-tab changes refresh the local UI through the Storage event.
-- Existing v1 state/backups remain readable. New `counters` and `focusWeapon` are optional fields on the v1 backup schema, so the export retains compatibility.
-- Versioned cache includes the new stylesheet; offline-first behavior remains network-first for updates.
+- `node --check app.js`
+- `python -m unittest discover -s tests -q` (**21 tests passed**)
+- Browser smoke tests for 16 views at 320, 390, 900 and 1440px, covering navigation, nine goals, option selection, Apex restrictions, save/load and no-Gunsmith weapons; no page-level JavaScript exceptions or horizontal overflow found in the tested cases.
 
-## Data & accuracy
+## Known limitations
 
-- Existing 35-weapon MW4 catalogue is retained. No unsupported new weapons or verified attachment stats have been invented.
-- Source-cited named loadouts remain examples. Builder performance priorities are **guidance**, not quantitative weapon TTK or no-recoil guarantees.
-- The GitHub Actions patch checker runs daily, with article discovery and source-health reporting. It updates the site archive but does **not** automatically add newly released weapons to the catalogue; those require data review.
-- Local ZIP contains a repository-source snapshot; the live GitHub Pages deployment includes the latest auto-generated patch catalogue.
+- Community-report mappings and unverified names are **not** proof that a particular attachment is currently selectable in game.
+- Not all attachment categories have documented names for all weapons. The app leaves categories without sourced names empty instead of generating fake ones.
+- The two Season 1 weapons are on a provisional slot map until their official categories are verified.
+- Patch intelligence updates automatically; the weapon and attachment databases require separate reviews when an official content drop changes them.
