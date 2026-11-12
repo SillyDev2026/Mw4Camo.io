@@ -13,11 +13,13 @@
   <link rel="stylesheet" href="ui-v3.css">
   <link rel="stylesheet" href="ui-v4.css">
   <link rel="stylesheet" href="ui-v5.css">
+  <link rel="stylesheet" href="ui-v6.css">
   <script src="data/weapons.js" defer></script>
   <script src="data/patches.js" defer></script>
   <script src="data/attachments.js" defer></script>
   <script src="data/update-status.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="ui-experience.js" defer></script>
 </head>
 <body>
 <button class="skip-link" id="skipLink" type="button">Skip to main content</button>
@@ -38,14 +40,22 @@
     </nav>
     <div class="side-label side-label-2">WORKSPACE</div>
     <nav class="side-nav"><a href="#/settings" data-route="settings"><span class="nav-icon">⚙</span>Data & Settings</a></nav>
-    <div class="side-bottom"><span class="status-led"></span> LOCAL-FIRST TRACKING<br><small>No login required · v1.3.1</small></div>
+    <div class="side-bottom"><span class="status-led"></span> LOCAL-FIRST TRACKING<br><small>No login required · v1.4.0</small></div>
   </aside>
   <div class="main-panel">
-    <header class="topbar"><button class="mobile-menu icon-button" id="menuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">☰</button><span class="breadcrumb" id="breadcrumb">COMMAND CENTER <span>/</span> OVERVIEW</span><div class="top-actions"><span class="refresh-status" id="refreshStatus"><i></i> PATCH FEED READY</span><button class="mode-button" id="modeButton" title="Switch active mode">◉ <span id="modeText">WARZONE</span> <span class="down-chevron">⌄</span></button></div></header>
+    <header class="topbar"><button class="mobile-menu icon-button" id="menuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">☰</button><span class="breadcrumb" id="breadcrumb">COMMAND CENTER <span>/</span> OVERVIEW</span><div class="top-actions"><button type="button" id="quickOpen" class="top-utility" aria-label="Quick jump to a page or weapon" title="Quick jump · Ctrl+K"><span aria-hidden="true">⌕</span> <span class="top-utility-label">JUMP <kbd>Ctrl K</kbd></span></button><button type="button" id="qualityButton" class="top-utility quality-utility" aria-label="Change visual detail mode" title="Visual quality mode">✦ <span id="qualityText">AUTO</span></button><span class="refresh-status" id="refreshStatus"><i></i> PATCH FEED READY</span><button class="mode-button" id="modeButton" title="Switch active mode">◉ <span id="modeText">WARZONE</span> <span class="down-chevron">⌄</span></button></div></header>
     <main id="app" tabindex="-1"><div class="loading">Initializing your camo command center…</div></main>
     <footer class="footer">MW4CAMO.IO <span>·</span> Independent fan project. Not affiliated with Activision, Infinity Ward, or Raven Software. <a href="https://www.callofduty.com/patchnotes" rel="noopener" target="_blank">Official patch notes ↗</a></footer>
   </div>
 </div>
+<div id="quickOverlay" class="quick-overlay" hidden>
+  <section class="quick-panel" role="dialog" aria-modal="true" aria-label="Quick jump">
+    <div class="quick-search-row"><span class="quick-search-icon" aria-hidden="true">⌕</span><input id="quickSearch" type="search" aria-label="Find pages, weapons, or patch notes" placeholder="Find weapons, blueprints, patches, pages…" autocomplete="off" spellcheck="false"><button type="button" id="quickClose" aria-label="Close quick jump">ESC</button></div>
+    <div id="quickResults" class="quick-results" role="listbox" aria-label="Search results"></div>
+    <footer class="quick-hint"><span>↑ ↓ Move · Enter Open</span><span>Ctrl K / ⌕ Open</span></footer>
+  </section>
+</div>
+<button type="button" class="back-top" id="backTop" hidden aria-label="Back to top" title="Back to top">↑</button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

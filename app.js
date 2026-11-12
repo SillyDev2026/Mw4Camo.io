@@ -105,6 +105,17 @@ let comparisonGoal='Low Recoil';
 const builderDrafts = Object.create(null);
 let template='Balanced';
 let toastTimer;
+let lastRenderedPath = null;
+function notifyUndo(message, callback){
+  clearTimeout(toastTimer);
+  toastBox.replaceChildren();
+  const label=document.createElement('span');label.textContent=message;
+  const button=document.createElement('button');button.type='button';button.className='toast-undo';button.textContent='UNDO';
+  button.setAttribute('aria-label','Undo the last progress change');
+  button.addEventListener('click',()=>{callback();notify('Last change undone');},{once:true});
+  toastBox.append(label,button);toastBox.classList.add('show');
+  toastTimer=setTimeout(()=>toastBox.classList.remove('show'),6500);
+}
 function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));return true;}catch{notify('Could not write local storage. Export your progress instead.');return false;}}
 function notify(msg){toastBox.textContent=msg;toastBox.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastBox.classList.remove('show'),3500);}
 function link(path){return '#/'+path;}
@@ -245,9 +256,19 @@ function renderNotFound(){return `<div class="empty"><h2 class="section-title">P
 function render(){let path=currentPath(),[route,param]=path.split('/');let heading=route==='weapon'?'WEAPON / CAMOS':route==='build'?'WEAPON / GUNSMITH':route==='patch'?'PATCH / DETAIL':(route||'dashboard').toUpperCase();document.getElementById('breadcrumb').innerHTML='MW4CAMO <span>/</span> '+esc(heading);document.getElementById('modeText').textContent=state.mode.toUpperCase();document.querySelectorAll('[data-route]').forEach(x=>x.classList.toggle('active',x.dataset.route===route || (route==='weapon'&&x.dataset.route==='weapons')||(route==='build'&&x.dataset.route==='loadouts')||(route==='patch'&&x.dataset.route==='patches')));
 let w=WEAPONS.find(w=>w.id===param),p=PATCHES.find(p=>p.id===param);
 app.innerHTML=route==='dashboard'||!route?renderDashboard():route==='weapons'?renderWeapons():route==='weapon'?renderWeapon(w):route==='mastery'?renderMastery():route==='planner'?renderPlanner():route==='loadouts'?renderLoadouts():route==='my-builds'?renderMyBuilds():route==='build'?renderBuild(w):route==='patches'?renderPatches():route==='patch'?renderPatch(p):route==='settings'?renderSettings():renderNotFound();
-if(route==='weapons')updateWeaponGrid();if(route==='patches')updatePatchGrid();app.classList.remove('page-enter');void app.offsetWidth;app.classList.add('page-enter');closeSidebar();}
+if(route==='weapons')updateWeaponGrid();if(route==='patches')updatePatchGrid();
+const isNewRoute=path!==lastRenderedPath;lastRenderedPath=path;
+app.classList.remove('page-enter');
+if(isNewRoute){void app.offsetWidth;app.classList.add('page-enter');}
+closeSidebar();
+window.dispatchEvent(new CustomEvent('mw4:render',{detail:{path,route,isNewRoute}}));}
 function updateWeaponGrid(){let grid=document.getElementById('weaponGrid');let results=document.getElementById('weaponResultsCount');if(!grid)return;let rows=filteredWeapons();grid.innerHTML=rows.length?rows.map(weaponCard).join(''):'<div class="empty">No weapons match. Try clearing filters.</div>';if(results)results.textContent='('+rows.length+' FOUND)';}
-function setMode(mode){if(!['Warzone','MW4','DMZ'].includes(mode))return;state.mode=mode;persist();render();notify('Mode changed to '+mode);}
+function setMode(mode){
+ if(!['Warzone','MW4','DMZ'].includes(mode)||state.mode===mode)return;
+ const path=currentPath().split('/');
+ if(path[0]==='build'){const w=WEAPONS.find(w=>w.id===path[1]);if(w)stashDraft(w);}
+ state.mode=mode;persist();render();notify('Mode changed to '+mode);
+}
 function valueById(id){let el=document.getElementById(id);return el?el.value.trim():'';}
 function collectBuild(w){const slots={};app.querySelectorAll('[data-slot-row]').forEach(row=>{const type=row.querySelector('.gs-type')?.value,value=row.querySelector('.gs-item')?.value||'';if(type&&availableTypes(w,document.getElementById('gsApex')?.checked).includes(type)&&!Object.hasOwn(slots,type)&&Object.keys(slots).length<5)slots[type]=value;});return {name:valueById('buildName')||w.name+' custom',template:activeGoal(w),slots,apex:!!document.getElementById('gsApex')?.checked,perks:valueById('buildPerks'),tactical:valueById('buildTactical'),lethal:valueById('buildLethal'),notes:valueById('buildNotes'),userSaved:true,savedAt:new Date().toISOString()};}
 async function copyText(text){try{await navigator.clipboard.writeText(text);notify('Copied to clipboard');}catch{let el=document.createElement('textarea');el.value=text;el.style.position='fixed';el.style.opacity='0';document.body.appendChild(el);el.select();let ok=document.execCommand('copy');el.remove();notify(ok?'Copied to clipboard':'Clipboard unavailable; use Export instead');}}
@@ -256,8 +277,16 @@ function validatedImport(data){if(!data || data.version!==1 || typeof data.compl
 app.addEventListener('click',event=>{let btn=event.target.closest('[data-action]');if(!btn)return;let action=btn.dataset.action,w=WEAPONS.find(w=>w.id===btn.dataset.weapon);if(action==='focus'&&w){state.focusWeapon=state.focusWeapon===w.id?null:w.id;persist();render();notify(state.focusWeapon?'Focus set to '+w.name:'Focus cleared');return;}
 if(action==='mission-filter'){missionFilter=btn.dataset.filter;render();return;}
 if(action==='favorite'&&w){state.favorites=favorite(w)?state.favorites.filter(x=>x!==w.id):[...state.favorites,w.id];persist();if(currentPath()==='weapons')updateWeaponGrid();else render();return;}
-if(action==='camo'&&w){let key=w.id+'|'+btn.dataset.camo;state.completed[key]=!state.completed[key];persist();render();return;}
-if(action==='account'){let key=btn.dataset.camo;state.accounts[key]=!state.accounts[key];persist();render();return;}
+if(action==='camo'&&w){
+ let key=w.id+'|'+btn.dataset.camo,previous=Boolean(state.completed[key]);
+ state.completed[key]=!previous;persist();render();
+ notifyUndo((previous?'Unchecked ':'Completed ')+w.name+' camo',()=>{state.completed[key]=previous;persist();render();});return;
+}
+if(action==='account'){
+ let key=btn.dataset.camo,previous=Boolean(state.accounts[key]);
+ state.accounts[key]=!previous;persist();render();
+ notifyUndo(previous?'Mastery unmarked':'Mastery marked complete',()=>{state.accounts[key]=previous;persist();render();});return;
+}
 if(action==='favorites'){filter.fav=!filter.fav;render();return;}
 if(action==='category'){filter.category=btn.dataset.category;render();return;}
 if(action==='set-class'){filter.category=btn.dataset.category;filter.search='';filter.status='All';filter.fav=false;location.hash='#/weapons';return;}

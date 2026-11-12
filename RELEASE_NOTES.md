@@ -1,3 +1,38 @@
+# MW4Camo.io v1.4.0 — HUD Motion, LOD & UX Reliability
+
+**Release date:** November 11, 2026
+
+## Bug fixes
+
+- Fixed inconsistent animation visibility on touch devices by introducing real route-entry, primary-panel and status animations rather than relying only on desktop hover states.
+- Avoided repeating page-entry animations whenever a checkbox or Gunsmith selection rerenders a page.
+- Made the Undo action tappable despite the older toast system's `pointer-events: none` default.
+- Preserve in-progress, unsaved Gunsmith draft fields when switching MW4 and Warzone modes.
+- Refreshed the PWA cache key and asset list; clean only caches owned by MW4Camo.
+- Consolidated spacing/interaction overrides into `ui-v6.css` rather than changing the weapon and attachment databases.
+
+## Quality of life and level of detail
+
+- Visuals menu: Auto / Full / Lite, with data-saver and low-capability detection. Preferences are saved locally and do not overwrite camo progress.
+- Full: page entrance and HUD panel transitions, progress bar movement, button press response, and status pulses.
+- Lite: reduced decorative layers, no expensive backdrop blur or infinite pulse animations, no page transitions.
+- System reduced-motion preferences always disable decorative animations.
+- Ctrl+K / Cmd+K / `/` Quick Jump for pages, weapons, recently visited weapons and selected patch articles.
+- Undo on accidental camo and mastery completion toggles, keyboard-accessible search dialog and back-to-top control.
+- Offscreen browser content-visibility optimization for weapon, patch and planner lists when supported.
+
+## Compatibility
+
+- Browser data key remains `mw4camo-io-v1`. Existing local camo checkmarks, goals, blueprints, weapon levels and exported backups stay compatible.
+- Patch-feed automation and gameplay data are unchanged.
+- Goal-priority scores remain editorial recommendations, not verified weapon recoil or TTK measurements.
+
+## Validation
+
+- Static regression suite and functional browser tests for mobile and desktop navigation, command search, all nine build goals, undo, motion modes, reduced-motion and overflow.
+
+---
+
 ## v1.3.1 — UI navigation and spacing repair
 
 - Fixed mobile sidebar/menu hit-testing: the overlay no longer covers navigation links.

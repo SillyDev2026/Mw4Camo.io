@@ -1,0 +1,70 @@
+/* MW4Camo v1.4: consistent motion, adaptive visual detail, accessible quick jump. */
+:root{--hud-ease:cubic-bezier(.18,.75,.23,1);--hud-fast:175ms;--hud-medium:340ms;--hud-gutter:clamp(14px,2.6vw,36px)}
+#app{padding-inline:var(--hud-gutter);overflow-wrap:break-word}
+#app .section{margin-top:clamp(22px,2.25vw,34px)}
+#app .section-head{margin-bottom:clamp(12px,1.3vw,18px)}
+#app .stats,#app .grid-2,#app .weapon-grid,#app .mission-grid,#app .camo-grid{column-gap:clamp(10px,1.2vw,18px);row-gap:clamp(10px,1.2vw,18px)}
+.topbar{padding-inline:var(--hud-gutter);gap:clamp(7px,1vw,15px)}
+.top-actions{gap:clamp(5px,.85vw,12px)}
+.top-utility{background:#172521;color:#d2edda;border:1px solid #3d5348;min-height:39px;min-width:40px;padding:8px 12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;border-radius:5px;font-size:11px;letter-spacing:.5px;font-weight:800;white-space:nowrap;transition:background var(--hud-fast),border-color var(--hud-fast),transform var(--hud-fast)}
+.top-utility:hover,.top-utility:focus-visible{background:#263d31;border-color:var(--lime);transform:translateY(-2px)}
+.top-utility>span:first-child{font-size:20px;line-height:1}
+.top-utility kbd,.visual-settings kbd{font:700 10px var(--header);color:#acc19c;border:1px solid #50644c;padding:2px 5px;border-radius:3px}
+.visual-settings{display:grid;gap:13px;align-content:start}
+.visual-settings .lede{max-width:none}
+.visual-settings .select{min-height:42px}
+.visual-settings .visual-status{border-left:3px solid var(--lime);background:#203028;padding:11px;margin:0;line-height:1.5}
+.toast{display:flex;gap:12px;justify-content:space-between;align-items:center;line-height:1.5;animation:toast-rise .3s var(--hud-ease) both}
+.toast-undo{cursor:pointer;padding:7px 10px;flex-shrink:0;background:#d2ff62;color:#111b17;border:0;border-radius:4px;font-weight:900;letter-spacing:.7px;font-size:11px}
+.toast-undo:focus-visible{outline:2px solid #fff!important}
+#app.page-enter{animation:page-sweep .34s var(--hud-ease) both}
+#app.page-enter>.hero,#app.page-enter>.focus-brief,#app.page-enter>.command-banner,#app.page-enter>.stats,#app.page-enter>.gs-command{animation:panel-arrive .42s var(--hud-ease) both}
+#app.page-enter>.hero{animation-delay:15ms}
+#app.page-enter>.focus-brief,#app.page-enter>.stats{animation-delay:65ms}
+#app.page-enter>.command-banner{animation-delay:100ms}
+@keyframes page-sweep{from{opacity:.3;transform:translate3d(0,8px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes panel-arrive{from{opacity:.4;transform:translate3d(0,12px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes toast-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes status-glow{0%,100%{box-shadow:0 0 8px #d2ff6233}50%{box-shadow:0 0 23px #d2ff6270}}
+@keyframes soft-progress{from{transform:scaleX(.2)}to{transform:scaleX(1)}}
+#app .btn,#app .chip,#app .gs-goal,#app .camo-tile,.side-nav a{transition-duration:var(--hud-fast)}
+#app .btn:active:not(:disabled),.top-utility:active{transform:scale(.97)}
+#app .gs-goal.is-active{box-shadow:inset 0 0 0 1px #d2ff6266,0 0 20px #d2ff6211}
+#app .bar>span{transform-origin:left center;animation:soft-progress .45s var(--hud-ease)}
+.status-led,.refresh-status i{animation:status-glow 2.7s ease-in-out infinite}
+@supports (content-visibility:auto){#app .weapon-card,#app .patch-card,#app .mission-card{content-visibility:auto;contain-intrinsic-size:auto 200px}}
+[data-quality="lite"] body::before,[data-quality="lite"] .hero:after,[data-quality="lite"] .command-banner:before{display:none}
+[data-quality="lite"] .topbar,[data-quality="lite"] .sidebar-backdrop,[data-quality="lite"] .quick-overlay{backdrop-filter:none}
+[data-quality="lite"] .card,[data-quality="lite"] .hero,[data-quality="lite"] .weapon-card,[data-quality="lite"] .gs-workspace,[data-quality="lite"] .mission-card{box-shadow:none!important}
+[data-quality="lite"] .focus-dot,[data-quality="lite"] .refresh-status i,[data-quality="lite"] .status-led{animation:none;box-shadow:none}
+[data-quality="lite"] #app.page-enter,[data-quality="lite"] #app.page-enter>*,[data-quality="lite"] #app .bar>span{animation:none!important}
+[data-quality="lite"] .btn:after{display:none}
+[data-quality="lite"] .btn,[data-quality="lite"] .gs-goal,[data-quality="lite"] .weapon-card,[data-quality="lite"] .mission-card{transition:none!important}
+.quick-overlay{position:fixed;inset:0;z-index:130;display:flex;align-items:flex-start;justify-content:center;padding:clamp(68px,10vh,130px) 12px 22px;background:#050b0ce8;backdrop-filter:blur(7px)}
+.quick-overlay[hidden],.back-top[hidden]{display:none!important}
+.quick-open{overflow:hidden}
+.quick-panel{width:min(620px,100%);max-height:min(75dvh,740px);min-width:0;display:flex;flex-direction:column;background:#101c1f;border:1px solid #78975e;box-shadow:0 25px 95px #000c;border-radius:9px;overflow:hidden;animation:panel-arrive .22s var(--hud-ease) both}
+.quick-search-row{display:flex;align-items:center;gap:10px;padding:15px;background:#1a2927;border-bottom:1px solid #435b4e}
+.quick-search-icon{color:var(--lime);font-size:27px}
+#quickSearch{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#f0ffee;font:600 clamp(14px,1.4vw,18px) var(--header);padding:8px}
+#quickSearch::placeholder{color:#8ca198}
+#quickClose{cursor:pointer;border:1px solid #4a5e55;background:#21332d;color:#e2f4db;border-radius:4px;padding:8px 10px;font:700 11px var(--header)}
+.quick-results{overflow:auto;overscroll-behavior:contain;padding:8px;display:grid;align-content:start;gap:3px}
+.quick-result{width:100%;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:transparent;color:#e6f5eb;text-align:left;border:1px solid transparent;border-radius:5px;cursor:pointer;min-width:0}
+.quick-result.selected,.quick-result:hover,.quick-result:focus-visible{background:#24362a;border-color:#506b4c}
+.quick-result span{min-width:0;display:grid;gap:5px}
+.quick-result strong{font-size:13px;overflow-wrap:anywhere}
+.quick-result small{font-size:11px;color:#a9bbb0}
+.quick-result b{flex:0 0 auto;font-size:9px;letter-spacing:.7px;color:#b7d18d}
+.quick-empty{font-size:13px;color:#acbdaf;padding:15px}
+.quick-hint{padding:12px 17px;border-top:1px solid #2d4239;font-size:10px;color:#a9bdab;display:flex;justify-content:space-between;gap:10px}
+.back-top{position:fixed;right:clamp(14px,2vw,25px);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:45;background:#d2ff62;color:#15211c;width:43px;height:43px;border-radius:50%;font:900 23px var(--header);border:1px solid #e9ffad;box-shadow:0 9px 24px #0008;cursor:pointer;transition:transform .2s}
+.back-top:hover{transform:translateY(-3px)}
+@media(max-width:1190px){.top-utility-label{display:none}.top-utility{padding-inline:10px}.topbar .refresh-status{display:none}}
+@media(max-width:760px){.quality-utility{display:none}.topbar{gap:7px}.top-actions{gap:6px}.top-utility{min-height:42px;min-width:42px}.quick-overlay{padding-top:calc(60px + env(safe-area-inset-top,0px))}.quick-panel{max-height:78dvh}.quick-result{padding-block:13px}}
+@media(max-width:360px){#app{padding-inline:12px}.topbar{padding-inline:10px}.quick-result b{font-size:8px}.quick-search-row{padding:10px}.quick-hint{font-size:9px}}
+@media(hover:none){.top-utility:hover,.back-top:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){#app.page-enter,#app.page-enter>*,.toast,.quick-panel,.status-led,.refresh-status i,#app .bar>span{animation:none!important}.quick-overlay{backdrop-filter:none}}
+[data-motion="reduce"] #app.page-enter,[data-motion="reduce"] #app.page-enter>*,[data-motion="reduce"] .toast,[data-motion="reduce"] .quick-panel,[data-motion="reduce"] .status-led,[data-motion="reduce"] .refresh-status i{animation:none!important}
+.toast.show:has(.toast-undo){pointer-events:auto}
+.toast.show .toast-undo{background:#173123;color:#e8ffbd;border:1px solid #31513d;min-height:36px}

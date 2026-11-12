@@ -6,6 +6,16 @@
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
+## v1.4 — restored animations, performance modes & quality-of-life
+
+- **UI animations restored:** route-entry fades and slide-in HUD cards, small button presses, progress-bar filling, navigation highlight, status glow, and an animated notification. Page-entry animation only fires when changing routes, not on every camo checkbox update.
+- **Adaptive UI detail:** Auto (hardware/data-saver aware), Full (enhanced motion), and Lite (fewer effects and GPU layers), adjustable from Settings → Visuals & Performance. System reduced-motion preferences override decorative movement.
+- **Quick Jump:** Ctrl+K / Cmd+K or `/` opens searchable navigation for pages, weapons and patch entries. Mobile header has a search icon. Use arrow keys/Enter, Escape to close, and choose a recent weapon.
+- **Undo progress:** after checking/unchecking a camo or account-mastery item, a temporary notification offers an Undo button.
+- **Preserve unsaved Gunsmith edits:** mode switching now stashes the active draft so toggling MW4 and Warzone does not silently discard edits.
+- **Scroll assistance:** back-to-top control appears on long pages. The PWA asset cache is versioned to load the updated styles/scripts, without clearing unrelated service-worker caches.
+- **Performance and accessibility:** offscreen card rendering optimization, keyboard-accessible search, meaningful dialog labels, consistent spacing, touch feedback and reduced animation on slow devices.
+
 ## v1.3 — Choose your Gunsmith attachments
 
 - **Per-weapon dropdowns:** choose a weapon, game mode and one of **nine goals**: Balanced, Fast TTK, Low Recoil, Aggressive, Long Range, Hipfire, Stealth, Quickscope and Squad Support. Choose a compatible attachment category, then an available **named attachment**—no manual name entry required.
@@ -31,13 +41,14 @@ A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Tr
 python -m http.server 8000
 ```
 
-Visit `http://localhost:8000/`. All frontend JavaScript is plain browser code. The main files are `index.html`, `app.js`, `styles.css`, `ui-v2.css`, `ui-v3.css`, `ui-v4.css`, `data/weapons.js` and `data/attachments.js`.
+Visit `http://localhost:8000/`. All frontend JavaScript is plain browser code. The main files are `index.html`, `app.js`, `styles.css`, `ui-v2.css`, `ui-v3.css`, `ui-v4.css`, `ui-v5.css`, `ui-v6.css`, `ui-experience.js`, `data/weapons.js` and `data/attachments.js`.
 
 ## Testing
 
 ```bash
 python -m unittest discover -s tests -v
 node --check app.js
+node --check ui-experience.js
 ```
 
 The test suite covers catalogs, constraints, daily synchronization, source fallbacks, and saved-build compatibility. The browser regression suite exercises desktop, tablet and mobile widths.
@@ -59,7 +70,8 @@ GitHub Actions workflow: `.github/workflows/sync-patches.yml`. The script `scrip
 ```text
 index.html                  Main application shell
 app.js                      Navigation, camo tracker and Gunsmith interactions
-styles.css, ui-v*.css       Responsive styles and UI versions
+styles.css, ui-v*.css       Responsive styles, adaptive detail and animations
+ui-experience.js             Quick Jump, quality modes, back-to-top and recent weapons
 data/weapons.json / .js     MW4 weapon/camo records
 data/attachments.json / .js Named weapon attachment catalog and category rules
 data/builds.json            Published starter configurations

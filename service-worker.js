@@ -1,7 +1,7 @@
-const CACHE = 'mw4camo-v1.3.1-ui';
-const ASSETS = ['./','./index.html','./styles.css','./ui-v2.css','./ui-v3.css','./ui-v4.css','./ui-v5.css','./app.js','./data/weapons.js','./data/patches.js','./data/attachments.js','./data/update-status.js','./manifest.webmanifest','./assets/favicon.svg'];
+const CACHE = 'mw4camo-v1.4.0-experience';
+const ASSETS = ['./','./index.html','./styles.css','./ui-v2.css','./ui-v3.css','./ui-v4.css','./ui-v5.css','./ui-v6.css','./app.js','./ui-experience.js','./data/weapons.js','./data/patches.js','./data/attachments.js','./data/update-status.js','./manifest.webmanifest','./assets/favicon.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));});
-self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mw4camo-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;
   event.respondWith(fetch(event.request).then(response=>{
