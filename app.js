@@ -403,8 +403,13 @@ function savedGameCode(w,b){
   try{return window.MW4_SHARE.fingerprint({weapon:w.id,mode:state.mode,apex:!!b.apex,slots:b.slots})===b.gameFingerprint?b.gameCode:'';}catch{return '';}
 }
 function shareLinkFor(code){const url=new URL(location.href);url.searchParams.set('share',code);url.hash='#/loadouts';return url.toString();}
+let pendingSharedCode='';
 function importSharedBuild(input){
-  const b=window.MW4_SHARE.decode(window.MW4_SHARE.extract(input)),w=WEAPONS.find(w=>w.id===b.weapon);
+  let b;
+  try{b=window.MW4_SHARE.decode(window.MW4_SHARE.extract(input));}
+  catch(error){if(!GUNSMITH.arsenalSynced&&/^Unverified attachment:/.test(String(error.message||error))){pendingSharedCode=input;notify('Waiting for expanded attachment catalog to import this build');return;}throw error;}
+  pendingSharedCode='';
+  const w=WEAPONS.find(w=>w.id===b.weapon);
   if(!w)throw Error('Weapon missing from current catalog');
   const k=b.weapon+'|'+b.mode;
   state.mode=b.mode;state.activeGoals[k]=b.goal;
@@ -715,7 +720,7 @@ window.addEventListener('keydown',event=>{
   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
 });
 closeSidebar();
-window.addEventListener('mw4:arsenal-ready',()=>{const route=currentPath().split('/');if(route[0]==='build'){const w=WEAPONS.find(w=>w.id===route[1]);if(w&&document.getElementById('buildName'))stashDraft(w);}if(route[0]==='class-builder')preserveClassDraft();render();});
+window.addEventListener('mw4:arsenal-ready',()=>{const route=currentPath().split('/');if(route[0]==='build'){const w=WEAPONS.find(w=>w.id===route[1]);if(w&&document.getElementById('buildName'))stashDraft(w);}if(route[0]==='class-builder')preserveClassDraft();render();if(pendingSharedCode){const code=pendingSharedCode;pendingSharedCode='';try{importSharedBuild(code);}catch(error){notify('Share import failed: '+String(error.message||error));}}});
 window.addEventListener('hashchange',()=>{
   const previous=String(lastRenderedPath||'').split('/');
   const destination=currentPath();
