@@ -124,27 +124,36 @@ function mount(){
   if(!grid || document.getElementById('refreshSettings'))return;
   const card = document.createElement('section');
   card.id='refreshSettings';card.className='card';card.setAttribute('aria-label','Update refresh settings');
-  card.innerHTML=`<h2 class="card-title">UPDATE REFRESH SETTINGS</h2>
-  <p class="lede">Choose how often this device checks published MW4 and Warzone patch notes and community-reported attachment updates. Your choice is private to this browser.</p>
-  <label class="field-label" for="refreshInterval">AUTOMATIC CHECK FREQUENCY</label>
-  <select class="select" id="refreshInterval">
-    <option value="0">Manual only</option>
-    <option value="5">Every 5 minutes</option>
-    <option value="15">Every 15 minutes</option>
-    <option value="30">Every 30 minutes</option>
-    <option value="60">Every hour (recommended)</option>
-    <option value="180">Every 3 hours</option>
-    <option value="360">Every 6 hours</option>
-    <option value="720">Every 12 hours</option>
-    <option value="1440">Every 24 hours</option>
-  </select>
-  <p class="micro">Checks run while this website is open. Returning to an inactive tab resumes overdue checks. The shared publisher-data sync runs hourly; choosing a shorter interval cannot create new publisher updates.</p>
+  card.innerHTML=`<header class="refresh-settings-head">
+  <div>
+    <h2 class="card-title">UPDATE REFRESH</h2>
+    <p class="lede">Choose when this browser checks the latest published MW4 and Warzone patches and community attachment data.</p>
+  </div>
+  <span class="refresh-pill">PERSONAL SCHEDULE</span>
+</header>
+<div class="refresh-settings-row">
+  <label class="field-label" for="refreshInterval">CHECK FREQUENCY
+    <select class="select" id="refreshInterval">
+      <option value="0">Manual only</option>
+      <option value="5">Every 5 minutes</option>
+      <option value="15">Every 15 minutes</option>
+      <option value="30">Every 30 minutes</option>
+      <option value="60">Every hour (recommended)</option>
+      <option value="180">Every 3 hours</option>
+      <option value="360">Every 6 hours</option>
+      <option value="720">Every 12 hours</option>
+      <option value="1440">Every 24 hours</option>
+    </select>
+  </label>
   <button class="btn btn-primary" type="button" id="refreshNow">↻ CHECK FOR UPDATES</button>
-  <div class="divider"></div>
-  <p class="micro">Last browser check: <strong id="refreshLastBrowser">—</strong></p>
-  <p class="micro">Last successful publisher sync: <strong id="refreshLastPublisher">—</strong></p>
-  <p class="micro">Next browser check: <strong id="refreshNext">—</strong></p>
-  <p class="micro" id="refreshMessage" role="status" aria-live="polite"></p>`;
+</div>
+<div class="refresh-details" aria-label="Update feed information">
+  <div class="refresh-detail"><small>Last browser check</small><strong id="refreshLastBrowser">—</strong></div>
+  <div class="refresh-detail"><small>Latest publisher sync</small><strong id="refreshLastPublisher">—</strong></div>
+  <div class="refresh-detail"><small>Next browser check</small><strong id="refreshNext">—</strong></div>
+</div>
+<p class="micro refresh-caveat">Your setting is saved on this device. Checks run when this page is open, resume after returning to a paused tab, and only read the shared publisher snapshots. Publisher data is checked hourly regardless of your preference.</p>
+<p class="micro" id="refreshMessage" role="status" aria-live="polite"></p>`;
   grid.prepend(card);
   card.querySelector('#refreshInterval').addEventListener('change',event=>changeInterval(event.target.value));
   card.querySelector('#refreshNow').addEventListener('click',()=>void checkNow(true));
