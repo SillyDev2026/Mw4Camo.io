@@ -13,6 +13,14 @@ A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Tr
 - Workflows are staggered to reduce competing pushes; GitHub Actions scheduling and GitHub Pages delivery may be delayed. Reload the webpage to read newly published snapshots; already-open tabs do not automatically replace loaded JavaScript data.
 - Camo progress, saved builds and local backups remain in browser storage. The refresh does not automatically invent new weapons, camo challenges, or in-game import codes.
 
+## v1.8 — Unified UI polish (November 12, 2026)
+
+A non-destructive styling refresh in `ui-v9.css` gives the dashboard, sidebar, weapon cards, Gunsmith, Patch Intelligence, and settings a more consistent dark tactical appearance. Card corners, panel contrast, headings, focus outlines, button sizes and hover effects follow one visual system. Breakpoints at 1180, 900, 700, 480 and 360 px improve narrower layouts without changing saved player progress or page routes.
+
+**Update Refresh Settings** now uses a compact selector/action row, three readable timestamps, and a clearer explanation of the shared publisher check cadence versus personal browser frequency. The Visuals & Performance settings card remains next to it near the top of settings. The mobile menu retains its existing focus/escape handling and backdrop; reduced-motion and lite-quality settings remain supported.
+
+`index.html` loads the new stylesheet after `ui-v8.css`; `service-worker.js` includes it under the new `mw4camo-v1.8-ui` cache name for offline upgrades. The regression checks in `tests/test_ui_v18.py` verify stylesheet order, preserved navigation IDs, storage keys, refresh controls, responsive rules and cache safety. JavaScript syntax and static integration checks were also run. These checks are not a substitute for full visual review on every device.
+
 ## Personal update refresh settings (November 12, 2026)
 
 **Data & Settings → Update Refresh Settings** lets each visitor choose **Manual only, 5, 15 or 30 minutes; 1, 3, 6, 12 or 24 hours**. The default is 1 hour. Settings are stored per browser/device in `mw4camo-refresh-interval-v1` and do not modify saved camo progress or user loadouts. Use **Check for Updates** at any time.
