@@ -6,6 +6,20 @@
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
+## v1.7.2 — Loadout Lab share codes
+
+**The Loadout Lab now creates reproducible website share codes from the selected weapon and compatible named attachments only.** No manual attachment text or synthetic in-game IDs are accepted. Use the buttons under **Loadout Lab → [weapon] → Attachment Workbench**:
+
+1. Choose your weapon, game mode, goal, up to five named standard attachments, and optionally its compatible Apex.
+2. Select **Copy Website Code** for an `MW4C1-...` code or **Copy Share Link** for an installable URL.
+3. On another browser/device, open the link or go to **Loadout Lab → Import a Loadout Lab Code** and paste the website code. Review the same weapon, goal, exact attachment names, and Apex, then **Save Blueprint** to persist it on that device.
+
+The codec uses canonical slot ordering, UTF-8-safe encoding, a corruption checksum, a strict weapon/slot/attachment catalog, and versioned format rejection. An attachment unavailable in the current catalog is rejected rather than substituted; the share-link importer waits for the async expanded attachment catalog when necessary. Editing slots changes the website share code. Perks and equipment are intentionally excluded because the code is *weapon-only*.
+
+**Important: MW4C1 codes do not import into Call of Duty.** The actual MW4 Gunsmith encoding and in-game numeric attachment IDs have not been independently verified. The Loadout Lab never fabricates an in-game code. If you copy a genuine build code from MW4 for the exact same loadout, you can save it in the separate **In-game MW4 Import Code** field. It is explicitly labelled *user-supplied, not independently verified* and is only offered while the weapon, Apex and attachment fingerprint still matches. Its format check is not proof that the game accepts it.
+
+Run `node tests/test_share_codes.js` to test valid round-trips, catalog and Apex constraints, checksum failures, link parsing, fingerprints, and site-versus-game code separation. GitHub Actions also runs that suite on relevant pushes.
+
 ### v1.7.1 — Season 1 guns complete
 
 Added 62 reported standard-attachment choices for the Cronen Osprey and 39 for the CSG-35 (63 and 40 total including their separate Apex attachments). Official levels, Apex names, and weapon-type categories are recorded. The community lists an additional Guard category for the CSG-35, shown provisionally. Corrected the CSG-35's unsupported Barrel slot. Named attachments remain third-party reported until verified in-game. No existing camo progress or blueprint storage is reset.
@@ -115,6 +129,7 @@ GitHub Actions workflow: `.github/workflows/sync-patches.yml`. The script `scrip
 ```text
 index.html                  Main application shell
 app.js                      Navigation, camo tracker and Gunsmith interactions
+share-codes.js              Versioned, strict, weapon-only website share codec
 styles.css, ui-v*.css       Responsive styles, adaptive detail and animations
 ui-experience.js             Quick Jump, quality modes, back-to-top and recent weapons
 data/weapons.json / .js     MW4 weapon/camo records
