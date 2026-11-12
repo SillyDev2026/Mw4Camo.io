@@ -20,6 +20,7 @@ const pageLinks=[
   ['Grind Planner','planner','Choose your next objective'],
   ['Mastery Roadmap','mastery','Mastery camo progress'],
   ['Loadout Lab','loadouts','Gunsmith weapon select'],
+  ['Operator Hub','hub','Your patch, camo, comparison and class tools'],
   ['Complete Loadouts','class-builder','Primary, secondary, perks and equipment'],
   ['Weapon Compare','compare','Verified and personal weapon statistics'],
   ['Camo Assistant','assistant','Next unlock goals and counters'],

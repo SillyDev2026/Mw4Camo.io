@@ -1,3 +1,18 @@
+# v1.6.0 — Operator Hub and Workflows
+
+- Added a connected Operator Hub with fast links to Patch Doctor, Camo Assistant, Weapon Compare and Full Loadouts.
+- Complete Loadouts now supports multiple named classes per game mode, duplicate/edit/delete, notes, session drafts, and links to primary/secondary Gunsmith configurations. Keeps v1.5 class data readable.
+- Patch Doctor now separates game-mode context, matches named equipped attachments where present, supports individual/bulk review with Undo, and links to official source pages. It does not assume confirmed nerfs/buffs.
+- Camo Assistant now has a weapon picker, editable targets, direct +1/-1 counters and progress indicators.
+- Weapon Compare now displays personal-test deltas, supports copying results, maintains unsaved input drafts during selections, and validates submissions before writing either weapon.
+- New ui-v8.css responsive styling, updated PWA cache and documentation. v1 storage format remains backwards compatible.
+
+## Limitations
+
+Missing official attachments, weapon TTK figures and mode-specific challenge requirements are still not invented; published entries include appropriate provenance. A source-text match is a review suggestion, not proof that a build must change. Data remains local to the browser unless exported.
+
+---
+
 # MW4Camo.io v1.5.0 — Smart Arsenal Intel
 
 **Release date:** November 11, 2026

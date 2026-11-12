@@ -6,6 +6,16 @@
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
+## v1.6 — Operator Hub, multi-class library and connected tools
+
+- **Operator Hub** (`#/hub`) connects the four most-used workflows. Live local counters show pending patch reviews, saved classes, measured weapon/mode pairs and your current focus weapon.
+- **Complete Loadouts 2.0** (`#/class-builder`) saves **up to 40 named classes per mode** with primary and secondary weapons, perks, equipment and notes. Create, edit, switch, duplicate, delete, reset unsaved fields and copy a complete class. Saved weapon-specific Gunsmith setups are linked in place. Previously saved v1.5 single-class records are visible as legacy classes and migrate on the next save.
+- **Patch Loadout Doctor 2.0** (`#/doctor`) checks weapon names, equipped attachment names and explicit global weapon-change language in source-linked patch summaries. Filters are based on the saved blueprint's mode; review a note, review all pending notes for a build, and undo acknowledgments. A match means **needs review**, not an automatic buff/nerf verdict.
+- **Camo Assistant 2.0** (`#/assistant`) includes a weapon focus picker, manual counter and target inputs per task, ±1 buttons with Undo, and a progress indicator without falsely marking an unlock.
+- **Weapon Compare 2.0** (`#/compare`) displays head-to-head differences **only** for personal values entered for both weapons in the current mode. Unmeasured statistics remain blank. Save test data atomically, retain temporary edits while switching compared weapons, and copy results.
+- **Compatibility and caching**: all existing progress uses the unchanged `mw4camo-io-v1` key. Backup export/import now covers the class library and active class ID; existing single-mode class saves, measurements, camo progress and patch review markers are preserved. Offline cache version updated to v1.6.0 and includes `ui-v8.css`.
+- **Verified behavior**: local automated and headless browser regression tests cover the menu, four modules, class actions, manual camo counts, comparison deltas, responsive layouts, and legacy saves. These tests do not establish complete game data accuracy.
+
 ## v1.5 — Smart Arsenal Intelligence & full loadouts
 
 - **Patch Loadout Doctor** (`#/doctor`): cross-references saved weapon blueprints against source-linked MW4 and Warzone patch records since a blueprint was saved. Review each matching record and mark it acknowledged. It never presumes a buff/nerf from ambiguous language and does not automatically rewrite loadouts.
@@ -52,7 +62,7 @@ The Warzone perks/equipment options were cross-checked against the [official 202
 python -m http.server 8000
 ```
 
-Visit `http://localhost:8000/`. All frontend JavaScript is plain browser code. The main files are `index.html`, `app.js`, `styles.css`, `ui-v2.css`, `ui-v3.css`, `ui-v4.css`, `ui-v5.css`, `ui-v6.css`, `ui-v7.css`, `ui-experience.js`, `data/intel-v15.js`, `data/weapons.js` and `data/attachments.js`.
+Visit `http://localhost:8000/`. All frontend JavaScript is plain browser code. The main files are `index.html`, `app.js`, `styles.css`, `ui-v2.css`, `ui-v3.css`, `ui-v4.css`, `ui-v5.css`, `ui-v6.css`, `ui-v7.css`, `ui-v8.css`, `ui-experience.js`, `data/intel-v15.js`, `data/weapons.js` and `data/attachments.js`.
 
 ## Testing
 
@@ -60,6 +70,7 @@ Visit `http://localhost:8000/`. All frontend JavaScript is plain browser code. T
 python -m unittest discover -s tests -v
 node --check app.js
 node --check ui-experience.js
+python tests/browser_v16_smoke.py
 ```
 
 The test suite covers catalogs, constraints, daily synchronization, source fallbacks, and saved-build compatibility. The browser regression suite exercises desktop, tablet and mobile widths.

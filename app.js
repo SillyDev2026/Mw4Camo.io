@@ -95,8 +95,8 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;',
 const slug = value => String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const pct = (done, total) => total ? Math.round(done*100/total) : 0;
 const fmtDate = value => new Date(value+'T12:00:00Z').toLocaleDateString('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'});
-const defaultState = () => ({version:1,mode:'Warzone',completed:{},accounts:{},levels:{},favorites:[],builds:{},activeGoals:{},counters:{},focusWeapon:null,classConfigs:{},reviewedPatches:{},weaponMeasurements:{}});
-function loadState(){try{let raw=JSON.parse(localStorage.getItem(STORE_KEY));return raw && raw.version===1 ? {...defaultState(),...raw,completed:raw.completed||{},accounts:raw.accounts||{},levels:raw.levels||{},favorites:Array.isArray(raw.favorites)?raw.favorites:[],builds:raw.builds||{},activeGoals:raw.activeGoals||{},counters:raw.counters&&typeof raw.counters==='object'&&!Array.isArray(raw.counters)?raw.counters:{},focusWeapon:WEAPONS.some(w=>w.id===raw.focusWeapon)?raw.focusWeapon:null,classConfigs:raw.classConfigs&&typeof raw.classConfigs==='object'&&!Array.isArray(raw.classConfigs)?raw.classConfigs:{},reviewedPatches:raw.reviewedPatches&&typeof raw.reviewedPatches==='object'&&!Array.isArray(raw.reviewedPatches)?raw.reviewedPatches:{},weaponMeasurements:raw.weaponMeasurements&&typeof raw.weaponMeasurements==='object'&&!Array.isArray(raw.weaponMeasurements)?raw.weaponMeasurements:{}} : defaultState();}catch{return defaultState();}}
+const defaultState = () => ({classLibrary:{},activeClassIds:{},version:1,mode:'Warzone',completed:{},accounts:{},levels:{},favorites:[],builds:{},activeGoals:{},counters:{},focusWeapon:null,classConfigs:{},reviewedPatches:{},weaponMeasurements:{}});
+function loadState(){try{let raw=JSON.parse(localStorage.getItem(STORE_KEY));return raw && raw.version===1 ? {...defaultState(),...raw,completed:raw.completed||{},accounts:raw.accounts||{},levels:raw.levels||{},favorites:Array.isArray(raw.favorites)?raw.favorites:[],builds:raw.builds||{},activeGoals:raw.activeGoals||{},counters:raw.counters&&typeof raw.counters==='object'&&!Array.isArray(raw.counters)?raw.counters:{},focusWeapon:WEAPONS.some(w=>w.id===raw.focusWeapon)?raw.focusWeapon:null,classConfigs:raw.classConfigs&&typeof raw.classConfigs==='object'&&!Array.isArray(raw.classConfigs)?raw.classConfigs:{},reviewedPatches:raw.reviewedPatches&&typeof raw.reviewedPatches==='object'&&!Array.isArray(raw.reviewedPatches)?raw.reviewedPatches:{},weaponMeasurements:raw.weaponMeasurements&&typeof raw.weaponMeasurements==='object'&&!Array.isArray(raw.weaponMeasurements)?raw.weaponMeasurements:{},classLibrary:raw.classLibrary&&typeof raw.classLibrary==='object'&&!Array.isArray(raw.classLibrary)?raw.classLibrary:{},activeClassIds:raw.activeClassIds&&typeof raw.activeClassIds==='object'&&!Array.isArray(raw.activeClassIds)?raw.activeClassIds:{}} : defaultState();}catch{return defaultState();}}
 let state = loadState();
 let filter={search:'',category:'All',status:'All',fav:false};
 let patchFilter='All';
@@ -105,6 +105,10 @@ let missionFilter='Recommended';
 let comparisonGoal='Low Recoil';
 let compareIds=['han-86','rezi-12'];
 let assistantSize=3;
+let doctorModeFilter='All';
+let doctorView='All';
+const classDrafts=Object.create(null);
+const measurementDrafts=Object.create(null);
 const builderDrafts = Object.create(null);
 let template='Balanced';
 let toastTimer;
@@ -221,39 +225,56 @@ function weaponPatchMentions(w){let name=w.name.toLowerCase(),patterns=[name,nam
 
 function activeModeOptions(){return INTEL.options?.[state.mode]||{perks:[[],[],[]],tactical:[],lethal:[],field:[]};}
 function safeDateTime(text){let date=Date.parse(text||'');return Number.isFinite(date)?date:0;}
-function patchesForWeapon(w,since=''){
- const name=w.name.toLowerCase(), alternatives=[name,name.replaceAll('-',' ')];
- const sinceDate=safeDateTime(since);
- return PATCHES.filter(p=>{
-   if(sinceDate&&safeDateTime(p.date+'T23:59:59Z')<sinceDate)return false;
-   return (p.sections||[]).some(section=>(section.points||[]).some(point=>{
-     const line=String(point).toLowerCase();
-     return alternatives.some(n=>line.includes(n))||(/all (ballistic|bullet) weapons/.test(line));
-   }));
- }).sort((a,b)=>b.date.localeCompare(a.date));
+function patchMatchLines(p,w,build={}){
+ const names=[w.name.toLowerCase(),w.name.toLowerCase().replaceAll('-',' ')];
+ const equipped=Object.values(build.slots||{}).map(x=>String(x||'').trim().toLowerCase()).filter(x=>x.length>3);
+ const rows=[];
+ for(const section of p.sections||[])for(const point of section.points||[]){
+  const line=String(point||''),text=line.toLowerCase();
+  const kind=names.some(n=>text.includes(n))?'Weapon':equipped.some(n=>text.includes(n))?'Attachment':/\balll? (ballistic|bullet) weapons\b/.test(text)?'Global':null;
+  if(kind)rows.push({kind,line});
+ }
+ return rows;
+}
+function patchModeMatches(mode,p){return mode==='Warzone'?p.game==='Warzone':p.game==='MW4';}
+function patchesForWeapon(w,since='',mode=state.mode,build={}){
+ const date=safeDateTime(since);
+ return PATCHES.filter(p=>patchModeMatches(mode,p)&&(!date||safeDateTime(p.date+'T23:59:59Z')>=date)&&patchMatchLines(p,w,build).length).sort((a,b)=>b.date.localeCompare(a.date));
 }
 function reviewKey(buildKeyValue,patch){return buildKeyValue+'|'+patch.id;}
-function pendingReviews(buildKeyValue,w,build){return patchesForWeapon(w,build.savedAt).filter(p=>!state.reviewedPatches[reviewKey(buildKeyValue,p)]);}
-function doctorSummary(buildKeyValue,w,build){
- const matches=pendingReviews(buildKeyValue,w,build);
- return matches.length?tag(matches.length+' PATCH'+(matches.length===1?'':'ES')+' TO REVIEW','gold'):tag('NO PENDING MATCHES','subtle');
+function pendingReviews(key,w,build){return patchesForWeapon(w,build.savedAt,key.split('|')[1],build).filter(p=>!state.reviewedPatches[reviewKey(key,p)]);}
+function doctorSummary(key,w,build){
+ const matches=pendingReviews(key,w,build);
+ return matches.length?tag(matches.length+' TO REVIEW','gold'):tag('NO MATCHES PENDING','subtle');
+}
+function renderCommandHub(){
+ const entries=Object.entries(state.builds).map(([key,build])=>({key,build,w:WEAPONS.find(w=>w.id===key.split('|')[0])})).filter(x=>x.w);
+ const pending=entries.reduce((total,x)=>total+pendingReviews(x.key,x.w,x.build).length,0);
+ const focus=WEAPONS.find(w=>w.id===state.focusWeapon)||rankedWeapons()[0]?.w;
+ const library=['Warzone','MW4','DMZ'].reduce((total,mode)=>total+classList(mode).length,0);
+ const measured=Object.values(state.weaponMeasurements||{}).filter(m=>m&&Object.values(m).some(n=>n!==null&&n!==''&&Number.isFinite(Number(n)))).length;
+ const cards=[['✦','PATCH LOADOUT DOCTOR','Review source-linked notes for saved builds','doctor',pending+' pending reviews'],['◎','CAMO ASSISTANT','Set challenge targets and manage your next session','assistant',focus?focus.name:'Choose a focus weapon'],['≍','WEAPON COMPARE','Compare your own tests and official figures','compare',measured+' tested weapon/mode pairs'],['▣','COMPLETE LOADOUTS','Save, duplicate and switch whole operator classes','class-builder',library+' saved classes']];
+ return `${intro('COMMAND CENTER / CONNECTED TOOLS','YOUR <em>OPERATOR HUB.</em>','Four tools, one workflow: plan the grind, compare weapons, build your class, then review changes after patches.')}
+ <div class="v16-hub-grid">${cards.map(([glyph,title,desc,route,metric])=>`<a class="v16-hub-card" href="#/${route}"><span class="v16-hub-icon">${glyph}</span><div class="eyebrow">${esc(metric)}</div><h2>${title}</h2><p>${desc}</p><span class="v16-link">OPEN TOOL ↗</span></a>`).join('')}</div>
+ ${focus?`<section class="card v16-hub-focus"><div><div class="eyebrow">CURRENT GRIND FOCUS</div><h3>${esc(focus.name)}</h3><p class="micro">${countWeapon(focus)} / ${CAMOS.length} tracked rewards complete</p></div><a href="#/assistant" class="btn btn-primary">CONTINUE CAMO ASSISTANT ↗</a></section>`:''}
+ <div class="note">Loadout and camo progress stays on this device. Use Settings → Export to back it up. Patch matching is conservative and never guarantees a build is buffed or nerfed.</div>`;
 }
 function renderDoctor(){
- const entries=Object.entries(state.builds).map(([key,build])=>({key,build,w:WEAPONS.find(w=>w.id===key.split('|')[0]),mode:key.split('|')[1]})).filter(x=>x.w);
- const pending=entries.reduce((sum,x)=>sum+pendingReviews(x.key,x.w,x.build).length,0);
- return `${intro('ARMORY INTELLIGENCE / PATCH REVIEW','THE <em>LOADOUT DOCTOR.</em>','Review official weapon changes affecting your saved builds. We flag matching patch text; we do not automatically claim a build is nerfed or broken.')}
- <div class="intel-grid"><div class="intel-mini"><div class="smallcaps">SAVED BLUEPRINTS</div><div class="number">${entries.length}</div><small>Across MW4, Warzone and DMZ</small></div><div class="intel-mini"><div class="smallcaps">UNREVIEWED NOTICES</div><div class="number">${pending}</div><small>Matching patch records since each save</small></div><div class="intel-mini"><div class="smallcaps">SOURCE</div><div class="number">COD</div><small>Publisher changelog summaries with original links</small></div></div>
- <div class="note warn">A match is a review reminder, not proof of a buff, nerf, or invalid attachment. Global ballistic changes can affect all weapons. The daily updater discovers new patch records; it does not recalculate unverified weapon statistics.</div>
- <div class="v15-stack">${entries.length?entries.map(({key,build,w,mode})=>{
-   const matches=pendingReviews(key,w,build),archived=patchesForWeapon(w,build.savedAt).length-matches.length;
-   return `<section class="card v15-doctor-card"><div class="v15-flex"><div><div class="eyebrow">${esc(mode)} · ${esc(build.template||'Balanced')}</div><h2 class="card-title">${esc(w.name)} · ${esc(build.name||'Blueprint')}</h2><div class="micro">Saved ${build.savedAt?esc(new Date(build.savedAt).toLocaleDateString()):'on an unknown date'} · ${archived} reviewed</div></div>${doctorSummary(key,w,build)}</div>
-   ${matches.length?`<div class="v15-stack">${matches.slice(0,6).map(p=>{
-     const lines=(p.sections||[]).flatMap(section=>section.points||[]).filter(point=>{let text=String(point).toLowerCase();return text.includes(w.name.toLowerCase())||text.includes(w.name.toLowerCase().replaceAll('-',' '))||/all (ballistic|bullet) weapons/.test(text)});
-     return `<div class="v15-patch-row"><div><strong>${esc(p.title)}</strong> ${tag(p.game,'blue')}<div class="micro">${esc(p.date)} · ${esc((lines[0]||'Weapon change — check source').slice(0,220))}</div><a href="#/patch/${encodeURIComponent(p.id)}" class="source-link">Patch details ↗</a></div><button class="btn btn-outline small" data-action="review-patch" data-key="${esc(key)}" data-patch="${esc(p.id)}">MARK REVIEWED</button></div>`;
-   }).join('')}</div>`:'<p class="micro">No unreviewed matching updates found. New patches can appear after the next daily sync.</p>'}
-   <a class="btn btn-outline small" href="#/build/${esc(w.id)}">OPEN GUNSMITH ↗</a></section>`;
- }).join(''):'<div class="empty">Save a weapon blueprint in the Loadout Lab to start tracking patch impact.</div>'}</div>`;
+ const all=Object.entries(state.builds).map(([key,build])=>({key,build,w:WEAPONS.find(w=>w.id===key.split('|')[0]),mode:key.split('|')[1]})).filter(x=>x.w);
+ const visible=all.filter(x=>(doctorModeFilter==='All'||x.mode===doctorModeFilter)&&(doctorView==='All'||pendingReviews(x.key,x.w,x.build).length));
+ const pending=all.reduce((sum,x)=>sum+pendingReviews(x.key,x.w,x.build).length,0);
+ return `${intro('ARMORY INTELLIGENCE / PATCH REVIEW','PATCH <em>LOADOUT DOCTOR.</em>','See which saved builds have source-linked weapon or attachment changes. Review records individually or in a group without altering your attachments.')}
+ <div class="intel-grid"><div class="intel-mini"><div class="smallcaps">SAVED BLUEPRINTS</div><div class="number">${all.length}</div><small>Weapon builds across all game modes</small></div><div class="intel-mini"><div class="smallcaps">PENDING NOTICES</div><div class="number">${pending}</div><small>Unacknowledged matching change records</small></div><div class="intel-mini"><div class="smallcaps">CHECK STATUS</div><div class="number">${UPDATE.lastSuccessfulAt?'LIVE':'LOCAL'}</div><small>${UPDATE.lastSuccessfulAt?'Last source sync '+esc(UPDATE.lastSuccessfulAt.slice(0,10)):'Patch archive bundled with site'}</small></div></div>
+ <div class="v16-toolbar"><div class="filter-chips">${['All','Warzone','MW4','DMZ'].map(m=>`<button data-action="doctor-mode" data-mode="${m}" class="chip ${doctorModeFilter===m?'active':''}" aria-pressed="${doctorModeFilter===m}">${m}</button>`).join('')}</div><label class="field-label">SHOW <select id="doctorView" class="select"><option value="Pending" ${doctorView==='Pending'?'selected':''}>Needs review</option><option value="All" ${doctorView==='All'?'selected':''}>All saved builds</option></select></label></div>
+ <div class="note warn">Matches are review prompts—not confirmed buffs, nerfs, or broken attachments. Notes are filtered to the current build's game mode; global changes are included only when the patch explicitly calls them out.</div>
+ <div class="v15-stack">${visible.length?visible.map(({key,build,w,mode})=>{
+  const matches=pendingReviews(key,w,build),total=patchesForWeapon(w,build.savedAt,mode,build).length,reviewed=total-matches.length;
+  return `<section class="card v15-doctor-card"><div class="v15-flex"><div><div class="eyebrow">${esc(mode)} · ${esc(build.template||'Balanced')}</div><h2 class="card-title">${esc(w.name)} / ${esc(build.name||'Custom Blueprint')}</h2><div class="micro">${build.savedAt?'Saved '+esc(new Date(build.savedAt).toLocaleDateString()):'Save date unknown'} · ${reviewed} reviewed</div></div>${doctorSummary(key,w,build)}</div>
+   ${matches.length?`<div class="v15-stack">${matches.slice(0,10).map(p=>{const rows=patchMatchLines(p,w,build),top=rows[0];return `<div class="v15-patch-row"><div><strong>${esc(p.title)}</strong> ${tag(top?.kind||'Patch','blue')}<div class="micro">${esc(p.date)} · ${esc((top?.line||'Review original patch notes').slice(0,200))}</div><a href="#/patch/${encodeURIComponent(p.id)}" class="source-link">Summary ↗</a> <a href="${esc(p.source)}" target="_blank" rel="noopener noreferrer" class="source-link">Official source ↗</a></div><button class="btn btn-outline small" data-action="review-patch" data-key="${esc(key)}" data-patch="${esc(p.id)}">REVIEWED ✓</button></div>`;}).join('')}</div><button class="btn btn-primary small" data-action="review-all" data-key="${esc(key)}">MARK ${matches.length} MATCHES REVIEWED</button>`:'<p class="micro">No unreviewed matching updates found for this saved blueprint.</p>'}
+   <a class="btn btn-outline small" href="#/build/${esc(w.id)}">EDIT WEAPON BUILD ↗</a></section>`;
+ }).join(''):`<div class="empty">${all.length?'No builds match the current filters. Select “All saved builds” to see your archive.':'Save a Gunsmith blueprint to start monitoring patch relevance.'}</div>`}</div>`;
 }
+
 function renderBuildAdvisor(w,b){
  const key=buildKey(w),pending=pendingReviews(key,w,b);
  const ranked=Object.entries(b.slots||{}).filter(([t,n])=>Boolean(n)).map(([type,name])=>({type,name,item:namedOptions(w,type).find(x=>x.name===name)}));
@@ -263,48 +284,85 @@ function renderBuildAdvisor(w,b){
 }
 function renderCamoAssistant(){
  const focus=WEAPONS.find(w=>w.id===state.focusWeapon),order=rankedWeapons(),target=focus||order[0]?.w;
- const recommended=order.slice(0,assistantSize),remaining=target?CAMOS.filter(c=>!has(target,c.id)):[];
+ const recommendations=order.slice(0,assistantSize);
+ const remaining=target?CAMOS.filter(c=>!has(target,c.id)):[];
  const tasks=target?[...remaining.filter(c=>c.type==='Military').slice(0,1),...remaining.filter(c=>c.type==='Special'),...remaining.filter(c=>c.type==='Completionist'),...remaining.filter(c=>c.type==='Prestige')].slice(0,assistantSize):[];
- return `${intro('MISSION CONTROL / PERSONAL ASSISTANT','YOUR <em>CAMO ASSISTANT.</em>','Prioritizes incomplete weapon challenges based on saved progress. Challenge counts remain manual and only you confirm unlocks.')}
- <div class="v15-flex"><span class="smallcaps">YOUR NEXT SESSION</span><label class="field-label">SHOW TASKS <select id="assistantSize" class="select">${[2,3,5].map(n=>`<option value="${n}" ${assistantSize===n?'selected':''}>${n} objectives</option>`).join('')}</select></label></div>
- ${target?`<section class="card v15-focus"><div class="eyebrow">FOCUSED WEAPON</div><h2>${esc(target.name)}</h2><p class="lede">${esc(target.category)} · ${countWeapon(target)} / ${CAMOS.length} camouflages unlocked</p><a class="btn btn-outline small" href="#/weapon/${esc(target.id)}">FULL CAMO TRACKER ↗</a><div class="v15-stack">${tasks.map(c=>{
-   const d=camoDetails(target,c),v=counter(target,c.id);
-   return `<div class="v15-task"><div><strong>${esc(d.name)}</strong><div class="micro">${esc(d.meta)} · ${d.confidence==='official'?'Official source':d.confidence==='community'?'Community report':'Unverified'}</div>${v.target?`<div class="micro">Counter: ${v.value}/${v.target}</div>`:''}</div><div class="v15-task-actions">${c.type!=='Military'?`<button class="btn btn-outline small" data-action="quick-count" data-weapon="${esc(target.id)}" data-camo="${esc(c.id)}" title="Increase your manual progress by one">+1 COUNT</button>`:''}<button class="btn btn-primary small" data-action="assistant-complete" data-weapon="${esc(target.id)}" data-camo="${esc(c.id)}">MARK UNLOCKED</button></div></div>`;
- }).join('')}</div></section>`:'<div class="empty">All tracked weapon objectives are completed.</div>'}
- <div class="section"><div class="section-head"><h2 class="section-title">RECOMMENDED WEAPONS</h2><span class="micro">Favorites and near-Gold progress rise to the top</span></div><div class="v15-stack">${recommended.map(({w,objective})=>`<article class="v15-recommend"><div><strong>${esc(w.name)}</strong><div class="micro">${esc(objective.label)} · ${baseDone(w)} / 11 base camos</div></div><button class="btn small btn-outline" data-action="focus" data-weapon="${esc(w.id)}">${w.id===state.focusWeapon?'UNPIN':'PIN FOCUS'}</button><a class="btn small" href="#/weapon/${esc(w.id)}">VIEW ↗</a></article>`).join('')}</div></div>
- <div class="note">The +1 button changes a manual counter only. It never assumes an unlock or imports gameplay data. Enter target counts on the weapon’s camo page first for accurate progress percentages.</div>`;
+ return `${intro('MISSION CONTROL / PERSONAL ASSISTANT','CAMO <em>ASSISTANT 2.0.</em>','Set progress targets, log challenge events, and pick your current weapon. No automatic completion or unverified kill counts.')}
+ <div class="v16-toolbar"><label class="field-label">FOCUS WEAPON<select id="assistantWeapon" class="select"><option value="">Recommended automatically</option>${WEAPONS.map(w=>`<option value="${esc(w.id)}" ${state.focusWeapon===w.id?'selected':''}>${esc(w.name)} · ${esc(w.category)}</option>`).join('')}</select></label><label class="field-label">SESSION SIZE<select id="assistantSize" class="select">${[2,3,5].map(n=>`<option value="${n}" ${assistantSize===n?'selected':''}>${n} objectives</option>`).join('')}</select></label></div>
+ ${target?`<section class="card v15-focus"><div class="v15-flex"><div><div class="eyebrow">ACTIVE MISSION</div><h2>${esc(target.name)}</h2><p class="lede">${esc(target.category)} · ${countWeapon(target)} / ${CAMOS.length} camouflages complete</p></div><a class="btn btn-outline small" href="#/weapon/${esc(target.id)}">FULL TRACKER ↗</a></div><div class="v15-stack">${tasks.map(c=>{
+  const d=camoDetails(target,c),v=counter(target,c.id),amount=v.target?Math.min(100,Math.round(v.value/v.target*100)):0;
+  return `<article class="v16-task"><div class="v16-task-heading"><div><strong>${esc(d.name)}</strong><p class="micro">${esc(d.meta)} · ${d.confidence==='official'?'Official source':d.confidence==='community'?'Community report':'Unverified'}</p></div>${tag(c.type,'subtle')}</div>
+  <div class="v16-task-controls"><label class="field-label">PROGRESS<input class="field" type="number" min="0" max="100000" data-task-counter="value" data-weapon="${esc(target.id)}" data-camo="${esc(c.id)}" value="${v.value}"></label><label class="field-label">YOUR TARGET<input class="field" type="number" min="0" max="100000" data-task-counter="target" data-weapon="${esc(target.id)}" data-camo="${esc(c.id)}" value="${v.target}" placeholder="Enter a target"></label><span class="v16-task-percent">${v.target?amount+'%':'Set a target'}</span></div>
+  ${v.target?progressBar(amount):''}<div class="v15-task-actions"><button class="btn btn-outline small" data-action="quick-decrease" data-weapon="${esc(target.id)}" data-camo="${esc(c.id)}" ${v.value===0?'disabled':''}>−1</button><button class="btn btn-outline small" data-action="quick-count" data-weapon="${esc(target.id)}" data-camo="${esc(c.id)}">+1 COUNT</button><button class="btn btn-primary small" data-action="assistant-complete" data-weapon="${esc(target.id)}" data-camo="${esc(c.id)}">✓ MARK UNLOCKED</button></div></article>`;
+ }).join('')||'<p class="micro">This weapon has no remaining tracked objectives.</p>'}</div></section>`:'<div class="empty">All tracked weapon challenges are complete.</div>'}
+ <section class="section"><div class="section-head"><h2 class="section-title">SUGGESTED WEAPONS</h2><span class="section-sub">Pinned and near-Gold weapons first</span></div><div class="v15-stack">${recommendations.map(({w,objective})=>`<article class="v15-recommend"><div><strong>${esc(w.name)}</strong><div class="micro">${esc(objective.label)} · ${baseDone(w)} / 11 base rewards</div></div><button class="btn btn-outline small" data-action="focus" data-weapon="${esc(w.id)}">${w.id===state.focusWeapon?'UNPIN':'FOCUS'}</button><a class="btn small" href="#/weapon/${esc(w.id)}">VIEW ↗</a></article>`).join('')}</div></section>
+ <div class="note">Progress counters are manual. A counter reaching its target does not automatically mark a camo unlocked. Challenge requirements vary by mode and may be unverified.</div>`;
 }
+
 function gearSelect(id,label,values,current,field=''){
  const items=[...new Set((values||[]).filter(Boolean))];
  if(current&&!items.includes(current))items.unshift(current);
  return `<label class="field-label">${esc(label)}<select id="${id}" class="select"><option value="">Not selected</option>${items.map(text=>`<option value="${esc(text)}" ${current===text?'selected':''}>${esc(text)}</option>`).join('')}</select>${items.length===0?'<span class="micro">No verified named options available for this mode</span>':''}</label>`;
 }
-function classByMode(){return state.classConfigs[state.mode]||{};}
-function renderClassBuilder(){
- const load=classByMode(),sets=activeModeOptions(),ids=WEAPONS.filter(w=>w.id!==load.primary),perks=sets.perks||[[],[],[]];
- const savedCount=Object.values(state.classConfigs).filter(x=>x&&x.savedAt).length;
- return `${intro('COMPLETE CLASS / WARZONE + MW4','FULL <em>LOADOUT CREATOR.</em>','Pair primary and secondary weapons with class equipment. Switch game modes to keep a separate class for each game.')}
- <div class="v15-flex"><div>${tag(state.mode,'lime')}${tag(savedCount+' MODE PRESETS SAVED','subtle')}</div><div class="filter-chips">${['Warzone','MW4','DMZ'].map(mode=>`<button data-action="mode" data-mode="${mode}" class="chip ${state.mode===mode?'active':''}">${mode}</button>`).join('')}</div></div>
- <section class="v15-class-grid"><div class="card v15-stack"><h2 class="card-title">WEAPON SLOTS</h2><label class="field-label">CLASS NAME<input id="className" class="field" maxlength="80" value="${esc(load.name||state.mode+' Operator Class')}" aria-label="Class name"></label>
- <label class="field-label">PRIMARY WEAPON<select id="classPrimary" class="select"><option value="">Choose primary</option>${WEAPONS.filter(w=>!['Pistols','Launchers','Melee'].includes(w.category)).map(w=>`<option value="${esc(w.id)}" ${w.id===load.primary?'selected':''}>${esc(w.name)} · ${esc(w.category)}</option>`).join('')}</select></label>
- <label class="field-label">SECONDARY WEAPON<select id="classSecondary" class="select"><option value="">Choose secondary</option>${WEAPONS.filter(w=>w.id!==load.primary).map(w=>`<option value="${esc(w.id)}" ${w.id===load.secondary?'selected':''}>${esc(w.name)} · ${esc(w.category)}</option>`).join('')}</select></label>
- <div class="note">Weapon choices are limited to the MW4 catalog; the legacy Warzone arsenal isn't yet included. Per-weapon Gunsmith builds remain saved independently by mode and goal.</div>
- <div class="v15-flex"><a class="btn btn-outline small" href="${load.primary?'#/build/'+encodeURIComponent(load.primary):'#/loadouts'}">EDIT PRIMARY ATTACHMENTS ↗</a>${load.secondary?`<a class="btn btn-outline small" href="#/build/${esc(load.secondary)}">EDIT SECONDARY ↗</a>`:''}</div></div>
- <div class="card v15-stack"><h2 class="card-title">PERKS & EQUIPMENT</h2>${state.mode==='Warzone'?`<div class="v15-presets"><span class="smallcaps">ONE-CLICK PLAYSTYLE PRESETS</span><div class="v15-flex">${['Aggressive','Stealth','Squad Support'].map(name=>`<button class="btn btn-outline small" type="button" data-action="class-preset" data-preset="${esc(name)}">✦ ${esc(name)}</button>`).join('')}</div></div>`:''}<div class="v15-gear-grid">${perks.slice(0,3).map((items,i)=>gearSelect('classPerk'+(i+1),'PERK SLOT '+(i+1),items,load['perk'+(i+1)]||'')).join('')}${gearSelect('classTactical','TACTICAL',sets.tactical,load.tactical||'')}${gearSelect('classLethal','LETHAL',sets.lethal,load.lethal||'')}${gearSelect('classField','FIELD UPGRADE',sets.field,load.field||'')}</div>
- <div class="note warn">Only a limited set of equipment names is sourced so far, not the complete in-game pool. Slots without confirmed options stay empty rather than showing invented choices. Warzone perk slots shown here follow the official Season 1 categories. Verify unlocks and playlists in-game before equipping.</div>
- <a class="source-link" href="${esc(INTEL.optionSource?.[state.mode]||'https://www.callofduty.com/patchnotes')}" target="_blank" rel="noopener noreferrer">Read official ${esc(state.mode)} equipment notes ↗</a></div></section>
- <div class="v15-flex section"><button class="btn btn-primary" data-action="save-class">✓ SAVE FULL LOADOUT</button><button class="btn btn-outline" data-action="copy-class">COPY CLASS</button><button class="btn btn-danger" data-action="clear-class">CLEAR CLASS</button></div>`;
+function classList(mode){
+ const lib=state.classLibrary?.[mode];
+ if(Array.isArray(lib)&&lib.length)return lib.filter(x=>x&&typeof x==='object'&&x.id);
+ const legacy=state.classConfigs?.[mode];
+ return legacy?.savedAt?[{...legacy,id:'legacy-'+mode}]:[];
 }
-function measurement(w){const record=state.weaponMeasurements[w.id+'|'+state.mode]||{};return Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(key=>[key,Number.isFinite(Number(record[key]))&&record[key]!==''&&record[key]!==undefined?Number(record[key]):null]));}
+function classByMode(){
+ if(classDrafts[state.mode])return classDrafts[state.mode];
+ const ids=state.activeClassIds||{},id=ids[state.mode];
+ if(id==='')return {};
+ const entries=classList(state.mode);
+ return entries.find(entry=>entry.id===id)||entries[0]||{};
+}
+function readClassForm(){
+ const get=id=>valueById(id);
+ return {name:get('className').slice(0,80)||state.mode+' Class',primary:get('classPrimary'),secondary:get('classSecondary'),perk1:get('classPerk1'),perk2:get('classPerk2'),perk3:get('classPerk3'),tactical:get('classTactical'),lethal:get('classLethal'),field:get('classField'),notes:get('classNotes').slice(0,500)};
+}
+function preserveClassDraft(){if(currentPath().split('/')[0]==='class-builder'&&document.getElementById('className'))classDrafts[state.mode]=readClassForm();}
+function classBlueprintSummary(w){
+ if(!w)return 'Choose a weapon';
+ const goal=state.activeGoals[w.id+'|'+state.mode]||'Balanced';
+ const build=state.builds[w.id+'|'+state.mode+'|'+goal]||state.builds[w.id+'|'+state.mode];
+ const count=build?Object.values(build.slots||{}).filter(Boolean).length:0;
+ return build?`${count}/5 named attachments · ${goal}`:'No saved Gunsmith setup yet';
+}
+function renderClassBuilder(){
+ const load=classByMode(),sets=activeModeOptions(),perks=sets.perks||[[],[],[]],library=classList(state.mode);
+ const active=state.activeClassIds?.[state.mode]??library[0]?.id??'';
+ const primaryW=WEAPONS.find(w=>w.id===load.primary),secondaryW=WEAPONS.find(w=>w.id===load.secondary);
+ const total=['Warzone','MW4','DMZ'].reduce((n,m)=>n+classList(m).length,0);
+ return `${intro('COMPLETE CLASS / MW4 + WARZONE + DMZ','YOUR <em>FULL LOADOUTS.</em>','Save multiple complete operator classes per mode, duplicate favorites, and jump directly into each weapon’s attachment setup.')}
+ <div class="v16-toolbar"><div>${tag(state.mode,'lime')} ${tag(total+' SAVED CLASSES','subtle')}</div><div class="filter-chips">${['Warzone','MW4','DMZ'].map(mode=>`<button data-action="mode" data-mode="${mode}" class="chip ${state.mode===mode?'active':''}">${mode}</button>`).join('')}</div></div>
+ <section class="card v16-class-library"><div class="v15-flex"><div><h2 class="card-title">CLASS LIBRARY</h2><p class="micro">${library.length} saved in ${esc(state.mode)}. Older single-class saves appear here automatically.</p></div><div class="v16-inline-actions"><button class="btn btn-primary small" data-action="class-new">+ NEW CLASS</button><button class="btn btn-outline small" data-action="class-duplicate" ${!library.length?'disabled':''}>DUPLICATE</button><button class="btn btn-danger small" data-action="class-delete" ${!library.length?'disabled':''}>DELETE</button></div></div>
+ <label class="field-label">EDIT SAVED CLASS<select id="classSelect" class="select"><option value="" ${active===''?'selected':''}>New unsaved class</option>${library.map(entry=>`<option value="${esc(entry.id)}" ${active===entry.id?'selected':''}>${esc(entry.name||'Untitled')} · ${esc(entry.primary||'No primary')}</option>`).join('')}</select></label></section>
+ <section class="v15-class-grid v16-class-editor"><div class="card v15-stack"><h2 class="card-title">WEAPON SLOTS</h2><label class="field-label">CLASS NAME<input id="className" class="field" maxlength="80" value="${esc(load.name||state.mode+' Operator Class')}"></label>
+ <label class="field-label">PRIMARY<select id="classPrimary" class="select"><option value="">Choose primary</option>${WEAPONS.filter(w=>!['Pistols','Launchers','Melee'].includes(w.category)).map(w=>`<option value="${esc(w.id)}" ${w.id===load.primary?'selected':''}>${esc(w.name)} · ${esc(w.category)}</option>`).join('')}</select></label>
+ <label class="field-label">SECONDARY<select id="classSecondary" class="select"><option value="">Choose secondary</option>${WEAPONS.filter(w=>w.id!==load.primary).map(w=>`<option value="${esc(w.id)}" ${w.id===load.secondary?'selected':''}>${esc(w.name)} · ${esc(w.category)}</option>`).join('')}</select></label>
+ <div class="v16-loadout-weapons">${[[primaryW,'PRIMARY'],[secondaryW,'SECONDARY']].map(([w,label])=>`<div class="v16-loadout-weapon"><span class="smallcaps">${label}</span><strong>${esc(w?.name||'Unassigned')}</strong><span class="micro">${esc(classBlueprintSummary(w))}</span>${w?`<a href="#/build/${esc(w.id)}" class="source-link">EDIT ${label.toLowerCase()} attachments ↗</a>`:''}</div>`).join('')}</div>
+ <p class="micro">Saved attachment blueprints remain independent of the class. Opening the Gunsmith does not overwrite a class.</p></div>
+ <div class="card v15-stack"><h2 class="card-title">PERKS AND EQUIPMENT</h2>${state.mode==='Warzone'?`<div class="v15-presets"><span class="smallcaps">PLAYSTYLE PRESETS</span><div class="v16-inline-actions">${['Aggressive','Stealth','Squad Support'].map(name=>`<button class="btn btn-outline small" data-action="class-preset" data-preset="${esc(name)}">${esc(name)}</button>`).join('')}</div></div>`:''}<div class="v15-gear-grid">${perks.slice(0,3).map((items,i)=>gearSelect('classPerk'+(i+1),'PERK '+(i+1),items,load['perk'+(i+1)]||'')).join('')}${gearSelect('classTactical','TACTICAL',sets.tactical,load.tactical||'')}${gearSelect('classLethal','LETHAL',sets.lethal,load.lethal||'')}${gearSelect('classField','FIELD UPGRADE',sets.field,load.field||'')}</div><label class="field-label">NOTES<textarea id="classNotes" class="field" rows="3" maxlength="500" placeholder="Your rotation, role, or map notes…">${esc(load.notes||'')}</textarea></label>
+ <div class="note warn">Named options are sourced where available and may be incomplete. The MW4 weapon roster is not the full legacy Warzone catalog.</div><a class="source-link" href="${esc(INTEL.optionSource?.[state.mode]||'https://www.callofduty.com/patchnotes')}" target="_blank" rel="noopener noreferrer">Official equipment source ↗</a></div></section>
+ <div class="v16-inline-actions section"><button class="btn btn-primary" data-action="save-class">✓ SAVE CLASS</button><button class="btn btn-outline" data-action="copy-class">COPY CLASS</button><button class="btn btn-outline" data-action="clear-class">RESET FIELDS</button></div>`;
+}
+
+function measurement(w){const record=measurementDrafts[w.id+'|'+state.mode]||state.weaponMeasurements[w.id+'|'+state.mode]||{};return Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(key=>[key,Number.isFinite(Number(record[key]))&&record[key]!==''&&record[key]!==undefined?Number(record[key]):null]));}
 function renderMeasureCard(w){const m=measurement(w),base=INTEL.verifiedWeaponStats?.[w.id];return `<div class="card v15-stat-card"><div class="eyebrow">${esc(w.category)}</div><h2 class="card-title">${esc(w.name)}</h2><div class="v15-fact-grid"><span>MAX LEVEL</span><b>${w.maxLevel||'Unverified'}</b><span>NAMED ATTACHMENTS</span><b>${namedOptionsForWeapon(w)}</b><span>MEASURED TTK</span><b>${m.ttkMs===null?'—':m.ttkMs+' ms'}</b><span>ADS TIME</span><b>${m.adsMs===null?'—':m.adsMs+' ms'}</b><span>YOUR RECOIL SCORE</span><b>${m.recoil===null?'—':m.recoil+' / 10'}</b><span>YOUR EFFECTIVE RANGE</span><b>${m.rangeM===null?'—':m.rangeM+' m'}</b></div>
  <div class="v15-data-source"><b>OFFICIAL PATCH-PUBLISHED VALUES</b>${base?`<div class="v15-fact-grid">${base.facts.map(f=>`<span>${esc(f.label)}</span><b>${f.value} ${esc(f.unit)}</b>`).join('')}</div><a class="source-link" href="${esc(base.source)}" target="_blank" rel="noopener noreferrer">Publisher data (${esc(base.date)}) ↗</a>`:'<p class="micro">No weapon-specific numeric stats available in the verified dataset. Missing data is not estimated.</p>'}</div>
  <div class="v15-gear-grid">${[['ttkMs','YOUR TESTED TTK (MS)'],['adsMs','YOUR TESTED ADS (MS)'],['recoil','YOUR RECOIL SCORE (0–10)'],['rangeM','YOUR EFFECTIVE RANGE (M)']].map(([key,label])=>`<label class="field-label">${label}<input class="field" type="number" min="0" max="${key==='recoil'?10:100000}" step="${key==='recoil'?'0.1':'1'}" data-measure="${key}" data-weapon="${esc(w.id)}" value="${m[key]===null?'':m[key]}" placeholder="Not measured"></label>`).join('')}</div></div>`;}
+function renderMeasuredDifferences(a,b){
+ const left=measurement(a),right=measurement(b);
+ const metrics=[['ttkMs','TTK (ms)','low'],['adsMs','ADS (ms)','low'],['recoil','Recoil score / 10','low'],['rangeM','Effective range (m)','high']];
+ return `<section class="card v16-difference"><div class="v15-flex"><div><h2 class="card-title">YOUR TEST DIFFERENCES</h2><p class="micro">Only measurements you entered in this game mode are compared. Smaller TTK, ADS and recoil scores are treated as preferable; larger range as preferable.</p></div>${tag(state.mode,'blue')}</div><div class="v16-delta-rows">${metrics.map(([key,label,direction])=>{const x=left[key],y=right[key],ready=x!==null&&y!==null,delta=ready?Math.abs(x-y):0,leader=!ready?'':x===y?'Tie':(direction==='low'?x<y:x>y)?a.name:b.name;return `<div class="v16-delta-row"><b>${esc(label)}</b><span>${x===null?'—':x}</span><strong>${!ready?'BOTH TESTS NEEDED':leader==='Tie'?'TIE':esc(leader)+' · '+delta.toFixed(key==='recoil'?1:0)+' difference'}</strong><span>${y===null?'—':y}</span></div>`;}).join('')}</div><div class="v16-delta-labels"><span>${esc(a.name)}</span><span>${esc(b.name)}</span></div><p class="micro">The recoil score uses your personal 0–10 scale (lower means easier to control). Comparisons are not official leaderboard or lab measurements.</p></section>`;
+}
 function renderCompare(){const a=WEAPONS.find(w=>w.id===compareIds[0])||WEAPONS[0],b=WEAPONS.find(w=>w.id===compareIds[1])||WEAPONS[1];
  const picker=(id,value)=>`<select id="${id}" class="select">${WEAPONS.map(w=>`<option value="${esc(w.id)}" ${value===w.id?'selected':''}>${esc(w.name)} · ${esc(w.category)}</option>`).join('')}</select>`;
  return `${intro('SOURCE-AWARE / WEAPON LAB','WEAPON <em>COMPARISON.</em>','Compare two weapons using publisher-confirmed specifications and your own optional in-game tests. No invented damage, recoil or TTK metrics.')}
  <div class="v15-compare-pickers"><label class="field-label">FIRST WEAPON${picker('compareA',a.id)}</label><label class="field-label">SECOND WEAPON${picker('compareB',b.id)}</label></div>
- <div class="v15-class-grid">${renderMeasureCard(a)}${renderMeasureCard(b)}</div>
- <div class="v15-flex section"><button class="btn btn-primary" data-action="save-measures">SAVE YOUR TEST RESULTS</button><button class="btn btn-outline" data-action="swap-compare">⇄ SWAP WEAPONS</button></div>
+ <div class="v15-class-grid">${renderMeasureCard(a)}${renderMeasureCard(b)}</div>${renderMeasuredDifferences(a,b)}
+ <div class="v15-flex section"><button class="btn btn-primary" data-action="save-measures">SAVE YOUR TEST RESULTS</button><button class="btn btn-outline" data-action="swap-compare">⇄ SWAP WEAPONS</button><button class="btn btn-outline" data-action="copy-compare">COPY RESULTS</button></div>
  <div class="note">All user-entered numbers are personal measurements, not official stats. TTK varies by mode, armor, range, hit location and patch. For complete verified numerical comparison more official or carefully tested data is needed.</div>`;
 }
 function renderMyBuilds(){
@@ -344,11 +402,11 @@ function renderSettings(){return `${intro('LOCAL VAULT / OWN YOUR DATA','DATA & 
 <div class="section settings-grid"><section class="card"><h2 class="card-title">EXPORT YOUR PROGRESS</h2><p>Download a JSON backup containing every checked camo, challenge counter, focus weapon, account mastery item, weapon level, favorite, game mode, and custom loadout.</p><button class="btn btn-primary" data-action="export">↓ DOWNLOAD BACKUP</button><button class="btn" data-action="copy-json" style="margin:7px 0 0">▢ COPY JSON</button><div class="note">Exports include your saved data but no Activision login, game account or credentials. Data is not synced with official Call of Duty servers.</div></section>
 <section class="card"><h2 class="card-title">IMPORT A BACKUP</h2><p>Load a previous MW4Camo.io v1 backup. This replaces progress on the current device. Export your current save first.</p><label class="btn upload">↑ SELECT JSON FILE <input id="importFile" type="file" accept=".json,application/json"></label><div class="divider"></div><h3 class="card-title">RESET EVERYTHING</h3><p>Remove local progress and custom loadouts from this browser. This cannot be undone without a backup.</p><button class="btn btn-danger" data-action="clear">RESET LOCAL DATA</button></section>
 <section class="card"><h2 class="card-title">GAME MODE</h2><p>Mode changes which published requirements are shown on weapon pages and which loadout is edited. Completed camos remain shared across games.</p><div class="filter-chips">${['Warzone','MW4','DMZ'].map(m=>`<button class="chip ${state.mode===m?'active':''}" data-action="mode" data-mode="${m}">${m}</button>`).join('')}</div><div class="smallcaps">LOCAL STORAGE KEY</div><code class="setting-code">${STORE_KEY}</code></section>
-<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v1.3.0 · selectable Gunsmith upgrade · Offline support after first HTTP(S) visit</p></section></div>`;}
+<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v1.6.0 · multi-class library · Operator Hub · Offline support after first HTTP(S) visit</p></section></div>`;}
 function renderNotFound(){return `<div class="empty"><h2 class="section-title">PAGE NOT FOUND</h2><p>That weapon or update is not in this version of MW4Camo.io.</p><a class="btn btn-primary" href="#/dashboard">RETURN TO DASHBOARD</a></div>`;}
 function render(){let path=currentPath(),[route,param]=path.split('/');let heading=route==='weapon'?'WEAPON / CAMOS':route==='build'?'WEAPON / GUNSMITH':route==='patch'?'PATCH / DETAIL':(route||'dashboard').toUpperCase();document.getElementById('breadcrumb').innerHTML='MW4CAMO <span>/</span> '+esc(heading);document.getElementById('modeText').textContent=state.mode.toUpperCase();document.querySelectorAll('[data-route]').forEach(x=>x.classList.toggle('active',x.dataset.route===route || (route==='weapon'&&x.dataset.route==='weapons')||(route==='build'&&x.dataset.route==='loadouts')||(route==='patch'&&x.dataset.route==='patches')));
 let w=WEAPONS.find(w=>w.id===param),p=PATCHES.find(p=>p.id===param);
-app.innerHTML=route==='dashboard'||!route?renderDashboard():route==='weapons'?renderWeapons():route==='weapon'?renderWeapon(w):route==='mastery'?renderMastery():route==='planner'?renderPlanner():route==='loadouts'?renderLoadouts():route==='class-builder'?renderClassBuilder():route==='compare'?renderCompare():route==='assistant'?renderCamoAssistant():route==='doctor'?renderDoctor():route==='my-builds'?renderMyBuilds():route==='build'?renderBuild(w):route==='patches'?renderPatches():route==='patch'?renderPatch(p):route==='settings'?renderSettings():renderNotFound();
+app.innerHTML=route==='dashboard'||!route?renderDashboard():route==='weapons'?renderWeapons():route==='weapon'?renderWeapon(w):route==='mastery'?renderMastery():route==='planner'?renderPlanner():route==='loadouts'?renderLoadouts():route==='hub'?renderCommandHub():route==='class-builder'?renderClassBuilder():route==='compare'?renderCompare():route==='assistant'?renderCamoAssistant():route==='doctor'?renderDoctor():route==='my-builds'?renderMyBuilds():route==='build'?renderBuild(w):route==='patches'?renderPatches():route==='patch'?renderPatch(p):route==='settings'?renderSettings():renderNotFound();
 if(route==='weapons')updateWeaponGrid();if(route==='patches')updatePatchGrid();
 const isNewRoute=path!==lastRenderedPath;lastRenderedPath=path;
 app.classList.remove('page-enter');
@@ -359,24 +417,36 @@ function updateWeaponGrid(){let grid=document.getElementById('weaponGrid');let r
 function setMode(mode){
  if(!['Warzone','MW4','DMZ'].includes(mode)||state.mode===mode)return;
  const path=currentPath().split('/');
- if(path[0]==='build'){const w=WEAPONS.find(w=>w.id===path[1]);if(w)stashDraft(w);}
+ if(path[0]==='build'){const w=WEAPONS.find(w=>w.id===path[1]);if(w)stashDraft(w);}if(path[0]==='class-builder')preserveClassDraft();
  state.mode=mode;persist();render();notify('Mode changed to '+mode);
 }
 function valueById(id){let el=document.getElementById(id);return el?el.value.trim():'';}
 function collectBuild(w){const slots={};app.querySelectorAll('[data-slot-row]').forEach(row=>{const type=row.querySelector('.gs-type')?.value,value=row.querySelector('.gs-item')?.value||'';if(type&&availableTypes(w,document.getElementById('gsApex')?.checked).includes(type)&&!Object.hasOwn(slots,type)&&Object.keys(slots).length<5)slots[type]=value;});return {name:valueById('buildName')||w.name+' custom',template:activeGoal(w),slots,apex:!!document.getElementById('gsApex')?.checked,perks:valueById('buildPerks'),tactical:valueById('buildTactical'),lethal:valueById('buildLethal'),notes:valueById('buildNotes'),userSaved:true,savedAt:new Date().toISOString()};}
 async function copyText(text){try{await navigator.clipboard.writeText(text);notify('Copied to clipboard');}catch{let el=document.createElement('textarea');el.value=text;el.style.position='fixed';el.style.opacity='0';document.body.appendChild(el);el.select();let ok=document.execCommand('copy');el.remove();notify(ok?'Copied to clipboard':'Clipboard unavailable; use Export instead');}}
 function download(name,text){let blob=new Blob([text],{type:'application/json;charset=utf-8'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}
-function validatedImport(data){if(!data || data.version!==1 || typeof data.completed!=='object'||Array.isArray(data.completed)||typeof data.accounts!=='object'||Array.isArray(data.accounts)||typeof data.levels!=='object'||Array.isArray(data.levels)||!Array.isArray(data.favorites)||typeof data.builds!=='object'||Array.isArray(data.builds))throw Error('Not a MW4Camo v1 backup');let validKeys=new Set(WEAPONS.flatMap(w=>CAMOS.map(c=>w.id+'|'+c.id)));let validAcc=new Set(ACCOUNT.map(c=>c.id));let validIds=new Set(WEAPONS.map(w=>w.id));let completed=Object.fromEntries(Object.entries(data.completed).filter(([k])=>validKeys.has(k)).map(([k,v])=>[k,v===true]));let accounts=Object.fromEntries(Object.entries(data.accounts).filter(([k])=>validAcc.has(k)).map(([k,v])=>[k,v===true]));let levels=Object.fromEntries(Object.entries(data.levels).filter(([k,v])=>validIds.has(k)&&Number.isFinite(Number(v))).map(([k,v])=>[k,Math.min(999,Math.max(0,Number(v)))]));let builds=Object.fromEntries(Object.entries(data.builds).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&v&&typeof v==='object'&&v.slots&&typeof v.slots==='object').map(([k,v])=>[k,{name:String(v.name||'Custom').slice(0,100),template:Object.hasOwn(TEMPLATES,String(v.template))?String(v.template):'Balanced',slots:Object.fromEntries(Object.entries(v.slots).slice(0,10).map(([key,val])=>[String(key).slice(0,50),String(val||'').slice(0,90)])),perks:String(v.perks||'').slice(0,300),tactical:String(v.tactical||'').slice(0,150),lethal:String(v.lethal||'').slice(0,150),notes:String(v.notes||'').slice(0,5000),apex:v.apex===true,userSaved:true,savedAt:Number.isFinite(Date.parse(v.savedAt))?String(v.savedAt).slice(0,40):''}]));let activeGoals=Object.fromEntries(Object.entries(data.activeGoals||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&Object.hasOwn(TEMPLATES,v)));let counters=Object.fromEntries(Object.entries(data.counters||{}).filter(([k,v])=>validKeys.has(k)&&v&&typeof v==='object').map(([k,v])=>[k,{value:Math.min(100000,Math.max(0,Math.floor(Number(v.value)||0))),target:Math.min(100000,Math.max(0,Math.floor(Number(v.target)||0)))}]));return {...defaultState(),completed,accounts,levels,builds,activeGoals,counters,focusWeapon:validIds.has(data.focusWeapon)?data.focusWeapon:null,favorites:data.favorites.filter(k=>validIds.has(k)),mode:['MW4','Warzone','DMZ'].includes(data.mode)?data.mode:'Warzone',classConfigs:Object.fromEntries(Object.entries(data.classConfigs||{}).filter(([k,v])=>['MW4','Warzone','DMZ'].includes(k)&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['name','primary','secondary','perk1','perk2','perk3','tactical','lethal','field','savedAt'].map(f=>[f,String(v[f]||'').slice(0,150)]))])),reviewedPatches:Object.fromEntries(Object.entries(data.reviewedPatches||{}).slice(0,1500).filter(([k,v])=>typeof k==='string'&&k.length<200&&v===true)),weaponMeasurements:Object.fromEntries(Object.entries(data.weaponMeasurements||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(f=>[f,Number.isFinite(Number(v[f]))&&v[f]!==null&&v[f]!==''?Math.min(f==='recoil'?10:100000,Math.max(0,Number(v[f]))):null]))]))};}
-app.addEventListener('click',event=>{let btn=event.target.closest('[data-action]');if(!btn)return;let action=btn.dataset.action,w=WEAPONS.find(w=>w.id===btn.dataset.weapon);if(action==='review-patch'){
+function validatedImport(data){if(!data || data.version!==1 || typeof data.completed!=='object'||Array.isArray(data.completed)||typeof data.accounts!=='object'||Array.isArray(data.accounts)||typeof data.levels!=='object'||Array.isArray(data.levels)||!Array.isArray(data.favorites)||typeof data.builds!=='object'||Array.isArray(data.builds))throw Error('Not a MW4Camo v1 backup');let validKeys=new Set(WEAPONS.flatMap(w=>CAMOS.map(c=>w.id+'|'+c.id)));let validAcc=new Set(ACCOUNT.map(c=>c.id));let validIds=new Set(WEAPONS.map(w=>w.id));let completed=Object.fromEntries(Object.entries(data.completed).filter(([k])=>validKeys.has(k)).map(([k,v])=>[k,v===true]));let accounts=Object.fromEntries(Object.entries(data.accounts).filter(([k])=>validAcc.has(k)).map(([k,v])=>[k,v===true]));let levels=Object.fromEntries(Object.entries(data.levels).filter(([k,v])=>validIds.has(k)&&Number.isFinite(Number(v))).map(([k,v])=>[k,Math.min(999,Math.max(0,Number(v)))]));let builds=Object.fromEntries(Object.entries(data.builds).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&v&&typeof v==='object'&&v.slots&&typeof v.slots==='object').map(([k,v])=>[k,{name:String(v.name||'Custom').slice(0,100),template:Object.hasOwn(TEMPLATES,String(v.template))?String(v.template):'Balanced',slots:Object.fromEntries(Object.entries(v.slots).slice(0,10).map(([key,val])=>[String(key).slice(0,50),String(val||'').slice(0,90)])),perks:String(v.perks||'').slice(0,300),tactical:String(v.tactical||'').slice(0,150),lethal:String(v.lethal||'').slice(0,150),notes:String(v.notes||'').slice(0,5000),apex:v.apex===true,userSaved:true,savedAt:Number.isFinite(Date.parse(v.savedAt))?String(v.savedAt).slice(0,40):''}]));let activeGoals=Object.fromEntries(Object.entries(data.activeGoals||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&Object.hasOwn(TEMPLATES,v)));let counters=Object.fromEntries(Object.entries(data.counters||{}).filter(([k,v])=>validKeys.has(k)&&v&&typeof v==='object').map(([k,v])=>[k,{value:Math.min(100000,Math.max(0,Math.floor(Number(v.value)||0))),target:Math.min(100000,Math.max(0,Math.floor(Number(v.target)||0)))}]));const classLibrary={};for(const mode of ['MW4','Warzone','DMZ']){
+ const list=Array.isArray(data.classLibrary?.[mode])?data.classLibrary[mode].slice(0,40):[];
+ classLibrary[mode]=list.filter(x=>x&&typeof x==='object'&&typeof x.id==='string'&&x.id.length<=80).map(x=>Object.fromEntries(['id','name','primary','secondary','perk1','perk2','perk3','tactical','lethal','field','notes','savedAt'].map(key=>[key,String(x[key]||'').slice(0,key==='notes'?500:150)]))).filter(x=>validIds.has(x.primary)&&(!x.secondary||validIds.has(x.secondary))&&x.primary!==x.secondary);
+ }
+ const activeClassIds=Object.fromEntries(Object.entries(data.activeClassIds||{}).filter(([mode,id])=>['MW4','Warzone','DMZ'].includes(mode)&&typeof id==='string'&&(id===''||classLibrary[mode].some(x=>x.id===id))));
+ return {...defaultState(),classLibrary,activeClassIds,completed,accounts,levels,builds,activeGoals,counters,focusWeapon:validIds.has(data.focusWeapon)?data.focusWeapon:null,favorites:data.favorites.filter(k=>validIds.has(k)),mode:['MW4','Warzone','DMZ'].includes(data.mode)?data.mode:'Warzone',classConfigs:Object.fromEntries(Object.entries(data.classConfigs||{}).filter(([k,v])=>['MW4','Warzone','DMZ'].includes(k)&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['name','primary','secondary','perk1','perk2','perk3','tactical','lethal','field','savedAt'].map(f=>[f,String(v[f]||'').slice(0,150)]))])),reviewedPatches:Object.fromEntries(Object.entries(data.reviewedPatches||{}).slice(0,1500).filter(([k,v])=>typeof k==='string'&&k.length<200&&v===true)),weaponMeasurements:Object.fromEntries(Object.entries(data.weaponMeasurements||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(f=>[f,Number.isFinite(Number(v[f]))&&v[f]!==null&&v[f]!==''?Math.min(f==='recoil'?10:100000,Math.max(0,Number(v[f]))):null]))]))};}
+app.addEventListener('click',event=>{let btn=event.target.closest('[data-action]');if(!btn)return;let action=btn.dataset.action,w=WEAPONS.find(w=>w.id===btn.dataset.weapon);if(action==='doctor-mode'){doctorModeFilter=['All','Warzone','MW4','DMZ'].includes(btn.dataset.mode)?btn.dataset.mode:'All';render();return;}
+if(action==='review-all'){
+ const key=btn.dataset.key,build=state.builds[key],w=WEAPONS.find(w=>w.id===key?.split('|')[0]);if(!build||!w)return;
+ const keys=pendingReviews(key,w,build).map(p=>reviewKey(key,p));if(!keys.length)return;
+ for(const k of keys)state.reviewedPatches[k]=true;persist();render();
+ notifyUndo(keys.length+' updates marked reviewed',()=>{for(const k of keys)delete state.reviewedPatches[k];persist();render();});return;
+}
+if(action==='review-patch'){
  const key=btn.dataset.key,patch=PATCHES.find(p=>p.id===btn.dataset.patch);
  if(!Object.hasOwn(state.builds,key)||!patch)return;
- state.reviewedPatches[reviewKey(key,patch)]=true;persist();render();notify('Patch note marked reviewed');return;
+ const rev=reviewKey(key,patch);state.reviewedPatches[rev]=true;persist();render();notifyUndo('Patch marked reviewed',()=>{delete state.reviewedPatches[rev];persist();render();});return;
 }
-if(action==='quick-count'&&w){
- const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo||camo.type==='Military')return;
+if((action==='quick-count'||action==='quick-decrease')&&w){
+ const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
  const key=w.id+'|'+camo.id,prior=counter(w,camo.id);
- state.counters[key]={...prior,value:Math.min(100000,prior.value+1)};persist();render();
- notifyUndo('Recorded one '+camo.name+' progress event',()=>{state.counters[key]=prior;persist();render();});return;
+ state.counters[key]={...prior,value:Math.max(0,Math.min(100000,prior.value+(action==='quick-decrease'?-1:1)))};persist();render();
+ notifyUndo('Updated '+camo.name+' progress',()=>{state.counters[key]=prior;persist();render();});return;
 }
 if(action==='assistant-complete'&&w){
  const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
@@ -394,35 +464,63 @@ if(action==='class-preset'){
  for(const [i,id] of ['classPerk1','classPerk2','classPerk3','classTactical','classLethal'].entries()){
   const field=document.getElementById(id);if(field&&[...field.options].some(x=>x.value===record[i]))field.value=record[i];
  }
- notify('Suggested '+btn.dataset.preset+' class equipped — save to keep it');return;
+ preserveClassDraft();notify('Suggested '+btn.dataset.preset+' class equipped — save to keep it');return;
+}
+if(action==='class-new'){
+ classDrafts[state.mode]={};state.activeClassIds[state.mode]='';persist();render();notify('New class editor ready');return;
+}
+if(action==='class-duplicate'){
+ const source=classByMode();if(!source.primary){notify('Select a saved class to duplicate');return;}
+ const id='class-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),copy={...source,id,name:String(source.name||'Class').slice(0,64)+' Copy',savedAt:new Date().toISOString()};
+ state.classLibrary[state.mode]=[...classList(state.mode),copy].slice(0,40);state.activeClassIds[state.mode]=id;delete classDrafts[state.mode];persist();render();notify('Class duplicated');return;
+}
+if(action==='class-delete'){
+ const id=state.activeClassIds[state.mode]??classList(state.mode)[0]?.id,items=classList(state.mode),picked=items.find(x=>x.id===id);if(!picked)return;
+ if(!confirm('Delete saved class '+picked.name+'?'))return;
+ const rest=items.filter(x=>x.id!==id);state.classLibrary[state.mode]=rest;delete state.classConfigs[state.mode];state.activeClassIds[state.mode]=rest[0]?.id||'';delete classDrafts[state.mode];persist();render();notify('Saved class deleted');return;
 }
 if(action==='save-class'||action==='copy-class'){
- const get=(id)=>valueById(id),primary=get('classPrimary'),secondary=get('classSecondary');
- if(primary&&secondary&&primary===secondary){notify('Primary and secondary must be different weapons');return;}
- const primaryW=WEAPONS.find(w=>w.id===primary),secondaryW=WEAPONS.find(w=>w.id===secondary);
- if(!primaryW){notify('Choose a primary weapon');return;}
- const load={name:get('className').slice(0,80)||state.mode+' Class',primary,secondary,perk1:get('classPerk1'),perk2:get('classPerk2'),perk3:get('classPerk3'),tactical:get('classTactical'),lethal:get('classLethal'),field:get('classField'),savedAt:new Date().toISOString()};
- if(action==='save-class'){state.classConfigs[state.mode]=load;persist();render();notify('Full '+state.mode+' loadout saved');}
- else copyText([load.name,'Mode: '+state.mode,'Primary: '+primaryW.name,'Secondary: '+(secondaryW?.name||'None'),'Perks: '+[load.perk1,load.perk2,load.perk3].filter(Boolean).join(', '),'Tactical: '+(load.tactical||'None'),'Lethal: '+(load.lethal||'None'),'Field: '+(load.field||'None')].join('\n'));
+ const load=readClassForm();if(!load.primary){notify('Choose a primary weapon');return;}
+ if(load.primary===load.secondary){notify('Primary and secondary must be different');return;}
+ if(!WEAPONS.some(w=>w.id===load.primary)||load.secondary&&!WEAPONS.some(w=>w.id===load.secondary)){notify('Invalid weapon selection');return;}
+ if(action==='save-class'){
+  const id=state.activeClassIds[state.mode]||'class-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),entry={...load,id,savedAt:new Date().toISOString()};
+  const list=classList(state.mode),index=list.findIndex(x=>x.id===id);
+  if(index<0&&list.length>=40){notify('You can save up to 40 classes per mode');return;}
+  if(index>=0)list[index]=entry;else list.push(entry);
+  state.classLibrary[state.mode]=list;state.activeClassIds[state.mode]=id;state.classConfigs[state.mode]=load;
+  delete classDrafts[state.mode];persist();render();notify('Saved '+load.name+' to '+state.mode+' class library');
+ }else{
+  const p=WEAPONS.find(w=>w.id===load.primary),s=WEAPONS.find(w=>w.id===load.secondary);
+  copyText([load.name,'Mode: '+state.mode,'Primary: '+p.name,'Primary build: '+classBlueprintSummary(p),'Secondary: '+(s?.name||'None'),s?'Secondary build: '+classBlueprintSummary(s):'','Perks: '+[load.perk1,load.perk2,load.perk3].filter(Boolean).join(', '),'Tactical: '+(load.tactical||'None'),'Lethal: '+(load.lethal||'None'),'Field: '+(load.field||'None'),load.notes?'Notes: '+load.notes:''].filter(Boolean).join('\n'));
+ }
  return;
 }
 if(action==='clear-class'){
- if(!confirm('Clear the full loadout for '+state.mode+'?'))return;
- delete state.classConfigs[state.mode];persist();render();notify('Full loadout cleared');return;
+ classDrafts[state.mode]={};state.activeClassIds[state.mode]='';persist();render();notify('Form reset; saved classes are untouched');return;
 }
+
 if(action==='save-measures'){
- const a=[...app.querySelectorAll('[data-measure]')];
+ const inputs=[...app.querySelectorAll('[data-measure]')],updates={};
  for(const w of WEAPONS.filter(w=>compareIds.includes(w.id))){
-  const values={};for(const input of a.filter(el=>el.dataset.weapon===w.id)){
+  const values={};for(const input of inputs.filter(el=>el.dataset.weapon===w.id)){
    if(input.value.trim()===''){values[input.dataset.measure]=null;continue;}
    const n=Number(input.value),cap=input.dataset.measure==='recoil'?10:100000;
    if(!Number.isFinite(n)||n<0||n>cap){notify('Measurements must be between 0 and '+cap);input.focus();return;}
    values[input.dataset.measure]=n;
   }
-  state.weaponMeasurements[w.id+'|'+state.mode]=values;
+  updates[w.id+'|'+state.mode]=values;
  }
+ Object.assign(state.weaponMeasurements,updates);
+ for(const key of Object.keys(updates))delete measurementDrafts[key];
  persist();render();notify('Personal measurements saved for '+state.mode);return;
 }
+if(action==='copy-compare'){
+ const a=WEAPONS.find(w=>w.id===compareIds[0]),b=WEAPONS.find(w=>w.id===compareIds[1]);if(!a||!b)return;
+ const metrics=[['ttkMs','TTK ms'],['adsMs','ADS ms'],['recoil','Recoil / 10'],['rangeM','Effective range m']];
+ copyText(['MW4Camo personal comparison · '+state.mode,a.name+' vs '+b.name,...metrics.map(([key,label])=>{const x=measurement(a)[key],y=measurement(b)[key];return label+': '+(x===null?'not tested':x)+' / '+(y===null?'not tested':y);}), 'Personal tests, not official or cross-mode performance data'].join('\n'));return;
+}
+
 if(action==='swap-compare'){compareIds=[compareIds[1],compareIds[0]];render();return;}
 if(action==='focus'&&w){state.focusWeapon=state.focusWeapon===w.id?null:w.id;persist();render();notify(state.focusWeapon?'Focus set to '+w.name:'Focus cleared');return;}
 if(action==='mission-filter'){missionFilter=btn.dataset.filter;render();return;}
@@ -457,11 +555,32 @@ if(action==='export'){download('mw4camo-backup-'+new Date().toISOString().slice(
 if(action==='copy-json'){copyText(JSON.stringify(state));return;}
 if(action==='clear'){if(confirm('Delete ALL local MW4Camo progress and saved loadouts? Export a backup first.')){state=defaultState();persist();render();notify('Local progress reset');}return;}
 });
-app.addEventListener('input',event=>{if(event.target.id==='weaponSearch'){filter.search=event.target.value;updateWeaponGrid();}if(event.target.id==='patchSearch'){patchQuery=event.target.value;updatePatchGrid();}});
+app.addEventListener('input',event=>{
+ if(event.target.closest('.v16-class-editor'))preserveClassDraft();
+ if(event.target.matches('[data-measure]')){
+  const key=event.target.dataset.weapon+'|'+state.mode;
+  const draft={...(measurementDrafts[key]||state.weaponMeasurements[key]||{})};
+  draft[event.target.dataset.measure]=event.target.value.trim()===''?null:event.target.value.trim();measurementDrafts[key]=draft;
+ }
+if(event.target.id==='weaponSearch'){filter.search=event.target.value;updateWeaponGrid();}if(event.target.id==='patchSearch'){patchQuery=event.target.value;updatePatchGrid();}});
 app.addEventListener('change',async event=>{
+if(event.target.closest('.v16-class-editor')&&event.target.id!=='classPrimary')preserveClassDraft();
+if(event.target.id==='doctorView'){doctorView=event.target.value==='All'?'All':'Pending';render();return;}
+if(event.target.id==='assistantWeapon'){state.focusWeapon=WEAPONS.some(w=>w.id===event.target.value)?event.target.value:null;persist();render();return;}
+if(event.target.id==='classSelect'){
+ const mode=state.mode,id=event.target.value;
+ if(id!==''&&!classList(mode).some(x=>x.id===id))return;
+ state.activeClassIds[mode]=id;delete classDrafts[mode];persist();render();return;
+}
+if(event.target.matches('[data-task-counter]')){
+ const w=WEAPONS.find(w=>w.id===event.target.dataset.weapon),c=CAMOS.find(c=>c.id===event.target.dataset.camo);if(!w||!c)return;
+ const key=w.id+'|'+c.id,old=counter(w,c.id),field=event.target.dataset.taskCounter;
+ const amount=Math.max(0,Math.min(100000,Math.floor(Number(event.target.value)||0)));
+ state.counters[key]={...old,[field]:amount};persist();render();notify('Challenge '+field+' updated');return;
+}
 if(event.target.id==='assistantSize'){assistantSize=[2,3,5].includes(Number(event.target.value))?Number(event.target.value):3;render();return;}
 if(event.target.id==='compareA'||event.target.id==='compareB'){const idx=event.target.id==='compareA'?0:1;const other=compareIds[1-idx];if(event.target.value===other){notify('Choose two different weapons to compare');event.target.value=compareIds[idx];return;}compareIds[idx]=event.target.value;render();return;}
-if(event.target.id==='classPrimary'){const secondary=document.getElementById('classSecondary');if(secondary&&secondary.value===event.target.value)secondary.value='';return;}if(event.target.matches('.gs-type,.gs-item')||event.target.id==='gsApex'){
+if(event.target.id==='classPrimary'){const secondary=document.getElementById('classSecondary');if(secondary&&secondary.value===event.target.value)secondary.value='';preserveClassDraft();render();return;}if(event.target.matches('.gs-type,.gs-item')||event.target.id==='gsApex'){
  const w=WEAPONS.find(x=>x.id===currentPath().split('/')[1]);if(!w)return;
  const b=collectBuild(w);if(event.target.id==='gsApex'){
   b.apex=event.target.checked;const removed=Object.keys(b.slots).filter(type=>!availableTypes(w,b.apex).includes(type));for(const type of removed)delete b.slots[type];if(removed.length)notify('Apex equipped — removed blocked slots: '+removed.join(', '));

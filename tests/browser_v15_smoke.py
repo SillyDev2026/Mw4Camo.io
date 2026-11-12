@@ -3,7 +3,7 @@ import re
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 SCRIPTS=['data/weapons.js','data/patches.js','data/attachments.js','data/update-status.js','data/intel-v15.js','app.js','ui-experience.js']
-CSS=['styles.css','ui-v2.css','ui-v3.css','ui-v4.css','ui-v5.css','ui-v6.css','ui-v7.css']
+CSS=['styles.css','ui-v2.css','ui-v3.css','ui-v4.css','ui-v5.css','ui-v6.css','ui-v7.css','ui-v8.css']
 def page_with_site(browser,width=390):
     page=browser.new_page(viewport={'width':width,'height':820},device_scale_factor=1)
     page.set_default_timeout(2500)
@@ -19,7 +19,7 @@ def main():
     browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox','--disable-dev-shm-usage'])
     for width in [320,390,768,1440]:
       page,errors=page_with_site(browser,width)
-      for route in ['dashboard','weapons','planner','mastery','loadouts','my-builds','patches','class-builder','compare','assistant','doctor','settings','build/han-86','weapon/rezi-12']:
+      for route in ['dashboard','hub','weapons','planner','mastery','loadouts','my-builds','patches','class-builder','compare','assistant','doctor','settings','build/han-86','weapon/rezi-12']:
         page.evaluate('r=>{location.hash="#/"+r}',route);page.wait_for_timeout(70)
         heading=page.locator('#app h1').first
         if not heading.count():raise AssertionError(f'{width} {route} blank {errors}')
@@ -43,7 +43,7 @@ def main():
         assert page.locator('[data-measure="ttkMs"][data-weapon="han-86"]').input_value()=='305'
         page.evaluate('()=>location.hash="#/assistant"');page.wait_for_timeout(70)
         print('STEP quick count',flush=True);page.locator('[data-action="quick-count"]').first.click()
-        assert 'recorded one' in page.locator('#toast').inner_text().lower()
+        assert 'progress' in page.locator('#toast').inner_text().lower()
         print('STEP undo',flush=True);page.locator('.toast-undo').click()
         page.evaluate('()=>location.hash="#/build/han-86"');page.wait_for_timeout(70)
         print('STEP save-build',flush=True);page.locator('[data-action="save-build"]').click()
