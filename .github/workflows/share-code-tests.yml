@@ -1,0 +1,38 @@
+name: Share Code Regression
+on:
+  push:
+    paths:
+      - 'share-codes.js'
+      - 'app.js'
+      - 'index.html'
+      - 'service-worker.js'
+      - 'data/attachments.js'
+      - 'data/weapons.js'
+      - 'tests/test_share_codes.js'
+      - '.github/workflows/share-code-tests.yml'
+  pull_request:
+    paths:
+      - 'share-codes.js'
+      - 'app.js'
+      - 'index.html'
+      - 'service-worker.js'
+      - 'data/attachments.js'
+      - 'data/weapons.js'
+      - 'tests/test_share_codes.js'
+permissions:
+  contents: read
+jobs:
+  verify-sharing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check share-codes.js
+      - name: Test website share codes and game-code separation
+        run: node tests/test_share_codes.js
