@@ -1,1 +1,22 @@
-{"lastCheckedAt":null,"lastSuccessfulAt":null,"discoveredSources":2,"newEntries":0,"sources":[],"note":"Automated checks begin after GitHub Actions is enabled."}
+{
+  "lastCheckedAt": "2026-11-12T00:37:33+00:00",
+  "lastSuccessfulAt": null,
+  "hubChecked": false,
+  "discoveredSources": 2,
+  "newEntries": 0,
+  "sources": [
+    {
+      "game": "MW4",
+      "url": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
+      "status": "error",
+      "message": "The read operation timed out"
+    },
+    {
+      "game": "Warzone",
+      "url": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+      "status": "error",
+      "message": "The read operation timed out"
+    }
+  ],
+  "note": "Some official source checks failed; previous patch data is retained."
+}
