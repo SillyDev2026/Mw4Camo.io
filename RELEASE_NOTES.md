@@ -1,3 +1,11 @@
+## v1.3.1 — UI navigation and spacing repair
+
+- Fixed mobile sidebar/menu hit-testing: the overlay no longer covers navigation links.
+- Added a visible close button, Escape and backdrop dismissal, tab-loop keyboard navigation, and accurate expanded state.
+- Sidebar cannot receive keyboard focus while offscreen; opening the drawer locks background scrolling.
+- Aligned the mobile/desktop navigation breakpoint at 900px and improved responsive header, menu, cards, and tap target spacing.
+- No weapon catalogs, camo progression, loadout logic, or patch synchronization data were changed.
+
 # MW4Camo.io v1.3.0 — Real Gunsmith Controls & UI Overhaul
 
 **Release date:** November 11, 2026

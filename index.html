@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="ui-v2.css">
   <link rel="stylesheet" href="ui-v3.css">
   <link rel="stylesheet" href="ui-v4.css">
+  <link rel="stylesheet" href="ui-v5.css">
   <script src="data/weapons.js" defer></script>
   <script src="data/patches.js" defer></script>
   <script src="data/attachments.js" defer></script>
@@ -20,9 +21,10 @@
 </head>
 <body>
 <button class="skip-link" id="skipLink" type="button">Skip to main content</button>
-<div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 <div class="shell">
-  <aside class="sidebar" id="sidebar">
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+  <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
+    <button class="sidebar-close" id="menuClose" type="button" aria-label="Close navigation">×</button>
     <a class="brand" href="#/dashboard" aria-label="MW4Camo dashboard"><span class="brand-mark">M<span>4</span></span><span><strong>MW4<span class="brand-light">CAMO</span></strong><small>YOUR GRIND. ORGANIZED.</small></span><span class="brand-dot">.</span></a>
     <div class="side-label">COMMAND CENTER</div>
     <nav class="side-nav" id="nav" aria-label="Main navigation">
@@ -36,10 +38,10 @@
     </nav>
     <div class="side-label side-label-2">WORKSPACE</div>
     <nav class="side-nav"><a href="#/settings" data-route="settings"><span class="nav-icon">⚙</span>Data & Settings</a></nav>
-    <div class="side-bottom"><span class="status-led"></span> LOCAL-FIRST TRACKING<br><small>No login required · v1.3.0</small></div>
+    <div class="side-bottom"><span class="status-led"></span> LOCAL-FIRST TRACKING<br><small>No login required · v1.3.1</small></div>
   </aside>
   <div class="main-panel">
-    <header class="topbar"><button class="mobile-menu icon-button" id="menuToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">☰</button><span class="breadcrumb" id="breadcrumb">COMMAND CENTER <span>/</span> OVERVIEW</span><div class="top-actions"><span class="refresh-status" id="refreshStatus"><i></i> PATCH FEED READY</span><button class="mode-button" id="modeButton" title="Switch active mode">◉ <span id="modeText">WARZONE</span> <span class="down-chevron">⌄</span></button></div></header>
+    <header class="topbar"><button class="mobile-menu icon-button" id="menuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">☰</button><span class="breadcrumb" id="breadcrumb">COMMAND CENTER <span>/</span> OVERVIEW</span><div class="top-actions"><span class="refresh-status" id="refreshStatus"><i></i> PATCH FEED READY</span><button class="mode-button" id="modeButton" title="Switch active mode">◉ <span id="modeText">WARZONE</span> <span class="down-chevron">⌄</span></button></div></header>
     <main id="app" tabindex="-1"><div class="loading">Initializing your camo command center…</div></main>
     <footer class="footer">MW4CAMO.IO <span>·</span> Independent fan project. Not affiliated with Activision, Infinity Ward, or Raven Software. <a href="https://www.callofduty.com/patchnotes" rel="noopener" target="_blank">Official patch notes ↗</a></footer>
   </div>

@@ -299,11 +299,38 @@ if(event.target.id==='weaponLevel'){let w=WEAPONS.find(w=>w.id===currentPath().s
 if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace your local tracker with the selected backup?')){state=data;persist();render();notify('Backup imported successfully');}}catch(e){notify('Import failed: '+e.message);}return;}
 });
 document.getElementById('modeButton').addEventListener('click',()=>{let modes=['Warzone','MW4','DMZ'];setMode(modes[(modes.indexOf(state.mode)+1)%modes.length]);});
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarBackdrop')?.classList.remove('active');document.getElementById('menuToggle').setAttribute('aria-expanded','false');}
-document.getElementById('menuToggle').addEventListener('click',()=>{let opening=!document.getElementById('sidebar').classList.contains('open');document.getElementById('sidebar').classList.toggle('open',opening);document.getElementById('sidebarBackdrop')?.classList.toggle('active',opening);document.getElementById('menuToggle').setAttribute('aria-expanded',String(opening));});
-document.getElementById('sidebarBackdrop')?.addEventListener('click',closeSidebar);
+const sidebar=document.getElementById('sidebar');
+const sidebarBackdrop=document.getElementById('sidebarBackdrop');
+const menuToggle=document.getElementById('menuToggle');
+const menuClose=document.getElementById('menuClose');
+const mobileNavigation=window.matchMedia('(max-width:900px)');
+function setSidebarOpen(open,restoreFocus=false){
+  const visible=Boolean(open&&mobileNavigation.matches);
+  sidebar.classList.toggle('open',visible);
+  sidebarBackdrop.classList.toggle('active',visible);
+  document.body.classList.toggle('nav-open',visible);
+  menuToggle.setAttribute('aria-expanded',String(visible));
+  menuToggle.setAttribute('aria-label',visible?'Close navigation menu':'Open navigation menu');
+  if(visible){sidebar.inert=false;menuClose.focus({preventScroll:true});}
+  else{if(restoreFocus&&mobileNavigation.matches)menuToggle.focus({preventScroll:true});sidebar.inert=mobileNavigation.matches;}
+}
+function closeSidebar(restoreFocus=false){setSidebarOpen(false,restoreFocus);}
+menuToggle.addEventListener('click',()=>setSidebarOpen(!sidebar.classList.contains('open'),true));
+menuClose.addEventListener('click',()=>closeSidebar(true));
+sidebarBackdrop.addEventListener('click',()=>closeSidebar(true));
+sidebar.addEventListener('click',event=>{if(event.target.closest('a[href^="#/"]'))closeSidebar();});
+mobileNavigation.addEventListener('change',()=>closeSidebar());
 document.getElementById('skipLink')?.addEventListener('click',()=>document.getElementById('app').focus());
-window.addEventListener('keydown',event=>{if(event.key==='Escape')closeSidebar();});
+window.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&sidebar.classList.contains('open')){event.preventDefault();closeSidebar(true);}
+  if(event.key!=='Tab'||!sidebar.classList.contains('open'))return;
+  const links=[...sidebar.querySelectorAll('a,button')].filter(el=>!el.inert&&el.getClientRects().length);
+  if(!links.length)return;
+  const first=links[0],last=links[links.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+});
+closeSidebar();
 window.addEventListener('hashchange',()=>{render();window.scrollTo({top:0,behavior:'instant'});});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
 if(UPDATE.lastSuccessfulAt){let status=document.getElementById('refreshStatus');if(status){let days=(Date.now()-Date.parse(UPDATE.lastSuccessfulAt))/86400000;status.classList.toggle('stale',days>2);status.lastChild.nodeType===3&&status.lastChild.remove();status.append(document.createTextNode(' PATCH SYNC '+(days>2?'STALE':'CURRENT')));status.title='Last successful check '+UPDATE.lastSuccessfulAt;}}

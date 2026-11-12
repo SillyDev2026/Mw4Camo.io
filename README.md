@@ -71,3 +71,6 @@ service-worker.js          Offline shell cache
 manifest.webmanifest       Installable app metadata
 tests/                      Regression suite
 ```
+
+### v1.3.1 interface fix
+The left navigation drawer is interactive on narrow screens. Use the top-left menu control to open it; close with ×, the dark backdrop, Escape, or a navigation selection. No game data was changed.

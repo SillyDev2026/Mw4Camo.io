@@ -1,0 +1,70 @@
+/* MW4Camo v1.3.1 — interface-only navigation and spacing repair */
+:root{--ui-unit:clamp(12px,1.4vw,20px);--ui-radius:8px;--ui-inset:clamp(14px,2vw,28px)}
+/* Keep backdrop and drawer in the SAME stacking context. Previous markup placed
+   the backdrop outside .shell and blocked every menu link on touch devices. */
+.shell{isolation:isolate;min-width:0}
+.sidebar-backdrop{z-index:44;pointer-events:none;touch-action:none}
+.sidebar-backdrop.active{pointer-events:auto}
+.sidebar{z-index:50;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+.sidebar-close{display:none;position:absolute;top:14px;right:12px;z-index:2;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #435b50;border-radius:7px;background:#1a2a27;color:#e5f9d5;font-size:30px;line-height:1;cursor:pointer}
+.sidebar-close:hover,.sidebar-close:focus-visible{background:#2b4334;border-color:var(--lime)}
+.sidebar .brand{min-width:0}
+.side-nav a{min-height:44px;height:auto;padding-block:10px;line-height:1.35;min-width:0}
+.side-nav .nav-icon{flex:0 0 22px}
+.side-nav a .nav-count,.side-nav a .new-dot{flex-shrink:0}
+.main-panel{min-width:0;width:100%}
+.topbar{gap:clamp(9px,1.2vw,18px)}
+.breadcrumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top-actions{flex:0 0 auto;gap:clamp(8px,1.3vw,16px)}
+.mode-button{min-height:42px;white-space:nowrap}
+#app{max-width:1480px;padding-block:clamp(22px,2.5vw,36px) clamp(42px,5vw,64px)}
+#app .section{margin-top:clamp(22px,2.5vw,32px)}
+#app .section-head{gap:12px;flex-wrap:wrap}
+#app .card,#app .stat,#app .mission-card,#app .weapon-card,#app .patch-card{min-width:0}
+#app .card{padding:clamp(15px,1.45vw,22px)}
+#app .grid-2,#app .stats,#app .weapon-grid,#app .patch-layout{gap:clamp(10px,1.2vw,16px)}
+#app .page-title,#app .weapon-name,#app .card-title,#app .section-title{overflow-wrap:anywhere}
+#app .filters,#app .loadout-hero,#app .build-actions,#app .build-save-actions{gap:10px}
+#app .field,#app .select,#app input:not([type="checkbox"]),#app textarea{max-width:100%}
+#app .btn,#app .chip,#app .gs-goal,#app button{touch-action:manipulation}
+#app .btn:focus-visible,#app button:focus-visible{outline-offset:2px}
+@media(max-width:900px){
+  body.nav-open{overflow:hidden;touch-action:none}
+  body.nav-open .sidebar{touch-action:pan-y}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;height:100dvh;max-height:100dvh;width:min(315px,86vw);flex:0 0 auto;transform:translate3d(-105%,0,0);transition:transform .24s ease;box-shadow:16px 0 48px #0008;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .sidebar.open{transform:translate3d(0,0,0)}
+  .sidebar .brand{padding-right:62px;padding-top:22px;padding-bottom:clamp(24px,4vw,39px)}
+  .sidebar-close{display:flex}
+  .mobile-menu{display:flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #3a4e44;border-radius:8px;background:#1b2a29;color:var(--lime);font-size:24px;line-height:1}
+  .mobile-menu:hover,.mobile-menu:focus-visible{background:#293c31;border-color:var(--lime)}
+  .topbar{min-height:64px;height:auto;padding-block:8px}
+  .breadcrumb{margin-right:auto;flex:1 1 auto}
+  .sidebar-backdrop{display:block}
+  .sidebar .side-bottom{margin-top:26px}
+  .footer{line-height:1.6}
+}
+@media(max-width:640px){
+  :root{--ui-unit:12px}
+  .topbar{gap:9px;padding-inline:14px}
+  .breadcrumb{font-size:9px;letter-spacing:.45px}
+  .breadcrumb span{padding:0 4px}
+  .mode-button{padding-inline:10px;gap:6px;font-size:10px}
+  .top-actions{gap:7px}
+  #app{padding:20px 14px 48px}
+  #app .card{padding:15px}
+  #app .section-head{align-items:start}
+  .stats,.milestone-grid,.camo-grid{gap:10px}
+  .footer{padding:16px 14px}
+  .sidebar .side-nav a{font-size:13px}
+}
+@media(max-width:360px){
+  .breadcrumb{font-size:8px;letter-spacing:0}
+  .mode-button{font-size:9px;padding-inline:7px}
+  .mobile-menu{flex-basis:42px;width:42px;height:42px}
+  #app .stat{padding:12px}
+}
+@media(min-width:901px){
+  .sidebar-backdrop{display:none!important}
+  .sidebar{height:100vh}
+}
+@media(prefers-reduced-motion:reduce){.sidebar{transition:none!important}}
