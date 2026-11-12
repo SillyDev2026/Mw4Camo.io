@@ -13,6 +13,14 @@ A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Tr
 - Workflows are staggered to reduce competing pushes; GitHub Actions scheduling and GitHub Pages delivery may be delayed. Reload the webpage to read newly published snapshots; already-open tabs do not automatically replace loaded JavaScript data.
 - Camo progress, saved builds and local backups remain in browser storage. The refresh does not automatically invent new weapons, camo challenges, or in-game import codes.
 
+## Personal update refresh settings (November 12, 2026)
+
+**Data & Settings → Update Refresh Settings** lets each visitor choose **Manual only, 5, 15 or 30 minutes; 1, 3, 6, 12 or 24 hours**. The default is 1 hour. Settings are stored per browser/device in `mw4camo-refresh-interval-v1` and do not modify saved camo progress or user loadouts. Use **Check for Updates** at any time.
+
+While the site is open, its browser-side checker requests the latest GitHub Pages JSON snapshots without retaining a new offline-cache entry for each request. If the user returns to a background tab after a check becomes due, a new check runs on return. New patch records can update the dashboard, Patch Intelligence and Patch Loadout Doctor without discarding local progress. The validated community attachment snapshot is likewise refreshed, and removed catalog choices do not accumulate forever. Last browser check, last successful publisher sync and next check are shown in Settings. Source errors leave the last usable data intact.
+
+**Limitations:** this setting controls *when the browser reads the published snapshots*, not how often GitHub Actions, Activision, or community sources publish new data. The shared GitHub Actions workflows run hourly. Automatic browser checks do not run while the site is closed, do not provide push notifications, and cannot promise real-time publisher releases. Preferences are device-local, not account-synced.
+
 ## v1.7.2 — Loadout Lab share codes
 
 **The Loadout Lab now creates reproducible website share codes from the selected weapon and compatible named attachments only.** No manual attachment text or synthetic in-game IDs are accepted. Use the buttons under **Loadout Lab → [weapon] → Attachment Workbench**:
@@ -117,7 +125,7 @@ python tests/browser_v16_smoke.py
 python tests/browser_v161_regression.py
 ```
 
-The test suite covers catalogs, constraints, daily synchronization, source fallbacks, and saved-build compatibility. The browser regression suite exercises desktop, tablet and mobile widths.
+The test suite covers catalogs, constraints, scheduled synchronization, source fallbacks, and saved-build compatibility. The browser regression suite exercises desktop, tablet and mobile widths.
 
 ## Automated patch refresh
 
