@@ -93,12 +93,12 @@ function extract(input) {
   if (text.length > 8192) throw Error('Share link is too long');
   let url;
   try { url = new URL(text); } catch { throw Error('Paste an MW4Camo code or share URL'); }
-  if (!/^https?:$/.test(url.protocol) || url.origin !== window.location.origin || !url.pathname.endsWith(window.location.pathname)) throw Error('The link is not from this MW4Camo installation');
+  if (!/^https?:$/.test(url.protocol)) throw Error('Unsupported share link');
   return url.searchParams.get('share') || '';
 }
 
 function gameCodeLooksPlausible(value) {
-  return /^[A-Z0-9]{1,5}(?:-[A-Z0-9]{2,10}){1,4}$/.test(String(value || '').trim().toUpperCase());
+  return /^[A-Z0-9]{1,5}(?:-[A-Z0-9]{1,10}){1,4}$/.test(String(value || '').trim().toUpperCase());
 }
 
 window.MW4_SHARE = Object.freeze({encode,decode,normalize,fingerprint,extract,gameCodeLooksPlausible});
