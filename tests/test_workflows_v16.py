@@ -28,7 +28,7 @@ class WorkflowV16(unittest.TestCase):
     def test_pwa_asset_and_lod(self):
         self.assertIn('ui-v8.css',self.html)
         self.assertIn('ui-v8.css',self.sw)
-        self.assertIn('mw4camo-v1.6.0-experience',self.sw)
+        self.assertIn('mw4camo-v1.6.1-reliability',self.sw)
         self.assertIn('prefers-reduced-motion:reduce',self.css)
         self.assertIn('[data-quality="lite"]',self.css)
 if __name__=='__main__':unittest.main()

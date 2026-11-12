@@ -6,6 +6,20 @@
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
+## v1.6.1 — Comprehensive stability and data-correctness patch
+
+- **Weapon Compare:** fixed an important false-zero bug: missing personal ADS, TTK, recoil, and range values now remain **Not tested** after saving one field, instead of appearing as `0`.
+- **Gunsmith draft preservation:** changing navigation routes no longer silently discards unsaved attachment and blueprint-name edits. Mode-switch preservation remains intact.
+- **Class library limit:** the Duplicate action now enforces 40 saved classes per mode and never creates a ghost selection at the limit.
+- **Recovery from malformed local data:** invalid field types and broken blueprint records no longer crash the dashboard, class builder, or other routes; compatible saved camo data is retained. Existing `mw4camo-io-v1` storage is preserved.
+- **Storage failure warning:** blocked/full browser storage creates a persistent, visible warning with a link to backup settings instead of letting a success toast conceal failed persistence. The banner clears when saving works again.
+- **Import/reset/sync:** temporary, unsaved editors are cleared on backup replacement, local reset, and external-tab saved-state updates, avoiding stale drafts overriding restored data.
+- **Camo Assistant:** +1/-1 counters and Undo now preserve scroll position; Quick Jump searches the entire patch archive instead of only its first 25 entries.
+- **PWA asset refresh:** cache version bumped to v1.6.1 to retire stale v1.6 assets. The existing daily patch-sync workflow and historical patch database are not replaced by the release commit.
+- **Validation:** 47 automated Python tests, prior v1.5/v1.6 Playwright smoke tests, and 90 page/viewport checks in the new bug-regression harness. Offline service worker behavior could not be fully tested in this environment because local HTTP navigation was blocked.
+
+Run `python tests/browser_v161_regression.py` to exercise the new regressions (requires Playwright and Chromium). Test results reduce risk but do not prove that all possible bugs are absent.
+
 ## v1.6 — Operator Hub, multi-class library and connected tools
 
 - **Operator Hub** (`#/hub`) connects the four most-used workflows. Live local counters show pending patch reviews, saved classes, measured weapon/mode pairs and your current focus weapon.
@@ -13,7 +27,7 @@ A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Tr
 - **Patch Loadout Doctor 2.0** (`#/doctor`) checks weapon names, equipped attachment names and explicit global weapon-change language in source-linked patch summaries. Filters are based on the saved blueprint's mode; review a note, review all pending notes for a build, and undo acknowledgments. A match means **needs review**, not an automatic buff/nerf verdict.
 - **Camo Assistant 2.0** (`#/assistant`) includes a weapon focus picker, manual counter and target inputs per task, ±1 buttons with Undo, and a progress indicator without falsely marking an unlock.
 - **Weapon Compare 2.0** (`#/compare`) displays head-to-head differences **only** for personal values entered for both weapons in the current mode. Unmeasured statistics remain blank. Save test data atomically, retain temporary edits while switching compared weapons, and copy results.
-- **Compatibility and caching**: all existing progress uses the unchanged `mw4camo-io-v1` key. Backup export/import now covers the class library and active class ID; existing single-mode class saves, measurements, camo progress and patch review markers are preserved. Offline cache version updated to v1.6.0 and includes `ui-v8.css`.
+- **Compatibility and caching**: all existing progress uses the unchanged `mw4camo-io-v1` key. Backup export/import now covers the class library and active class ID; existing single-mode class saves, measurements, camo progress and patch review markers are preserved. Offline cache version updated to v1.6.1 and includes `ui-v8.css`.
 - **Verified behavior**: local automated and headless browser regression tests cover the menu, four modules, class actions, manual camo counts, comparison deltas, responsive layouts, and legacy saves. These tests do not establish complete game data accuracy.
 
 ## v1.5 — Smart Arsenal Intelligence & full loadouts
@@ -71,6 +85,7 @@ python -m unittest discover -s tests -v
 node --check app.js
 node --check ui-experience.js
 python tests/browser_v16_smoke.py
+python tests/browser_v161_regression.py
 ```
 
 The test suite covers catalogs, constraints, daily synchronization, source fallbacks, and saved-build compatibility. The browser regression suite exercises desktop, tablet and mobile widths.

@@ -50,3 +50,6 @@
 @media(max-width:370px){.v16-delta-row{grid-template-columns:minmax(70px,1fr) minmax(33px,.4fr) minmax(70px,1fr) minmax(33px,.4fr);gap:3px}.v16-delta-row>span{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.v16-hub-card{transition:none}.v16-hub-card:hover{transform:none}}
 [data-quality="lite"] .v16-hub-card{transition:none;box-shadow:none}
+
+/* Persistent save-failure signal, unaffected by the transient toast system. */
+.storage-warning:not([hidden]){display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:clamp(.6rem,1.6vw,1.2rem);padding:.85rem 1rem;border:1px solid #efad4d;border-radius:10px;background:#30241b;color:#fff0d2;font-size:.875rem;line-height:1.45}.storage-warning a{color:#f7d387;text-decoration:underline;font-weight:750}

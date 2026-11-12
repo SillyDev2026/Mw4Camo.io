@@ -87,7 +87,7 @@ function makeItems(term){
     candidates.push(...recent.map(id=>weapons.find(w=>w.id===id)).filter(Boolean).map(w=>({title:w.name,path:'weapon/'+w.id,subtitle:'Continue camo progress',kind:'RECENT WEAPON'})));
   }
   candidates.push(...weapons.map(w=>({title:w.name,path:'weapon/'+w.id,subtitle:w.category+' · Open camo tracker',kind:'WEAPON'})));
-  candidates.push(...patches.slice(0,25).map(p=>({title:p.title,path:'patch/'+p.id,subtitle:p.game+' · '+p.date,kind:'PATCH'})));
+  candidates.push(...patches.map(p=>({title:p.title,path:'patch/'+p.id,subtitle:p.game+' · '+p.date,kind:'PATCH'})));
   const matches=candidates.filter(item=>!termLC||[item.title,item.kind,item.subtitle].join(' ').toLowerCase().includes(termLC));
   return matches.filter((item,index)=>matches.findIndex(prev=>prev.path===item.path)===index).slice(0,termLC?14:12);
 }

@@ -96,7 +96,25 @@ const slug = value => String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,'-')
 const pct = (done, total) => total ? Math.round(done*100/total) : 0;
 const fmtDate = value => new Date(value+'T12:00:00Z').toLocaleDateString('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'});
 const defaultState = () => ({classLibrary:{},activeClassIds:{},version:1,mode:'Warzone',completed:{},accounts:{},levels:{},favorites:[],builds:{},activeGoals:{},counters:{},focusWeapon:null,classConfigs:{},reviewedPatches:{},weaponMeasurements:{}});
-function loadState(){try{let raw=JSON.parse(localStorage.getItem(STORE_KEY));return raw && raw.version===1 ? {...defaultState(),...raw,completed:raw.completed||{},accounts:raw.accounts||{},levels:raw.levels||{},favorites:Array.isArray(raw.favorites)?raw.favorites:[],builds:raw.builds||{},activeGoals:raw.activeGoals||{},counters:raw.counters&&typeof raw.counters==='object'&&!Array.isArray(raw.counters)?raw.counters:{},focusWeapon:WEAPONS.some(w=>w.id===raw.focusWeapon)?raw.focusWeapon:null,classConfigs:raw.classConfigs&&typeof raw.classConfigs==='object'&&!Array.isArray(raw.classConfigs)?raw.classConfigs:{},reviewedPatches:raw.reviewedPatches&&typeof raw.reviewedPatches==='object'&&!Array.isArray(raw.reviewedPatches)?raw.reviewedPatches:{},weaponMeasurements:raw.weaponMeasurements&&typeof raw.weaponMeasurements==='object'&&!Array.isArray(raw.weaponMeasurements)?raw.weaponMeasurements:{},classLibrary:raw.classLibrary&&typeof raw.classLibrary==='object'&&!Array.isArray(raw.classLibrary)?raw.classLibrary:{},activeClassIds:raw.activeClassIds&&typeof raw.activeClassIds==='object'&&!Array.isArray(raw.activeClassIds)?raw.activeClassIds:{}} : defaultState();}catch{return defaultState();}}
+const isRecord = value => Boolean(value && typeof value === 'object' && !Array.isArray(value));
+function loadState(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(STORE_KEY));
+    if(!isRecord(raw)||raw.version!==1)return defaultState();
+    const records=['completed','accounts','levels','builds','activeGoals','counters','classConfigs','reviewedPatches','weaponMeasurements','classLibrary','activeClassIds'];
+    const safe=Object.fromEntries(records.map(key=>[key,isRecord(raw[key])?raw[key]:{}]));
+    safe.builds=Object.fromEntries(Object.entries(safe.builds).filter(([key,build])=>
+      typeof key==='string'&&isRecord(build)&&isRecord(build.slots)&&
+      WEAPONS.some(w=>key.startsWith(w.id+'|'))&&['Warzone','MW4','DMZ'].includes(key.split('|')[1])));
+    for(const mode of ['Warzone','MW4','DMZ']){
+      if(!Array.isArray(safe.classLibrary[mode]))safe.classLibrary[mode]=[];
+      else safe.classLibrary[mode]=safe.classLibrary[mode].filter(entry=>isRecord(entry)&&typeof entry.id==='string'&&typeof entry.primary==='string').slice(0,40);
+    }
+    return {...defaultState(),...raw,...safe,mode:['Warzone','MW4','DMZ'].includes(raw.mode)?raw.mode:'Warzone',
+      favorites:Array.isArray(raw.favorites)?raw.favorites.filter(id=>WEAPONS.some(w=>w.id===id)):[],
+      focusWeapon:WEAPONS.some(w=>w.id===raw.focusWeapon)?raw.focusWeapon:null};
+  }catch{return defaultState();}
+}
 let state = loadState();
 let filter={search:'',category:'All',status:'All',fav:false};
 let patchFilter='All';
@@ -123,7 +141,7 @@ function notifyUndo(message, callback){
   toastBox.append(label,button);toastBox.classList.add('show');
   toastTimer=setTimeout(()=>toastBox.classList.remove('show'),6500);
 }
-function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));return true;}catch{notify('Could not write local storage. Export your progress instead.');return false;}}
+function persist(){const warning=document.getElementById('storageWarning');try{localStorage.setItem(STORE_KEY,JSON.stringify(state));if(warning)warning.hidden=true;return true;}catch{if(warning)warning.hidden=false;notify('Storage full or blocked. Export a backup to avoid losing your changes.');return false;}}
 function notify(msg){toastBox.textContent=msg;toastBox.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastBox.classList.remove('show'),3500);}
 function link(path){return '#/'+path;}
 function currentPath(){try{return decodeURIComponent((location.hash||'#/dashboard').replace(/^#\/?/,''));}catch{return 'dashboard';}}
@@ -213,7 +231,8 @@ function generateSlots(w,goal,apex=false){let types=availableTypes(w,apex),chose
 function defaultSlots(w){let seed=getSeed(w,state.mode),goal=activeGoal(w);if(goal==='Balanced'&&seed){return validRows(w,seed.slots,false);}return generateSlots(w,goal,false);}
 function currentBuild(w){const stored=builderDrafts[buildKey(w)]||getBuild(w);return stored?{...stored,slots:validRows(w,stored.slots,!!stored.apex)}:{name:w.name+' · '+activeGoal(w)+' / '+state.mode,template:activeGoal(w),slots:defaultSlots(w),apex:false,perks:'',tactical:'',lethal:'',notes:'',userSaved:false};}
 function stashDraft(w,changes={}){const b=collectBuild(w);builderDrafts[buildKey(w)]={...b,...changes,userSaved:false};}
-function rerenderBuilderPreservePosition(){const scroll=window.scrollY;render();window.scrollTo({top:scroll,behavior:'instant'});}
+function rerenderPreservePosition(){const scroll=window.scrollY;render();window.scrollTo({top:scroll,behavior:'instant'});}
+function rerenderBuilderPreservePosition(){rerenderPreservePosition();}
 function optionStatus(item){return item.sourceType==='official'?'Official name · reported compatibility':'Community-reported';}
 function renderSlotRows(w,b){let spec=gunSpec(w),slots=Object.entries(validRows(w,b.slots,b.apex)),allowed=availableTypes(w,b.apex),used=slots.map(([type])=>type);
   if(!allowed.length)return `<div class="gs-empty"><strong>NO TRADITIONAL GUNSMITH</strong><p>Launchers and melee weapons do not support standard attachments. You can still track their camouflages.</p></div>`;
@@ -348,7 +367,7 @@ function renderClassBuilder(){
  <div class="v16-inline-actions section"><button class="btn btn-primary" data-action="save-class">✓ SAVE CLASS</button><button class="btn btn-outline" data-action="copy-class">COPY CLASS</button><button class="btn btn-outline" data-action="clear-class">RESET FIELDS</button></div>`;
 }
 
-function measurement(w){const record=measurementDrafts[w.id+'|'+state.mode]||state.weaponMeasurements[w.id+'|'+state.mode]||{};return Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(key=>[key,Number.isFinite(Number(record[key]))&&record[key]!==''&&record[key]!==undefined?Number(record[key]):null]));}
+function measurement(w){const record=measurementDrafts[w.id+'|'+state.mode]||state.weaponMeasurements[w.id+'|'+state.mode]||{};return Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(key=>[key,record[key]!==null&&record[key]!==''&&record[key]!==undefined&&Number.isFinite(Number(record[key]))?Number(record[key]):null]));}
 function renderMeasureCard(w){const m=measurement(w),base=INTEL.verifiedWeaponStats?.[w.id];return `<div class="card v15-stat-card"><div class="eyebrow">${esc(w.category)}</div><h2 class="card-title">${esc(w.name)}</h2><div class="v15-fact-grid"><span>MAX LEVEL</span><b>${w.maxLevel||'Unverified'}</b><span>NAMED ATTACHMENTS</span><b>${namedOptionsForWeapon(w)}</b><span>MEASURED TTK</span><b>${m.ttkMs===null?'—':m.ttkMs+' ms'}</b><span>ADS TIME</span><b>${m.adsMs===null?'—':m.adsMs+' ms'}</b><span>YOUR RECOIL SCORE</span><b>${m.recoil===null?'—':m.recoil+' / 10'}</b><span>YOUR EFFECTIVE RANGE</span><b>${m.rangeM===null?'—':m.rangeM+' m'}</b></div>
  <div class="v15-data-source"><b>OFFICIAL PATCH-PUBLISHED VALUES</b>${base?`<div class="v15-fact-grid">${base.facts.map(f=>`<span>${esc(f.label)}</span><b>${f.value} ${esc(f.unit)}</b>`).join('')}</div><a class="source-link" href="${esc(base.source)}" target="_blank" rel="noopener noreferrer">Publisher data (${esc(base.date)}) ↗</a>`:'<p class="micro">No weapon-specific numeric stats available in the verified dataset. Missing data is not estimated.</p>'}</div>
  <div class="v15-gear-grid">${[['ttkMs','YOUR TESTED TTK (MS)'],['adsMs','YOUR TESTED ADS (MS)'],['recoil','YOUR RECOIL SCORE (0–10)'],['rangeM','YOUR EFFECTIVE RANGE (M)']].map(([key,label])=>`<label class="field-label">${label}<input class="field" type="number" min="0" max="${key==='recoil'?10:100000}" step="${key==='recoil'?'0.1':'1'}" data-measure="${key}" data-weapon="${esc(w.id)}" value="${m[key]===null?'':m[key]}" placeholder="Not measured"></label>`).join('')}</div></div>`;}
@@ -445,8 +464,8 @@ if(action==='review-patch'){
 if((action==='quick-count'||action==='quick-decrease')&&w){
  const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
  const key=w.id+'|'+camo.id,prior=counter(w,camo.id);
- state.counters[key]={...prior,value:Math.max(0,Math.min(100000,prior.value+(action==='quick-decrease'?-1:1)))};persist();render();
- notifyUndo('Updated '+camo.name+' progress',()=>{state.counters[key]=prior;persist();render();});return;
+ state.counters[key]={...prior,value:Math.max(0,Math.min(100000,prior.value+(action==='quick-decrease'?-1:1)))};persist();rerenderPreservePosition();
+ notifyUndo('Updated '+camo.name+' progress',()=>{state.counters[key]=prior;persist();rerenderPreservePosition();});return;
 }
 if(action==='assistant-complete'&&w){
  const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
@@ -471,8 +490,9 @@ if(action==='class-new'){
 }
 if(action==='class-duplicate'){
  const source=classByMode();if(!source.primary){notify('Select a saved class to duplicate');return;}
+  if(classList(state.mode).length>=40){notify('Maximum 40 saved classes per mode — delete one before duplicating');return;}
  const id='class-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),copy={...source,id,name:String(source.name||'Class').slice(0,64)+' Copy',savedAt:new Date().toISOString()};
- state.classLibrary[state.mode]=[...classList(state.mode),copy].slice(0,40);state.activeClassIds[state.mode]=id;delete classDrafts[state.mode];persist();render();notify('Class duplicated');return;
+ state.classLibrary[state.mode]=[...classList(state.mode),copy];state.activeClassIds[state.mode]=id;delete classDrafts[state.mode];persist();render();notify('Class duplicated');return;
 }
 if(action==='class-delete'){
  const id=state.activeClassIds[state.mode]??classList(state.mode)[0]?.id,items=classList(state.mode),picked=items.find(x=>x.id===id);if(!picked)return;
@@ -553,7 +573,7 @@ if(action==='patch-filter'){patchFilter=btn.dataset.filter;render();return;}
 if(action==='mode'){setMode(btn.dataset.mode);return;}
 if(action==='export'){download('mw4camo-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(state,null,2));notify('Backup exported');return;}
 if(action==='copy-json'){copyText(JSON.stringify(state));return;}
-if(action==='clear'){if(confirm('Delete ALL local MW4Camo progress and saved loadouts? Export a backup first.')){state=defaultState();persist();render();notify('Local progress reset');}return;}
+if(action==='clear'){if(confirm('Delete ALL local MW4Camo progress and saved loadouts? Export a backup first.')){state=defaultState();for(const key of Object.keys(classDrafts))delete classDrafts[key];for(const key of Object.keys(builderDrafts))delete builderDrafts[key];for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];persist();render();notify('Local progress reset');}return;}
 });
 app.addEventListener('input',event=>{
  if(event.target.closest('.v16-class-editor'))preserveClassDraft();
@@ -597,7 +617,7 @@ if(event.target.dataset.counter){let w=WEAPONS.find(w=>w.id===event.target.datas
 if(event.target.id==='statusFilter'){filter.status=event.target.value;render();return;}
 if(event.target.id==='loadoutWeaponSelect'){if(event.target.value)location.hash='#/build/'+event.target.value;return;}
 if(event.target.id==='weaponLevel'){let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){state.levels[w.id]=Math.min(999,Math.max(0,Number(event.target.value)||0));persist();}return;}
-if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace your local tracker with the selected backup?')){state=data;persist();render();notify('Backup imported successfully');}}catch(e){notify('Import failed: '+e.message);}return;}
+if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace your local tracker with the selected backup?')){state=data;for(const key of Object.keys(classDrafts))delete classDrafts[key];for(const key of Object.keys(builderDrafts))delete builderDrafts[key];for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];persist();render();notify('Backup imported successfully');}}catch(e){notify('Import failed: '+e.message);}return;}
 });
 document.getElementById('modeButton').addEventListener('click',()=>{let modes=['Warzone','MW4','DMZ'];setMode(modes[(modes.indexOf(state.mode)+1)%modes.length]);});
 const sidebar=document.getElementById('sidebar');
@@ -632,9 +652,18 @@ window.addEventListener('keydown',event=>{
   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
 });
 closeSidebar();
-window.addEventListener('hashchange',()=>{render();window.scrollTo({top:0,behavior:'instant'});});
+window.addEventListener('hashchange',()=>{
+  const previous=String(lastRenderedPath||'').split('/');
+  const destination=currentPath();
+  if(previous[0]==='build'&&destination!==lastRenderedPath){
+    const w=WEAPONS.find(weapon=>weapon.id===previous[1]);
+    if(w&&document.getElementById('buildName'))stashDraft(w);
+  }
+  if(previous[0]==='class-builder')preserveClassDraft();
+  render();window.scrollTo({top:0,behavior:'instant'});
+});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
 if(UPDATE.lastSuccessfulAt){let status=document.getElementById('refreshStatus');if(status){let days=(Date.now()-Date.parse(UPDATE.lastSuccessfulAt))/86400000;status.classList.toggle('stale',days>2);status.lastChild.nodeType===3&&status.lastChild.remove();status.append(document.createTextNode(' PATCH SYNC '+(days>2?'STALE':'CURRENT')));status.title='Last successful check '+UPDATE.lastSuccessfulAt;}}
-window.addEventListener('storage',event=>{if(event.key===STORE_KEY){state=loadState();render();notify('Progress updated from another tab');}});
+window.addEventListener('storage',event=>{if(event.key===STORE_KEY){state=loadState();for(const key of Object.keys(classDrafts))delete classDrafts[key];for(const key of Object.keys(builderDrafts))delete builderDrafts[key];for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];render();notify('Progress updated from another tab');}});
 render();
 })();

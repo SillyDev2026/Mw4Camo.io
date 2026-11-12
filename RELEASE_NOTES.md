@@ -1,3 +1,31 @@
+# v1.6.1 — Full Reliability Patch (2026-11-11)
+
+A focused, backwards-compatible bugfix release for the existing Operator Hub, Camo Assistant, Gunsmith, Weapon Compare, Complete Loadouts, Patch Doctor, and mobile navigation.
+
+### Fixed
+
+- Weapon Compare no longer turns unsupplied null numeric metrics into 0 when saving a different field. Unknown values stay untested; comparisons never fabricate 0 ms TTK.
+- The Complete Loadouts duplicate button correctly refuses a 41st saved class and keeps the selected class valid.
+- Unsaved Gunsmith names/attachments survive navigation to other pages and back, not only game-mode switching.
+- Partially corrupt local state is handled defensively rather than throwing an exception during page rendering.
+- Storage/quota write failures are flagged in a persistent, accessible warning with backup instructions.
+- Import, local reset and cross-tab storage updates clear old unsaved editor drafts.
+- Camo Assistant manual counter/Undo operations preserve the current scroll location.
+- Quick Jump can find older patch records past the first 25 entries.
+- Service worker asset version bumped so old cached shell resources are retired.
+
+### Validation
+
+- `node --check app.js` and `node --check ui-experience.js` passed.
+- 47 automated Python regression tests passed, including daily patch-sync tests.
+- Prior v1.5 and v1.6 Chromium interaction suites passed.
+- New v1.6.1 Chromium scenarios passed: null metric values, unsaved Gunsmith drafts, 40-class limit, malformed data, Camo Assistant Undo, storage errors, and 90 responsive page/viewport checks.
+- Offline service-worker behavior was not directly verified; the local browser environment blocked HTTP-origin navigation.
+
+**Compatibility:** no save-key migration; the `mw4camo-io-v1` format and existing live patch database remain unchanged.
+
+---
+
 # v1.6.0 — Operator Hub and Workflows
 
 - Added a connected Operator Hub with fast links to Patch Doctor, Camo Assistant, Weapon Compare and Full Loadouts.

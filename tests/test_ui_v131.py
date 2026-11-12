@@ -33,7 +33,7 @@ class NavigationRegression(unittest.TestCase):
     def test_cache_and_ui_scope(self):
         self.assertIn('ui-v5.css',self.html)
         self.assertIn('ui-v5.css',self.sw)
-        self.assertIn('mw4camo-v1.6.0-experience',self.sw)
+        self.assertIn('mw4camo-v1.6.1-reliability',self.sw)
         self.assertTrue((ROOT/'data/weapons.json').is_file())
         self.assertTrue((ROOT/'data/attachments.json').is_file())
         self.assertIn("const STORE_KEY = 'mw4camo-io-v1';",self.app)
