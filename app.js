@@ -597,7 +597,34 @@ if(action==='category'){filter.category=btn.dataset.category;render();return;}
 if(action==='set-class'){filter.category=btn.dataset.category;filter.search='';filter.status='All';filter.fav=false;location.hash='#/weapons';return;}
 if(action==='sync-level'&&w){let level=Math.min(w.maxLevel||999,Math.max(0,Number(valueById('weaponLevel'))||0));state.levels[w.id]=level;persist();render();notify('Weapon level saved. Only mark camo challenges once earned in-game.');return;}
 if(action==='goal'&&w){const goal=btn.dataset.goal;if(!Object.hasOwn(TEMPLATES,goal))return;if(currentPath().startsWith('build/')&&activeGoal(w)!==goal)stashDraft(w);state.activeGoals[goalId(w)]=goal;persist();render();notify('Tactical profile: '+goal);return;}
-if(action==='save-build'&&w){const b=collectBuild(w);if(Object.keys(b.slots).length>5){notify('Maximum five standard attachments');return;}state.builds[buildKey(w)]=b;for(const key of Object.keys(state.reviewedPatches))if(key.startsWith(buildKey(w)+'|'))delete state.reviewedPatches[key];if(activeGoal(w)==='Balanced')delete state.builds[goalId(w)];delete builderDrafts[buildKey(w)];if(persist()){render();notify(w.name+' loadout saved for '+state.mode);}return;}
+
+if(action==='import-share'){
+  try{importSharedBuild(valueById('shareImportInput'));}catch(error){notify('Import failed: '+String(error.message||error));}
+  return;
+}
+if((action==='share-build'||action==='share-link')&&w){
+  const p=sharePreview(w,collectBuild(w));
+  if(!p.code){notify('Cannot share: '+p.error);return;}
+  copyText(action==='share-link'?shareLinkFor(p.code):p.code);return;
+}
+if(action==='save-game-code'&&w){
+  const code=valueById('gameImportCode').toUpperCase().replace(/\s+/g,'');
+  if(!window.MW4_SHARE.gameCodeLooksPlausible(code)){notify('Invalid code shape; use the code displayed by MW4 Gunsmith');return;}
+  const b=collectBuild(w);
+  try{
+    window.MW4_SHARE.normalize({weapon:w.id,mode:state.mode,goal:activeGoal(w),apex:b.apex,slots:b.slots});
+    b.gameCode=code;b.gameFingerprint=window.MW4_SHARE.fingerprint({weapon:w.id,mode:state.mode,apex:b.apex,slots:b.slots});
+    state.builds[buildKey(w)]=b;delete builderDrafts[buildKey(w)];
+    if(persist()){render();notify('User-supplied in-game code saved for exact build; not independently verified.');}
+  }catch(error){notify('Cannot save code: '+String(error.message||error));}
+  return;
+}
+if(action==='copy-game-code'&&w){
+  const old=getBuild(w),current=collectBuild(w),code=savedGameCode(w,{...current,gameCode:old?.gameCode,gameFingerprint:old?.gameFingerprint});
+  if(code)copyText(code);else notify('No matching in-game code saved for these attachments');
+  return;
+}
+if(action==='save-build'&&w){const b=collectBuild(w);if(Object.keys(b.slots).length>5){notify('Maximum five standard attachments');return;}const old=getBuild(w);if(old?.gameCode&&savedGameCode(w,{...b,gameCode:old.gameCode,gameFingerprint:old.gameFingerprint})){b.gameCode=old.gameCode;b.gameFingerprint=old.gameFingerprint;}state.builds[buildKey(w)]=b;for(const key of Object.keys(state.reviewedPatches))if(key.startsWith(buildKey(w)+'|'))delete state.reviewedPatches[key];if(activeGoal(w)==='Balanced')delete state.builds[goalId(w)];delete builderDrafts[buildKey(w)];if(persist()){render();notify(w.name+' loadout saved for '+state.mode);}return;}
 if(action==='restore-seed'&&w){const seed=getSeed(w,state.mode);if(!seed)return;if(getBuild(w)&&!confirm('Replace your saved custom build with the published example?'))return;delete state.builds[buildKey(w)];delete state.builds[goalId(w)];delete builderDrafts[buildKey(w)];state.activeGoals[goalId(w)]='Balanced';persist();render();notify('Published example restored');return;}
 if(action==='gs-add'&&w){const b=collectBuild(w),free=availableTypes(w,b.apex).filter(t=>!Object.hasOwn(b.slots,t));if(Object.keys(b.slots).length>=5||!free.length){notify('Maximum five standard attachments');return;}b.slots[free[0]]='';builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();return;}
 if(action==='gs-remove'&&w){const b=collectBuild(w),index=Number(btn.dataset.index),type=Object.keys(b.slots)[index];if(type)delete b.slots[type];builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();return;}
