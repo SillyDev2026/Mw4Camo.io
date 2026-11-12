@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install HTML parser
-        run: python -m pip install beautifulsoup4==4.12.3
+        run: python -m pip install beautifulsoup4==4.12.3 markdown==3.9
       - name: Fetch official index, discover articles and record changes
         run: python scripts/sync_patches.py
       - name: Validate generated catalog and update files
@@ -38,3 +38,14 @@ jobs:
             git commit -m 'chore: daily official MW4 and Warzone intel refresh'
             git push origin HEAD:"${GITHUB_REF_NAME}"
           fi
+      - name: Flag inaccessible publisher sources
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          health = json.loads(Path('data/update-status.json').read_text())
+          refreshed = sum(source.get('status') == 'ok' for source in health.get('sources', []))
+          if not refreshed:
+              raise SystemExit('Official patch notes unavailable from runner and fallback; retained cached patch entries. This run requires review.')
+          print(f'Validated {refreshed} official patch pages; cached notes retained for any unavailable sources.')
+          PY

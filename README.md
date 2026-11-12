@@ -81,3 +81,7 @@ python scripts/sync_patches.py --dry-run  # Requires access to official site
 ```
 
 Browser smoke tests cover dashboard, the 35-weapon arsenal, a 9-profile builder, local preset saving, patch details and camo completion on desktop and mobile viewport sizes. Text sources follow `ATTRIBUTION.md`.
+
+### Network reliability
+
+The daily bot tries the official Call of Duty patch pages directly first. When a GitHub-hosted runner times out on that publisher, it can try a public reader mirror of the *same official URL*. It validates the mirror’s declared URL before parsing. The site continues to link to the original official source. Readers and mirrors can be unavailable or stale; the bot retains the last known patch archive and exposes health status rather than silently clearing updates. Check the Actions run and the Intelligence page for the last successful source check.
