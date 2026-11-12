@@ -4,6 +4,8 @@ self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mw4camo-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;
+  const requestUrl = new URL(event.request.url);
+  if(requestUrl.searchParams.has('_fresh')){event.respondWith(fetch(event.request));return;}
   event.respondWith(fetch(event.request).then(response=>{
     if(response.ok){let copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy)).catch(()=>{});}
     return response;
