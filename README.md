@@ -1,10 +1,17 @@
 # MW4Camo.io — MW4 + Warzone Camo Tracker & Gunsmith
 
-[![Daily patch refresh](https://github.com/SillyDev2026/Mw4Camo.io/actions/workflows/sync-patches.yml/badge.svg)](https://github.com/SillyDev2026/Mw4Camo.io/actions/workflows/sync-patches.yml)
+[![Hourly patch refresh](https://github.com/SillyDev2026/Mw4Camo.io/actions/workflows/sync-patches.yml/badge.svg)](https://github.com/SillyDev2026/Mw4Camo.io/actions/workflows/sync-patches.yml)
 
 **[Open the live site](https://sillydev2026.github.io/Mw4Camo.io/)** · **[Official patch notes](https://www.callofduty.com/patchnotes)**
 
 A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
+
+## Hourly data refresh (November 12, 2026)
+
+- The official MW4 and Warzone patch monitor checks official publisher sources once per hour (`13 * * * *` UTC). It stores checked/success timestamps and keeps previous verified notes if a source fails.
+- The independently sourced attachment snapshot checks once per hour (`43 * * * *` UTC), validates weapon/slot mappings and only commits a changed catalog. Community-reported attachments are **not** publisher-verified.
+- Workflows are staggered to reduce competing pushes; GitHub Actions scheduling and GitHub Pages delivery may be delayed. Reload the webpage to read newly published snapshots; already-open tabs do not automatically replace loaded JavaScript data.
+- Camo progress, saved builds and local backups remain in browser storage. The refresh does not automatically invent new weapons, camo challenges, or in-game import codes.
 
 ## v1.7.2 — Loadout Lab share codes
 
@@ -26,7 +33,7 @@ Added 62 reported standard-attachment choices for the Cronen Osprey and 39 for t
 
 ## v1.7.0 — Arsenal expansion
 
-The site retains all 35 weapons and all saved progress. The Gunsmith now accepts a validated local snapshot of 615 community-reported attachments, organized by weapon and attachment slot, plus existing curated attachments. Names and mappings are unverified and not official Activision data. The original curated choices remain when offline or before snapshot sync. The Apex + five-standard-slot rules remain unchanged. A separate daily GitHub Actions sync refreshes `data/attachments-community.json` from the public COD Loadout source; the existing official patch sync remains independent. Use `python -m unittest discover -s tests -p 'test_arsenal_v17.py'` for catalog checks.
+The site retains all 35 weapons and all saved progress. The Gunsmith now accepts a validated local snapshot of 615 community-reported attachments, organized by weapon and attachment slot, plus existing curated attachments. Names and mappings are unverified and not official Activision data. The original curated choices remain when offline or before snapshot sync. The Apex + five-standard-slot rules remain unchanged. A separate hourly GitHub Actions sync refreshes `data/attachments-community.json` from the public COD Loadout source; the existing official patch sync remains independent. Use `python -m unittest discover -s tests -p 'test_arsenal_v17.py'` for catalog checks.
 
 ## v1.6.1 — Comprehensive stability and data-correctness patch
 
@@ -114,7 +121,7 @@ The test suite covers catalogs, constraints, daily synchronization, source fallb
 
 ## Automated patch refresh
 
-GitHub Actions workflow: `.github/workflows/sync-patches.yml`. The script `scripts/sync_patches.py` discovers and checks official patch articles on a daily UTC cron and can also be started manually. On success it updates the patch JSON/JS archives and the source-health file; on failed source reads, cached records are retained. **New game weapons, challenge requirements and compatibility data are not automatically invented or added;** these still require source review. GitHub Pages automatically deploys changes to the main branch.
+GitHub Actions workflow: `.github/workflows/sync-patches.yml`. The script `scripts/sync_patches.py` discovers and checks official patch articles on an hourly UTC cron and can also be started manually. On success it updates the patch JSON/JS archives and the source-health file; on failed source reads, cached records are retained. **New game weapons, challenge requirements and compatibility data are not automatically invented or added;** these still require source review. GitHub Pages automatically deploys changes to the main branch.
 
 ## Data & limitations
 
