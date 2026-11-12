@@ -7,6 +7,7 @@ const DEFAULT_MINUTES = 60;
 const MAX_WAIT = 15000;
 const root = document.getElementById('app');
 let minutes = readInterval();
+const openedAt = Date.now();
 let timer = null;
 let checking = false;
 let lastChecked = 0;
@@ -45,7 +46,7 @@ function updateView(){
   if(selected)selected.value = String(minutes);
   setText('refreshLastBrowser',lastChecked ? readableTime(lastChecked) : 'Not checked this visit');
   setText('refreshLastPublisher',readableTime(window.MW4CamoFeed?.current()?.status?.lastSuccessfulAt));
-  const next = minutes === 0 ? 'Manual only' : readableTime((lastChecked || Date.now()) + minutes*60000);
+  const next = minutes === 0 ? 'Manual only' : readableTime((lastChecked || openedAt) + minutes*60000);
   setText('refreshNext',next);
   setText('refreshMessage',checking ? 'Checking published snapshots…' : detail);
   const btn = document.getElementById('refreshNow');
@@ -66,7 +67,7 @@ async function freshJson(path){
 async function checkNow(manual=false){
   if(checking)return;
   checking=true;updateView();
-  let success=0, failures=0, added=0, changes=false;
+  let success=0, added=0, changes=false;
   try {
     const results = await Promise.allSettled([
       freshJson('./data/patches.json'),
@@ -80,17 +81,17 @@ async function checkNow(manual=false){
       const oldTime = Date.parse(existing.status?.lastCheckedAt || '') || 0;
       const freshTime = Date.parse(results[1].value.lastCheckedAt) || 0;
       if(freshTime>=oldTime){
-        added = results[0].value.filter(item=>!new Set(existing.patches.map(old=>old.id)).has(item.id)).length;
+        const knownIds = new Set(existing.patches.map(old=>old.id));
+        added = results[0].value.filter(item=>!knownIds.has(item.id)).length;
         changes = window.MW4CamoFeed.apply(results[0].value,results[1].value);
         success++;
       } else {
         // A delayed CDN response must not roll the current session backward.
-        failures++;
       }
-    }else failures++;
+    }
     if(results[2].status==='fulfilled' && typeof window.MW4_ApplyCommunityCatalog==='function' && window.MW4_ApplyCommunityCatalog(results[2].value)){
       success++;
-    }else failures++;
+    }
     lastChecked=Date.now();
     outcome=success===2?'ok':success===1?'partial':'error';
     detail=outcome==='ok'?(changes ? (added?added+' new patch record(s) loaded.':'Revised patch information loaded.') : 'Up to date with the published sources.') : outcome==='partial'?'One source could not be refreshed. Existing saved data was kept.':'Could not contact the published sources. Existing saved data was kept.';
@@ -105,7 +106,7 @@ async function checkNow(manual=false){
 function schedule(){
   if(timer!==null){clearTimeout(timer);timer=null;}
   if(minutes===0 || document.hidden || checking)return;
-  const elapsed=lastChecked ? Math.max(0,Date.now()-lastChecked) : 0;
+  const elapsed=Math.max(0,Date.now()-(lastChecked || openedAt));
   const delay=Math.max(1000,minutes*60000-elapsed);
   timer=setTimeout(()=>{timer=null;void checkNow(false);},delay);
 }
@@ -157,12 +158,12 @@ window.addEventListener('storage',event=>{
 });
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){if(timer!==null){clearTimeout(timer);timer=null;}return;}
-  if(minutes && lastChecked && Date.now()-lastChecked>=minutes*60000)void checkNow(false);
+  if(minutes && Date.now()-(lastChecked || openedAt)>=minutes*60000)void checkNow(false);
   else schedule();
   updateView();
 });
 window.addEventListener('online',()=>{
-  if(minutes && lastChecked && Date.now()-lastChecked>=minutes*60000)void checkNow(false);
+  if(minutes && Date.now()-(lastChecked || openedAt)>=minutes*60000)void checkNow(false);
 });
 mount();schedule();updateView();
 })();
