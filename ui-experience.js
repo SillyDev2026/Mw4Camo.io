@@ -56,7 +56,8 @@ function settingsControl(){
     <select class="select" id="qualitySelect"><option value="auto">Auto (recommended)</option><option value="full">Full motion & effects</option><option value="lite">Lite (fewer effects)</option></select>
     <p class="micro visual-status" id="visualStatus" role="status"></p>
     <p class="micro">Shortcut: <kbd>Ctrl K</kbd> to jump to a weapon or section. Press <kbd>/</kbd> outside a text field to search.</p>`;
-  grid.prepend(card);
+  const refreshCard=grid.querySelector('#refreshSettings');
+  if(refreshCard)refreshCard.after(card);else grid.prepend(card);
   card.querySelector('#qualitySelect').addEventListener('change',e=>setQuality(e.target.value));
   updateQualityLabel();
 }
