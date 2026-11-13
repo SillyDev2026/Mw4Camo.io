@@ -44,6 +44,22 @@ class TestSync(unittest.TestCase):
                 self.assertEqual(result['newEntries'],0)
                 self.assertEqual(json.loads((root/'patches.json').read_text()),original)
 
+    def test_partial_current_season_failure_preserves_stale_status(self):
+        def fake(url):
+            if url == sync.HUB: return HUB
+            if url == sync.PINNED['Warzone']: raise RuntimeError('temporary Warzone outage')
+            return ARTICLE
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            (root/'patches.json').write_text('[]')
+            (root/'status.json').write_text(json.dumps({'lastSuccessfulAt':'2026-11-11T00:00:00+00:00'}))
+            with patch.multiple(sync,PATCH_JSON=root/'patches.json',PATCH_JS=root/'patches.js',STATE_JSON=root/'state.json',STATUS_JSON=root/'status.json',STATUS_JS=root/'status.js'):
+                result=sync.update(fetcher=fake)
+                self.assertFalse(result['activeSourcesHealthy'])
+                self.assertEqual(result['lastSuccessfulAt'],'2026-11-11T00:00:00+00:00')
+                self.assertGreaterEqual(result['patchCount'],1)
+                self.assertTrue(result['latestPatchDate'])
+
     def test_dry_run_never_writes(self):
         def fake(url): return HUB if url==sync.HUB else ARTICLE
         with tempfile.TemporaryDirectory() as temp:
