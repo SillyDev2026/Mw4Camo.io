@@ -30,7 +30,6 @@ const pageLinks=[
   ['Data & Settings','settings','Backups, detail and animation options']
 ];
 const weapons=Array.isArray(window.MW4_WEAPONS)?window.MW4_WEAPONS:[];
-const patches=Array.isArray(window.MW4_PATCHES)?window.MW4_PATCHES:[];
 let preference='auto', recent=[], selection=0, items=[], priorFocus=null;
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}}
 function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));}catch{/* Private mode may disallow storage. */}}
@@ -88,6 +87,7 @@ function makeItems(term){
     candidates.push(...recent.map(id=>weapons.find(w=>w.id===id)).filter(Boolean).map(w=>({title:w.name,path:'weapon/'+w.id,subtitle:'Continue camo progress',kind:'RECENT WEAPON'})));
   }
   candidates.push(...weapons.map(w=>({title:w.name,path:'weapon/'+w.id,subtitle:w.category+' · Open camo tracker',kind:'WEAPON'})));
+  const patches=Array.isArray(window.MW4_PATCHES)?window.MW4_PATCHES:[];
   candidates.push(...patches.map(p=>({title:p.title,path:'patch/'+p.id,subtitle:p.game+' · '+p.date,kind:'PATCH'})));
   const matches=candidates.filter(item=>!termLC||[item.title,item.kind,item.subtitle].join(' ').toLowerCase().includes(termLC));
   return matches.filter((item,index)=>matches.findIndex(prev=>prev.path===item.path)===index).slice(0,termLC?14:12);
