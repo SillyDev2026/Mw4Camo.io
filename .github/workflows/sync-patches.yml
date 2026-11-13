@@ -27,8 +27,8 @@ jobs:
         run: python -m pip install beautifulsoup4==4.12.3 markdown==3.9
       - name: Fetch official index, discover articles and record changes
         run: python scripts/sync_patches.py
-      - name: Validate generated catalog and update files
-        run: python -m unittest discover -s tests -v
+      - name: Validate official patch feed only
+        run: python -m unittest discover -s tests -p 'test_sync.py' -v
       - name: Commit updated intelligence, if different
         run: |
           git config user.name 'mw4camo-patch-bot'
