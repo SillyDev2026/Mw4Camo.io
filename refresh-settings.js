@@ -49,8 +49,10 @@ function updateView(){
   const next = minutes === 0 ? 'Manual only' : readableTime((lastChecked || openedAt) + minutes*60000);
   setText('refreshNext',next);
   setText('refreshMessage',checking ? 'Checking published snapshots…' : detail);
-  const btn = document.getElementById('refreshNow');
-  if(btn){btn.disabled=checking;btn.textContent=checking?'CHECKING…':'↻ CHECK FOR UPDATES';}
+  for(const id of ['refreshNow','patchRefreshNow']){
+    const btn=document.getElementById(id);
+    if(btn){btn.disabled=checking;btn.textContent=checking?'CHECKING…':'↻ CHECK FOR UPDATES';}
+  }
   syncHeader();
 }
 async function freshJson(path){
@@ -163,6 +165,9 @@ function mount(){
   updateView();
 }
 window.addEventListener('mw4:render',mount);
+document.addEventListener('click',event=>{
+  if(event.target.closest?.('#patchRefreshNow'))void checkNow(true);
+});
 window.addEventListener('storage',event=>{
   if(event.key!==KEY)return;
   minutes=readInterval();detail='Refresh preference updated from another tab.';
