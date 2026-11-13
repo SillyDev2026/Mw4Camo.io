@@ -45,7 +45,7 @@ jobs:
           from pathlib import Path
           health = json.loads(Path('data/update-status.json').read_text())
           refreshed = sum(source.get('status') == 'ok' for source in health.get('sources', []))
-          if not refreshed:
-              raise SystemExit('Official patch notes unavailable from runner and fallback; retained cached patch entries. This run requires review.')
+          if not health.get('activeSourcesHealthy'):
+              raise SystemExit('One or both active season official patch pages could not be verified; previous confirmed sync time was preserved.')
           print(f'Validated {refreshed} official patch pages; cached notes retained for any unavailable sources.')
           PY
