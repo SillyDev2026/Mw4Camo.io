@@ -1,5 +1,103 @@
 [
   {
+    "id": "mw4-2026-11-13",
+    "game": "MW4",
+    "date": "2026-11-13",
+    "title": "Weapon range, flinch and gameplay balance update",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
+    "verified": true,
+    "sections": [
+      {
+        "title": "Weapon tuning",
+        "points": [
+          "Weapon tuning expands the effective range of multiple SMGs and assault rifles and removes an additional long-range damage drop-off from SMGs.",
+          "Most assault rifles received 25.4% less incoming flinch and inflicted 7.8% less flinch, except where weapon-specific notes override those values.",
+          "Full per-weapon range, damage and multiplier adjustments are listed in the official patch notes."
+        ]
+      },
+      {
+        "title": "Multiplayer and events",
+        "points": [
+          "Aim assist is disabled when firing through Smoke Grenade or Smoke Wall smoke, including gaps created by explosions or gunfire.",
+          "Wager Match trophy drop rates increased across Multiplayer and DMZ.",
+          "Fixed CDL Operator head rendering at some distances and missing Grind token audio."
+        ]
+      },
+      {
+        "title": "Attachments, UI and DMZ",
+        "points": [
+          "Aim Grips and Heavy Stocks slightly reduce incoming flinch; ammunition types increase flinch inflicted.",
+          "Fixed an Operator selection issue after Prestige and missing Shared Camos for Cronen Osprey and CSG-35.",
+          "DMZ teams are reviewing time-to-kill; several X01 conversion and event interface bugs were fixed."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wz-2026-11-12",
+    "game": "Warzone",
+    "date": "2026-11-12",
+    "title": "Smoke aim-assist, Prestige token and challenge fixes",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+    "verified": true,
+    "sections": [
+      {
+        "title": "Gameplay",
+        "points": [
+          "Aim assist is disabled when shooting through Smoke Grenade or Smoke Wall smoke, even if gunfire or explosions open gaps."
+        ]
+      },
+      {
+        "title": "Bug fixes and progression",
+        "points": [
+          "Fixed missing Classic Prestige tokens and Zodiac POI challenge progress not carrying between matches.",
+          "Restored Schlager Indigo-RF sniper optic glint and corrected some attachment indicator colors.",
+          "Fixed Battle Pass showing In Progress after full completion and corrected Resurgence mode squad and player count labels."
+        ]
+      },
+      {
+        "title": "Known issues",
+        "points": [
+          "The dim squad-armor pip issue is still under investigation; this patch does not confirm a general FPS or stutter fix."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mw4-2026-11-12",
+    "game": "MW4",
+    "date": "2026-11-12",
+    "title": "Stability, Fast Hands, Battle Pass and private match fixes",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
+    "verified": true,
+    "sections": [
+      {
+        "title": "Stability and weapons",
+        "points": [
+          "Addressed several stability issues.",
+          "Restored sniper glint to the Schlager Indigo-RF optic.",
+          "Corrected white attachment indicator pips displaying instead of orange."
+        ]
+      },
+      {
+        "title": "Multiplayer and progression",
+        "points": [
+          "Fixed Fast Hands not speeding up some Tactical Equipment animations.",
+          "Stopped Wager Match trophies from dropping in private matches; Kill Block private matches now support up to 12 players.",
+          "Fixed Battle Pass completion status and Wager Match trophy counting across rounds."
+        ]
+      },
+      {
+        "title": "DMZ",
+        "points": [
+          "Corrected some Wager Match trophy drops and insurance issues after X01 deployment.",
+          "Fixed Grizzly vehicles continuing to drive after their driver was eliminated.",
+          "Fixed several DMZ UI and BlackCell camo challenge tracking issues."
+        ]
+      }
+    ]
+  },
+  {
     "id": "official-warzone-2026-11-11-0210e81",
     "game": "Warzone",
     "date": "2026-11-11",
