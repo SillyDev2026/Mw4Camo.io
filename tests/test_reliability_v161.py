@@ -10,8 +10,8 @@ INDEX=(ROOT/'index.html').read_text()
 
 
 def test_new_version_assets_loaded():
-    assert 'v1.6.1' in INDEX
-    assert 'v1.6.1' in SW
+    assert 'v1.8' in INDEX
+    assert 'v1.8.1-patch-refresh' in SW
     for name in ['ui-experience.js','app.js','data/weapons.js','data/patches.js','data/intel-v15.js','ui-v8.css']:
         assert name in SW
         assert (ROOT/name).is_file()
