@@ -62,6 +62,7 @@ class ResponsiveUIV18Tests(unittest.TestCase):
         self.assertIn("Publisher sync is delayed", self.refresh)
         self.assertIn("mw4:patches-updated", self.app)
         self.assertIn("id=\"patchStatTotal\"", self.app)
+        self.assertIn("id=\"patchRefreshNow\"", self.app)
         self.assertIn("const patches=Array.isArray(window.MW4_PATCHES)", self.experience)
 
 
