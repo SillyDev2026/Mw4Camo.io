@@ -58,6 +58,11 @@ class ResponsiveUIV18Tests(unittest.TestCase):
     def test_no_blind_json_cache_expansion(self):
         self.assertIn("requestUrl.searchParams.has('_fresh')", self.worker)
         self.assertIn("cache:'no-store'", self.refresh)
+        self.assertIn("Number.isInteger(results[1].value.patchCount)", self.refresh)
+        self.assertIn("Publisher sync is delayed", self.refresh)
+        self.assertIn("mw4:patches-updated", self.app)
+        self.assertIn("id=\"patchStatTotal\"", self.app)
+        self.assertIn("const patches=Array.isArray(window.MW4_PATCHES)", self.experience)
 
 
 if __name__ == "__main__":
