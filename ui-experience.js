@@ -133,6 +133,7 @@ backTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:reduced.mat
 window.addEventListener('scroll',syncScroll,{passive:true});
 function onRender(){rememberRoute();settingsControl();syncScroll();if(!quickOverlay.hidden)closeQuick();}
 window.addEventListener('mw4:render',onRender);
+window.addEventListener('mw4:patches-updated',()=>{if(!quickOverlay.hidden)drawResults();});
 window.addEventListener('hashchange',()=>{if(!quickOverlay.hidden)closeQuick();});
 onRender();
 })();
