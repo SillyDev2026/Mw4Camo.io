@@ -15,10 +15,10 @@ class V14Regression(unittest.TestCase):
             self.assertIn(f,self.html)
             self.assertIn(f,self.sw)
             self.assertTrue((ROOT/f).is_file())
-        self.assertIn('mw4camo-v1.6.1-reliability',self.sw)
+        self.assertIn('mw4camo-v1.8.1-patch-refresh',self.sw)
     def test_data_format_untouched(self):
         self.assertIn("const STORE_KEY = 'mw4camo-io-v1';",self.app)
-        self.assertIn('v1.6.1',self.html)
+        self.assertIn('v1.8',self.html)
     def test_quality_modes_and_reduced_motion(self):
         for v in ('auto','full','lite'):
             self.assertIn(v,self.experience)
