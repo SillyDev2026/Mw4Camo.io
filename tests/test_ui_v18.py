@@ -24,7 +24,7 @@ class ResponsiveUIV18Tests(unittest.TestCase):
         self.assertLess(self.html.index('href="ui-v8.css"'), self.html.index('href="ui-v9.css"'))
         self.assertLess(self.html.index('href="ui-v9.css"'), self.html.index('src="app.js"'))
         self.assertIn("'./ui-v9.css'", self.worker)
-        self.assertIn("mw4camo-v1.8-ui", self.worker)
+        self.assertIn("mw4camo-v1.8.1-patch-refresh", self.worker)
 
     def test_navigation_controls_still_present(self):
         for name in ("sidebar", "sidebarBackdrop", "menuToggle", "menuClose", "quickOpen", "qualityButton", "modeButton", "refreshStatus", "app"):
