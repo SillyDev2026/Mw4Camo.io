@@ -261,12 +261,15 @@ def update(dry_run=False, fetcher=fetch_page):
             found_changes += 1
             print('CHANGED',entry_id)
     patches.sort(key=lambda p:(p['date'],p.get('updatedAt',''),p['id']),reverse=True)
-    success = successful>0
+    pinned_ok = all(any(item['url'] == url and item['status'] == 'ok' for item in source_results) for url in PINNED.values())
+    latest_date = max((item['date'] for item in patches), default=None)
     status = {
-        'lastCheckedAt':now,'lastSuccessfulAt':now if success else last_success,
+        'lastCheckedAt':now,'lastSuccessfulAt':now if pinned_ok else last_success,
+        'activeSourcesHealthy':pinned_ok,'latestPatchDate':latest_date,'patchCount':len(patches),
         'hubChecked':hub_ok,'discoveredSources':len(targets),
         'newEntries':found_changes,'sources':source_results,
-        'note': ('Some official source checks failed; previous patch data is retained.'
+        'note': ('One or more active MW4/Warzone patch pages could not be checked; cached records were retained.'
+                 if not pinned_ok else 'Some archived source checks failed; current-season sources were verified.'
                  if successful<len(targets) or not hub_ok else 'Official source checks completed.')
     }
     if not dry_run:
