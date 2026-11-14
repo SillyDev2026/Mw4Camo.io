@@ -225,3 +225,18 @@ button,input,select,textarea{font-size:inherit}
   #app :where(.mission-card,.weapon-card,.patch-card,.v16-hub-card,.gs-goal,.template-card),.top-utility,.mode-button,.mobile-menu{transition:none!important}
 }
 [data-quality="lite"] #app :where(.card,.stat,.weapon-card,.patch-card,.v16-hub-card){box-shadow:none!important}
+
+/* Movement + handling lab (v1.9) */
+#app .perf-lab{margin-top:18px;padding:clamp(14px,2vw,22px);border:1px solid var(--v9-line);border-radius:var(--v9-radius);background:var(--v9-surface-2);display:grid;gap:14px;min-width:0}
+#app .perf-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+#app .perf-header h3{margin:5px 0 0;font-size:clamp(17px,2vw,22px);letter-spacing:.02em}
+#app .perf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#app .perf-grid .field-label{min-width:0;display:grid;gap:6px}
+#app .perf-grid input{width:100%;min-width:0;box-sizing:border-box;font-variant-numeric:tabular-nums}
+#app .perf-unit{color:var(--v9-muted);font-weight:400;font-size:.77em;text-transform:none}
+#app .perf-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#app .perf-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#app .perf-results span{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 11px;background:var(--v9-surface);border:1px solid var(--v9-line-soft);border-radius:var(--v9-radius-sm);color:var(--v9-muted);font-size:12px}
+#app .perf-results b{color:var(--v9-accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:480px){#app .perf-grid,#app .perf-results{grid-template-columns:1fr}#app .perf-actions .btn{flex:1;min-width:130px}}
+@media(prefers-reduced-motion:reduce){#app .perf-lab *{scroll-behavior:auto}}
