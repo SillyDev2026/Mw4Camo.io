@@ -7,9 +7,11 @@ on:
       - 'index.html'
       - 'service-worker.js'
       - 'data/attachments.js'
+      - 'data/attachments.json'
       - 'data/weapons.js'
       - 'tests/test_share_codes.js'
       - 'tests/test_movement_lab_v19.py'
+      - 'tests/test_multi_apex_v191.py'
       - 'ui-v9.css'
       - '.github/workflows/share-code-tests.yml'
   pull_request:
@@ -19,9 +21,11 @@ on:
       - 'index.html'
       - 'service-worker.js'
       - 'data/attachments.js'
+      - 'data/attachments.json'
       - 'data/weapons.js'
       - 'tests/test_share_codes.js'
       - 'tests/test_movement_lab_v19.py'
+      - 'tests/test_multi_apex_v191.py'
       - 'ui-v9.css'
 permissions:
   contents: read
@@ -42,3 +46,5 @@ jobs:
         run: node tests/test_share_codes.js
       - name: Validate movement lab and measured-data safeguards
         run: python3 -m unittest discover -s tests -p 'test_movement_lab_v19.py'
+      - name: Validate all Apex options and catalog parity
+        run: python3 -m unittest discover -s tests -p 'test_multi_apex_v191.py'
