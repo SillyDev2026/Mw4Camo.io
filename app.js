@@ -261,8 +261,18 @@ const GOAL_SLOT_ORDER = {
   'Max Speed':['Stock','Rear Grip','Barrel','Laser','Magazine','Muzzle','Underbarrel','Optic'],
   'Speed + Control':['Stock','Rear Grip','Muzzle','Underbarrel','Barrel','Magazine','Laser','Optic']
 };
+function goalAffinity(item,goal){
+ const goals=Array.isArray(item.goals)?item.goals:[];
+ if(goals.includes(goal))return 6;
+ if(goal==='Max Speed')return goals.includes('Aggressive')?4:goals.includes('Hipfire')?2:0;
+ if(goal==='Speed + Control'){
+  const stability=['Muzzle','Underbarrel'].includes(item.type);
+  return Number(goals.includes('Low Recoil'))*(stability?4:2)+Number(goals.includes('Aggressive'))*(stability?2:4)+Number(goals.includes('Balanced'));
+ }
+ return 0;
+}
 function generateSlots(w,goal,apex=false){let types=availableTypes(w,apex),chosen={};let order=GOAL_SLOT_ORDER[goal]||GOAL_SLOT_ORDER.Balanced;
-  for(const type of order){if(Object.keys(chosen).length>=5)break;if(!types.includes(type))continue;let options=namedOptions(w,type);if(!options.length)continue;options=[...options].sort((a,b)=>Number(b.goals.includes(goal))-Number(a.goals.includes(goal))||Number(b.sourceType==='official')-Number(a.sourceType==='official')||a.name.localeCompare(b.name));chosen[type]=options[0].name;}
+  for(const type of order){if(Object.keys(chosen).length>=5)break;if(!types.includes(type))continue;let options=namedOptions(w,type);if(!options.length)continue;options=[...options].sort((a,b)=>goalAffinity(b,goal)-goalAffinity(a,goal)||Number(b.sourceType==='official')-Number(a.sourceType==='official')||a.name.localeCompare(b.name));chosen[type]=options[0].name;}
   return chosen;
 }
 function defaultSlots(w){let seed=getSeed(w,state.mode),goal=activeGoal(w);if(goal==='Balanced'&&seed){return validRows(w,seed.slots,false);}return generateSlots(w,goal,false);}
