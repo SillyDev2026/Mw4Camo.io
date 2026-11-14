@@ -47,8 +47,8 @@ mustReject('Bad mode',()=>share.encode({...build,mode:'Unknown'}));
 mustReject('Bad Apex',()=>share.encode({...build,apex:'yes'}));
 const hyeon = catalog.specs['hyeon-burst'];
 const kastov = catalog.specs['kastov-762'];
-assert.deepEqual(hyeon.apexOptions.map(x=>x.name).sort(),['Hyeon Auto','Hyeon Hyperburst'].sort(),'Hyeon has both official Apex choices');
-assert.deepEqual(kastov.apexOptions.map(x=>x.name).sort(),['Kastov 545','Kastov ARC'].sort(),'Kastov has both official Apex choices');
+assert.deepEqual(Array.from(hyeon.apexOptions,x=>x.name).sort(),['Hyeon Auto','Hyeon Hyperburst'].sort(),'Hyeon has both official Apex choices');
+assert.deepEqual(Array.from(kastov.apexOptions,x=>x.name).sort(),['Kastov 545','Kastov ARC'].sort(),'Kastov has both official Apex choices');
 assert.equal(catalog.specs.m4.apexOptions.length,1,'M16 Burst is not officially described as an Apex');
 for (const [weapon,names] of [['hyeon-burst',['Hyeon Auto','Hyeon Hyperburst']],['kastov-762',['Kastov 545','Kastov ARC']]]) {
  const first={weapon,mode:'MW4',goal:'Balanced',apex:true,apexName:names[0],slots:{}};
