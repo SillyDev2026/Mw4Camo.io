@@ -34,6 +34,33 @@
     ]
   },
   {
+    "id": "official-warzone-2026-11-12-0210e81",
+    "game": "Warzone",
+    "date": "2026-11-12",
+    "title": "Official Warzone update · 2026-11-12",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+    "verified": true,
+    "auto": true,
+    "updatedAt": "2026-11-14T03:08:18+00:00",
+    "sections": [
+      {
+        "title": "Gameplay",
+        "points": [
+          "Smoke Grenades and Smoke Wall Aim assist is now disabled when shooting through smoke from Smoke Grenades and the Smoke Wall, even if gunfire or e…",
+          "Aim assist is now disabled when shooting through smoke from Smoke Grenades and the Smoke Wall, even if gunfire or explosions open gaps in the smo…"
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "points": [
+          "Fixed an issue where players who Prestiged using the Classic Prestige track would not receive a prestige token",
+          "Fixed an issue where the Resurgence category button didn't show squad size (1–4) and player count (45)",
+          "We're investigating an issue where armor pips in the squad HUD look dim unless the player's armor is full"
+        ]
+      }
+    ]
+  },
+  {
     "id": "wz-2026-11-12",
     "game": "Warzone",
     "date": "2026-11-12",
