@@ -240,3 +240,14 @@ button,input,select,textarea{font-size:inherit}
 #app .perf-results b{color:var(--v9-accent);font-variant-numeric:tabular-nums;white-space:nowrap}
 @media(max-width:480px){#app .perf-grid,#app .perf-results{grid-template-columns:1fr}#app .perf-actions .btn{flex:1;min-width:130px}}
 @media(prefers-reduced-motion:reduce){#app .perf-lab *{scroll-behavior:auto}}
+
+#app .perf-compare-panel{display:grid;gap:10px;border-top:1px solid var(--v9-line);padding-top:12px}
+#app .perf-compare-panel h4{margin:0;color:var(--v9-text);font-size:13px;letter-spacing:.06em}
+#app .perf-comparison{border:1px solid var(--v9-line);border-radius:var(--v9-radius-sm);background:var(--v9-surface);overflow:hidden}
+#app .perf-comparison summary{cursor:pointer;padding:11px 12px;color:var(--v9-accent);font-weight:700;letter-spacing:.025em;list-style-position:inside}
+#app .perf-comparison summary:focus-visible{outline:2px solid var(--v9-blue);outline-offset:-3px}
+#app .perf-deltas{display:grid;gap:0;padding:0 10px 10px}
+#app .perf-delta-row{display:grid;grid-template-columns:minmax(110px,1fr) minmax(90px,1fr) minmax(95px,1fr);align-items:center;gap:8px;padding:9px 4px;border-top:1px solid var(--v9-line-soft);font-size:12px}
+#app .perf-delta-row span{color:var(--v9-muted)}
+#app .perf-delta-row strong{color:var(--v9-text);text-align:right}
+@media(max-width:700px){#app .perf-delta-row{grid-template-columns:1fr 1fr}#app .perf-delta-row strong{grid-column:1/-1;text-align:left;color:var(--v9-accent)}}
