@@ -13,6 +13,14 @@ A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Tr
 - Workflows are staggered to reduce competing pushes; GitHub Actions scheduling and GitHub Pages delivery may be delayed. Reload the webpage to read newly published snapshots; already-open tabs do not automatically replace loaded JavaScript data.
 - Camo progress, saved builds and local backups remain in browser storage. The refresh does not automatically invent new weapons, camo challenges, or in-game import codes.
 
+## v1.9 — Movement & Performance Lab (November 14, 2026)
+
+- **New goals:** Max Speed and Speed + Control. The Loadout Lab now offers 11 tactical priority profiles with weapon-specific compatible attachment suggestions. These are editorial priorities, not automatically calculated movement speeds or guarantees of zero recoil.
+- **Exact-build measurements:** Each weapon/Warzone-MW4-DMZ mode/goal can store user-tested walking, sprint, tactical sprint and ADS movement speeds (m/s), plus ADS, sprint-to-fire and reload times (ms), and personal recoil difficulty (0–10, lower is easier).
+- **Retest protection:** Results are tied to the selected set of attachments and Apex state. Changing the attachment configuration hides previous figures and displays a retest notice; reverting to the prior configuration restores their display. No guessed weapon speeds are displayed.
+- **Backups preserved:** The existing `mw4camo-io-v1` browser-storage key remains unchanged. Results are included in standard JSON Export/Import. Empty measurements stay unmeasured.
+- **Sharing:** Website codes can carry the two new goals and continue to verify weapon/attachment compatibility. These codes are **not MW4 in-game Gunsmith codes** and do not include performance tests.
+
 ## v1.8 — Unified UI polish (November 12, 2026)
 
 A non-destructive styling refresh in `ui-v9.css` gives the dashboard, sidebar, weapon cards, Gunsmith, Patch Intelligence, and settings a more consistent dark tactical appearance. Card corners, panel contrast, headings, focus outlines, button sizes and hover effects follow one visual system. Breakpoints at 1180, 900, 700, 480 and 360 px improve narrower layouts without changing saved player progress or page routes.
