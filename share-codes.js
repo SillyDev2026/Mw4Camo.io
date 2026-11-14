@@ -16,7 +16,7 @@ function normalize(input) {
   const mode = String(input.mode || 'MW4');
   if (!MODES.includes(mode)) throw Error('Unknown game mode');
   const goal = String(input.goal || 'Balanced');
-  if (!['Balanced','Fast TTK','Low Recoil','Aggressive','Long Range','Hipfire','Stealth','Quickscope','Squad Support'].includes(goal)) throw Error('Unknown loadout goal');
+  if (!['Balanced','Fast TTK','Low Recoil','Aggressive','Long Range','Hipfire','Stealth','Quickscope','Squad Support','Max Speed','Speed + Control'].includes(goal)) throw Error('Unknown loadout goal');
   if (typeof input.apex !== 'boolean') throw Error('Invalid Apex selection');
   if (input.apex && !spec.apex) throw Error('Apex is not available for this weapon');
   const raw = input.slots;
