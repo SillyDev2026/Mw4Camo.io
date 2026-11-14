@@ -4,7 +4,7 @@
 
 **[Open the live site](https://sillydev2026.github.io/Mw4Camo.io/)** · **[Official patch notes](https://www.callofduty.com/patchnotes)**
 
-A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare nine tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
+A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Track camo unlocks and challenges, plan your next grind, assemble compatible loadouts from dropdowns, compare eleven tactical goals, and browse the official patch-note archive. No account, API key, npm, or backend is required.
 
 ## Hourly data refresh (November 12, 2026)
 
@@ -12,6 +12,14 @@ A free, local-first, unofficial fan tracker for Modern Warfare 4 and Warzone. Tr
 - The independently sourced attachment snapshot checks once per hour (`43 * * * *` UTC), validates weapon/slot mappings and only commits a changed catalog. Community-reported attachments are **not** publisher-verified.
 - Workflows are staggered to reduce competing pushes; GitHub Actions scheduling and GitHub Pages delivery may be delayed. Reload the webpage to read newly published snapshots; already-open tabs do not automatically replace loaded JavaScript data.
 - Camo progress, saved builds and local backups remain in browser storage. The refresh does not automatically invent new weapons, camo challenges, or in-game import codes.
+
+## v1.9.1 — Correct multi-Apex Gunsmith (November 14, 2026)
+
+- Replaced the Apex on/off checkbox with a **single-selection dropdown** displaying all published Apex choices on each weapon. Hyeon Burst supports **Hyeon Hyperburst** and **Hyeon Auto**; Kastov 762 supports **Kastov ARC** and **Kastov 545**. Official Season 1 event choices show their Wager Match unlock method, distinct from base-game maximum-level rewards.
+- Updated the source catalog in `data/attachments.json` and `data/attachments.js`. Every supported weapon now supplies an `apexOptions` array with the exact name, individually documented blocked attachment slots, unlock route, availability label, and source link. Where blocked slots have not been officially published, the UI states that uncertainty rather than claiming a guaranteed unrestricted build.
+- Only **one Apex** can be selected at a time; it does not occupy any of the five standard attachment slots. Changing Apex checks compatibility against the specific selection and removes confirmed conflicts. Non-Apex M16 Burst is not included in the M4 Apex dropdown.
+- **Versioned sharing:** Newly created website links use `MW4C2` to preserve the exact Apex name. Old `MW4C1` codes still import, mapping legacy Apex-on to the weapon's original default. In-game import codes are not generated or fabricated; legacy saved fingerprints remain recognized for unchanged builds.
+- Apex selection persists in per-mode build saves and JSON backup imports. Personal performance signatures now include the chosen Apex, avoiding accidental comparison of two different conversions.
 
 ## v1.9 — Movement & Performance Lab (November 14, 2026)
 
