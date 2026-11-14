@@ -9,6 +9,8 @@ on:
       - 'data/attachments.js'
       - 'data/weapons.js'
       - 'tests/test_share_codes.js'
+      - 'tests/test_movement_lab_v19.py'
+      - 'ui-v9.css'
       - '.github/workflows/share-code-tests.yml'
   pull_request:
     paths:
@@ -19,6 +21,8 @@ on:
       - 'data/attachments.js'
       - 'data/weapons.js'
       - 'tests/test_share_codes.js'
+      - 'tests/test_movement_lab_v19.py'
+      - 'ui-v9.css'
 permissions:
   contents: read
 jobs:
@@ -36,3 +40,5 @@ jobs:
           node --check share-codes.js
       - name: Test website share codes and game-code separation
         run: node tests/test_share_codes.js
+      - name: Validate movement lab and measured-data safeguards
+        run: python3 -m unittest discover -s tests -p 'test_movement_lab_v19.py'
