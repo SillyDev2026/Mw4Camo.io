@@ -31,6 +31,7 @@ const decoded = share.decode(code);
 assert.deepEqual(JSON.parse(JSON.stringify(decoded.slots)),JSON.parse(JSON.stringify(share.normalize(build).slots)));
 assert.equal(share.encode({...build,slots:Object.fromEntries(Object.entries(slots).reverse())}),code,'Canonical attachment order');
 assert.notEqual(share.encode({...build,goal:'Stealth'}),code,'Goal changes website share code');
+for(const goal of ['Max Speed','Speed + Control']){const speedCode=share.encode({...build,goal});assert.equal(share.decode(speedCode).goal,goal,'New profiles roundtrip through MW4C1 codes');}
 assert.notEqual(share.encode({...build,mode:'Warzone'}),code,'Mode changes website share code');
 assert.equal(share.extract(code),code);
 assert.equal(share.extract('https://mw4camo.example/?share='+encodeURIComponent(code)+'#/loadouts'),code);
