@@ -1,6 +1,6 @@
 {
-  "version": "1.7.1",
-  "updated": "2026-11-11",
+  "version": "1.9.1",
+  "updated": "2026-11-14",
   "officialSource": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class",
   "communitySource": "https://codloadout.gitlab.io/mw4/attachments/",
   "maxStandard": 5,
@@ -23,6 +23,20 @@
         "Optic",
         "Stock",
         "Barrel"
+      ],
+      "apexOptions": [
+        {
+          "name": "Han X20 Skybreaker",
+          "blocked": [
+            "Optic",
+            "Stock",
+            "Barrel"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "m4": {
@@ -42,6 +56,19 @@
       "blocked": [
         "Barrel",
         "Magazine"
+      ],
+      "apexOptions": [
+        {
+          "name": "M4 Hurricane",
+          "blocked": [
+            "Barrel",
+            "Magazine"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "hyeon-burst": {
@@ -58,7 +85,25 @@
       ],
       "source": "official",
       "apex": "Hyeon Hyperburst",
-      "blocked": []
+      "blocked": [],
+      "apexOptions": [
+        {
+          "name": "Hyeon Hyperburst",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        },
+        {
+          "name": "Hyeon Auto",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Wager Match Event reward",
+          "availability": "Season 1 in-season event",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-warzone-season-1-announcement"
+        }
+      ]
     },
     "patriot-xmr": {
       "types": [
@@ -76,6 +121,18 @@
       "apex": "Patriot XMR Volt",
       "blocked": [
         "Barrel"
+      ],
+      "apexOptions": [
+        {
+          "name": "Patriot XMR Volt",
+          "blocked": [
+            "Barrel"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "kastov-762": {
@@ -94,6 +151,26 @@
       "apex": "Kastov ARC",
       "blocked": [
         "Barrel"
+      ],
+      "apexOptions": [
+        {
+          "name": "Kastov ARC",
+          "blocked": [
+            "Barrel"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        },
+        {
+          "name": "Kastov 545",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Wager Match Event reward",
+          "availability": "Season 1 in-season event",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-warzone-season-1-announcement"
+        }
       ]
     },
     "oden": {
@@ -113,6 +190,19 @@
       "blocked": [
         "Barrel",
         "Muzzle"
+      ],
+      "apexOptions": [
+        {
+          "name": "Oden Sentinel",
+          "blocked": [
+            "Barrel",
+            "Muzzle"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "axion": {
@@ -135,6 +225,22 @@
         "Underbarrel",
         "Stock",
         "Rear Grip"
+      ],
+      "apexOptions": [
+        {
+          "name": "Axion Clearcut",
+          "blocked": [
+            "Optic",
+            "Laser",
+            "Underbarrel",
+            "Stock",
+            "Rear Grip"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "cronen-squall": {
@@ -154,6 +260,19 @@
       "blocked": [
         "Laser",
         "Underbarrel"
+      ],
+      "apexOptions": [
+        {
+          "name": "Cronen Maelstrom",
+          "blocked": [
+            "Laser",
+            "Underbarrel"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "cronen-osprey": {
@@ -170,7 +289,17 @@
       ],
       "source": "official",
       "apex": "Cronen Helix Mk. II",
-      "blocked": []
+      "blocked": [],
+      "apexOptions": [
+        {
+          "name": "Cronen Helix Mk. II",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
+      ]
     },
     "iso-nightshade": {
       "types": [
@@ -189,6 +318,19 @@
       "blocked": [
         "Optic",
         "Ammunition"
+      ],
+      "apexOptions": [
+        {
+          "name": "ISO Trace",
+          "blocked": [
+            "Optic",
+            "Ammunition"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "vel-46": {
@@ -207,6 +349,18 @@
       "apex": "VEL 46 Snap",
       "blocked": [
         "Stock"
+      ],
+      "apexOptions": [
+        {
+          "name": "VEL 46 Snap",
+          "blocked": [
+            "Stock"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "wz-55-striga": {
@@ -227,6 +381,20 @@
         "Optic",
         "Stock",
         "Underbarrel"
+      ],
+      "apexOptions": [
+        {
+          "name": "WZ.55 Striga Rampage",
+          "blocked": [
+            "Optic",
+            "Stock",
+            "Underbarrel"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "ppsh-41": {
@@ -246,6 +414,20 @@
         "Barrel",
         "Underbarrel",
         "Magazine"
+      ],
+      "apexOptions": [
+        {
+          "name": "PPSh-41 Ember",
+          "blocked": [
+            "Barrel",
+            "Underbarrel",
+            "Magazine"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "x-58-nyx": {
@@ -265,6 +447,19 @@
       "blocked": [
         "Barrel",
         "Ammunition"
+      ],
+      "apexOptions": [
+        {
+          "name": "X-58 Void",
+          "blocked": [
+            "Barrel",
+            "Ammunition"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "csg-35": {
@@ -281,7 +476,17 @@
       ],
       "source": "community-augmented",
       "apex": "CSG Crossfire",
-      "blocked": []
+      "blocked": [],
+      "apexOptions": [
+        {
+          "name": "CSG Crossfire",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
+      ]
     },
     "rezi-12": {
       "types": [
@@ -299,7 +504,17 @@
       ],
       "source": "official",
       "apex": "Rezi 12 Enforcer",
-      "blocked": []
+      "blocked": [],
+      "apexOptions": [
+        {
+          "name": "Rezi 12 Enforcer",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
+      ]
     },
     "warlord": {
       "types": [
@@ -319,6 +534,19 @@
       "blocked": [
         "Optic",
         "Laser"
+      ],
+      "apexOptions": [
+        {
+          "name": "Warlord Lumen",
+          "blocked": [
+            "Optic",
+            "Laser"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "finn-lmg": {
@@ -335,7 +563,17 @@
       ],
       "source": "official",
       "apex": "FiNN Adverse",
-      "blocked": []
+      "blocked": [],
+      "apexOptions": [
+        {
+          "name": "FiNN Adverse",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
+      ]
     },
     "type-73": {
       "types": [
@@ -354,6 +592,19 @@
       "blocked": [
         "Magazine",
         "Ammunition"
+      ],
+      "apexOptions": [
+        {
+          "name": "Type 73 Assault",
+          "blocked": [
+            "Magazine",
+            "Ammunition"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "apoc-338": {
@@ -372,6 +623,18 @@
       "apex": "APOC-338 Praetor",
       "blocked": [
         "Magazine"
+      ],
+      "apexOptions": [
+        {
+          "name": "APOC-338 Praetor",
+          "blocked": [
+            "Magazine"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "mar-9": {
@@ -391,6 +654,18 @@
       "apex": "MAR-9 Auto",
       "blocked": [
         "Trigger Action"
+      ],
+      "apexOptions": [
+        {
+          "name": "MAR-9 Auto",
+          "blocked": [
+            "Trigger Action"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "oris-8-6": {
@@ -410,6 +685,18 @@
       "apex": "Oris 8.6 Razor",
       "blocked": [
         "Underbarrel"
+      ],
+      "apexOptions": [
+        {
+          "name": "Oris 8.6 Razor",
+          "blocked": [
+            "Underbarrel"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "mosin-nagant": {
@@ -429,6 +716,19 @@
       "blocked": [
         "Barrel",
         "Muzzle"
+      ],
+      "apexOptions": [
+        {
+          "name": "Mosin Harpoon",
+          "blocked": [
+            "Barrel",
+            "Muzzle"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "kg-7-vulcan": {
@@ -446,7 +746,17 @@
       ],
       "source": "official",
       "apex": "KG-7 Drillcharge",
-      "blocked": []
+      "blocked": [],
+      "apexOptions": [
+        {
+          "name": "KG-7 Drillcharge",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
+      ]
     },
     "astaroth-57": {
       "types": [
@@ -462,6 +772,18 @@
       "apex": "Astaroth .57 Infiltrator",
       "blocked": [
         "Optic"
+      ],
+      "apexOptions": [
+        {
+          "name": "Astaroth .57 Infiltrator",
+          "blocked": [
+            "Optic"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "signal-50": {
@@ -480,6 +802,18 @@
       "apex": "Signal Inferno",
       "blocked": [
         "Ammunition"
+      ],
+      "apexOptions": [
+        {
+          "name": "Signal Inferno",
+          "blocked": [
+            "Ammunition"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "sang-9mm": {
@@ -497,6 +831,18 @@
       "apex": "SANG Breach",
       "blocked": [
         "Laser"
+      ],
+      "apexOptions": [
+        {
+          "name": "SANG Breach",
+          "blocked": [
+            "Laser"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "krait-p68": {
@@ -512,7 +858,17 @@
       ],
       "source": "official",
       "apex": "Krait P68 Commando",
-      "blocked": []
+      "blocked": [],
+      "apexOptions": [
+        {
+          "name": "Krait P68 Commando",
+          "blocked": [],
+          "blockedVerified": false,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
+      ]
     },
     "50-gs": {
       "types": [
@@ -530,6 +886,18 @@
       "apex": "GS Magna",
       "blocked": [
         "Trigger Action"
+      ],
+      "apexOptions": [
+        {
+          "name": "GS Magna",
+          "blocked": [
+            "Trigger Action"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "mojave-357": {
@@ -547,37 +915,54 @@
       "apex": "Mojave Lawless",
       "blocked": [
         "Trigger Action"
+      ],
+      "apexOptions": [
+        {
+          "name": "Mojave Lawless",
+          "blocked": [
+            "Trigger Action"
+          ],
+          "blockedVerified": true,
+          "unlock": "Max weapon level",
+          "availability": "Base game",
+          "source": "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class"
+        }
       ]
     },
     "pila": {
       "types": [],
       "source": "official",
       "apex": null,
-      "blocked": []
+      "blocked": [],
+      "apexOptions": []
     },
     "rpg-8": {
       "types": [],
       "source": "official",
       "apex": null,
-      "blocked": []
+      "blocked": [],
+      "apexOptions": []
     },
     "jokr": {
       "types": [],
       "source": "official",
       "apex": null,
-      "blocked": []
+      "blocked": [],
+      "apexOptions": []
     },
     "pm-40-anvil": {
       "types": [],
       "source": "official",
       "apex": null,
-      "blocked": []
+      "blocked": [],
+      "apexOptions": []
     },
     "fss-carbon-edge-1095": {
       "types": [],
       "source": "official",
       "apex": null,
-      "blocked": []
+      "blocked": [],
+      "apexOptions": []
     }
   },
   "items": [
