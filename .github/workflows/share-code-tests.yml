@@ -44,6 +44,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install Python regression dependencies
+        run: python3 -m pip install beautifulsoup4==4.12.3 markdown==3.9 pytest
       - name: Check JavaScript syntax
         run: |
           node --check app.js
@@ -53,6 +55,8 @@ jobs:
           for file in app.js share-codes.js refresh-settings.js ui-experience.js service-worker.js; do node --check "$file"; done
       - name: Full Python regression suite
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Verify earlier reliability checks
+        run: python3 -m pytest tests/test_reliability_v161.py -q
       - name: Test website share codes and game-code separation
         run: node tests/test_share_codes.js
       - name: Validate movement lab and measured-data safeguards
