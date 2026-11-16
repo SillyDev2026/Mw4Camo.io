@@ -534,7 +534,7 @@ function renderSettings(){return `${intro('LOCAL VAULT / OWN YOUR DATA','DATA & 
 <div class="section settings-grid"><section class="card"><h2 class="card-title">EXPORT YOUR PROGRESS</h2><p>Download a JSON backup containing every checked camo, challenge counter, focus weapon, account mastery item, weapon level, favorite, game mode, and custom loadout.</p><button class="btn btn-primary" data-action="export">↓ DOWNLOAD BACKUP</button><button class="btn" data-action="copy-json" style="margin:7px 0 0">▢ COPY JSON</button><div class="note">Exports include your saved data but no Activision login, game account or credentials. Data is not synced with official Call of Duty servers.</div></section>
 <section class="card"><h2 class="card-title">IMPORT A BACKUP</h2><p>Load a previous MW4Camo.io v1 backup. This replaces progress on the current device. Export your current save first.</p><label class="btn upload">↑ SELECT JSON FILE <input id="importFile" type="file" accept=".json,application/json"></label><div class="divider"></div><h3 class="card-title">RESET EVERYTHING</h3><p>Remove local progress and custom loadouts from this browser. This cannot be undone without a backup.</p><button class="btn btn-danger" data-action="clear">RESET LOCAL DATA</button></section>
 <section class="card"><h2 class="card-title">GAME MODE</h2><p>Mode changes which published requirements are shown on weapon pages and which loadout is edited. Completed camos remain shared across games.</p><div class="filter-chips">${['Warzone','MW4','DMZ'].map(m=>`<button class="chip ${state.mode===m?'active':''}" data-action="mode" data-mode="${m}">${m}</button>`).join('')}</div><div class="smallcaps">LOCAL STORAGE KEY</div><code class="setting-code">${STORE_KEY}</code></section>
-<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v2.0.0 · searchable Blueprint Vault · multi-Apex Gunsmith · local-first storage · Offline support after first HTTP(S) visit</p></section></div>`;}
+<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v2.2.0 · reliable classes and blueprints · verified patch snapshots · safer local saves · searchable Blueprint Vault · multi-Apex Gunsmith · local-first storage · Offline support after first HTTP(S) visit</p></section></div>`;}
 function renderNotFound(){return `<div class="empty"><h2 class="section-title">PAGE NOT FOUND</h2><p>That weapon or update is not in this version of MW4Camo.io.</p><a class="btn btn-primary" href="#/dashboard">RETURN TO DASHBOARD</a></div>`;}
 function render(){let path=currentPath(),[route,param]=path.split('/');let heading=route==='weapon'?'WEAPON / CAMOS':route==='build'?'WEAPON / GUNSMITH':route==='patch'?'PATCH / DETAIL':(route||'dashboard').toUpperCase();document.getElementById('breadcrumb').innerHTML='MW4CAMO <span>/</span> '+esc(heading);document.getElementById('modeText').textContent=state.mode.toUpperCase();document.querySelectorAll('[data-route]').forEach(x=>{const active=x.dataset.route===route||(route==='weapon'&&x.dataset.route==='weapons')||(route==='build'&&x.dataset.route==='loadouts')||(route==='patch'&&x.dataset.route==='patches');x.classList.toggle('active',active);if(active)x.setAttribute('aria-current','page');else x.removeAttribute('aria-current');});
 let w=WEAPONS.find(w=>w.id===param),p=PATCHES.find(p=>p.id===param);
@@ -599,18 +599,36 @@ if(action==='class-preset'){
  preserveClassDraft();notify('Suggested '+btn.dataset.preset+' class equipped — save to keep it');return;
 }
 if(action==='class-new'){
- classDrafts[state.mode]={};state.activeClassIds[state.mode]='';persist();render();notify('New class editor ready');return;
+ const previous=state.activeClassIds[state.mode];
+ state.activeClassIds[state.mode]='';
+ if(!persist()){state.activeClassIds[state.mode]=previous;notify('Class editor could not be reset; saved data is unchanged.');return;}
+ classDrafts[state.mode]={};render();notify('New class editor ready');return;
 }
 if(action==='class-duplicate'){
  const source=classByMode();if(!source.primary){notify('Select a saved class to duplicate');return;}
-  if(classList(state.mode).length>=40){notify('Maximum 40 saved classes per mode — delete one before duplicating');return;}
+ if(classList(state.mode).length>=40){notify('Maximum 40 saved classes per mode — delete one before duplicating');return;}
  const id='class-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),copy={...source,id,name:String(source.name||'Class').slice(0,64)+' Copy',savedAt:new Date().toISOString()};
- state.classLibrary[state.mode]=[...classList(state.mode),copy];state.activeClassIds[state.mode]=id;delete classDrafts[state.mode];persist();render();notify('Class duplicated');return;
+ const previousList=state.classLibrary[state.mode],previousId=state.activeClassIds[state.mode];
+ state.classLibrary[state.mode]=[...classList(state.mode),copy];state.activeClassIds[state.mode]=id;
+ if(!persist()){
+   state.classLibrary[state.mode]=previousList;state.activeClassIds[state.mode]=previousId;
+   notify('Duplicate not saved; original class is preserved.');return;
+ }
+ delete classDrafts[state.mode];render();notify('Class duplicated');return;
 }
 if(action==='class-delete'){
  const id=state.activeClassIds[state.mode]??classList(state.mode)[0]?.id,items=classList(state.mode),picked=items.find(x=>x.id===id);if(!picked)return;
  if(!confirm('Delete saved class '+picked.name+'?'))return;
- const rest=items.filter(x=>x.id!==id);state.classLibrary[state.mode]=rest;delete state.classConfigs[state.mode];state.activeClassIds[state.mode]=rest[0]?.id||'';delete classDrafts[state.mode];persist();render();notify('Saved class deleted');return;
+ const mode=state.mode,previousList=state.classLibrary[mode],previousId=state.activeClassIds[mode];
+ const hadConfig=Object.hasOwn(state.classConfigs,mode),previousConfig=state.classConfigs[mode];
+ const rest=items.filter(x=>x.id!==id);
+ state.classLibrary[mode]=rest;delete state.classConfigs[mode];state.activeClassIds[mode]=rest[0]?.id||'';
+ if(!persist()){
+   state.classLibrary[mode]=previousList;state.activeClassIds[mode]=previousId;
+   if(hadConfig)state.classConfigs[mode]=previousConfig;else delete state.classConfigs[mode];
+   notify('Class deletion not saved; original class is preserved.');return;
+ }
+ delete classDrafts[mode];render();notify('Saved class deleted');return;
 }
 if(action==='save-class'||action==='copy-class'){
  const load=readClassForm();if(!load.primary){notify('Choose a primary weapon');return;}
@@ -618,11 +636,18 @@ if(action==='save-class'||action==='copy-class'){
  if(!WEAPONS.some(w=>w.id===load.primary)||load.secondary&&!WEAPONS.some(w=>w.id===load.secondary)){notify('Invalid weapon selection');return;}
  if(action==='save-class'){
   const id=state.activeClassIds[state.mode]||'class-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),entry={...load,id,savedAt:new Date().toISOString()};
-  const list=classList(state.mode),index=list.findIndex(x=>x.id===id);
+  const mode=state.mode,list=classList(mode),index=list.findIndex(x=>x.id===id);
   if(index<0&&list.length>=40){notify('You can save up to 40 classes per mode');return;}
+  const previousList=state.classLibrary[mode],previousId=state.activeClassIds[mode];
+  const hadConfig=Object.hasOwn(state.classConfigs,mode),previousConfig=state.classConfigs[mode];
   if(index>=0)list[index]=entry;else list.push(entry);
-  state.classLibrary[state.mode]=list;state.activeClassIds[state.mode]=id;state.classConfigs[state.mode]=load;
-  delete classDrafts[state.mode];persist();render();notify('Saved '+load.name+' to '+state.mode+' class library');
+  state.classLibrary[mode]=list;state.activeClassIds[mode]=id;state.classConfigs[mode]=load;
+  if(!persist()){
+    state.classLibrary[mode]=previousList;state.activeClassIds[mode]=previousId;
+    if(hadConfig)state.classConfigs[mode]=previousConfig;else delete state.classConfigs[mode];
+    classDrafts[mode]=load;notify('Class not saved. Your editor is preserved.');return;
+  }
+  delete classDrafts[mode];render();notify('Saved '+load.name+' to '+mode+' class library');
  }else{
   const p=WEAPONS.find(w=>w.id===load.primary),s=WEAPONS.find(w=>w.id===load.secondary);
   copyText([load.name,'Mode: '+state.mode,'Primary: '+p.name,'Primary build: '+classBlueprintSummary(p),'Secondary: '+(s?.name||'None'),s?'Secondary build: '+classBlueprintSummary(s):'','Perks: '+[load.perk1,load.perk2,load.perk3].filter(Boolean).join(', '),'Tactical: '+(load.tactical||'None'),'Lethal: '+(load.lethal||'None'),'Field: '+(load.field||'None'),load.notes?'Notes: '+load.notes:''].filter(Boolean).join('\n'));
@@ -630,9 +655,11 @@ if(action==='save-class'||action==='copy-class'){
  return;
 }
 if(action==='clear-class'){
- classDrafts[state.mode]={};state.activeClassIds[state.mode]='';persist();render();notify('Form reset; saved classes are untouched');return;
+ const previous=state.activeClassIds[state.mode];
+ state.activeClassIds[state.mode]='';
+ if(!persist()){state.activeClassIds[state.mode]=previous;notify('Could not reset editor; your class is unchanged.');return;}
+ classDrafts[state.mode]={};render();notify('Form reset; saved classes are untouched');return;
 }
-
 if(action==='save-measures'){
  const inputs=[...app.querySelectorAll('[data-measure]')],updates={};
  for(const w of WEAPONS.filter(w=>compareIds.includes(w.id))){
@@ -692,8 +719,14 @@ if(action==='save-game-code'&&w){
   try{
     window.MW4_SHARE.normalize({weapon:w.id,mode:state.mode,goal:activeGoal(w),apex:b.apex,apexName:b.apexName,slots:b.slots});
     b.gameCode=code;b.gameFingerprint=window.MW4_SHARE.fingerprint({weapon:w.id,mode:state.mode,apex:b.apex,apexName:b.apexName,slots:b.slots});
-    state.builds[buildKey(w)]=b;delete builderDrafts[buildKey(w)];
-    if(persist()){render();notify('User-supplied in-game code saved for exact build; not independently verified.');}
+    const key=buildKey(w),hadOld=Object.hasOwn(state.builds,key),old=state.builds[key];
+    state.builds[key]=b;
+    if(!persist()){
+      if(hadOld)state.builds[key]=old;else delete state.builds[key];
+      builderDrafts[key]={...b,userSaved:false};
+      notify('In-game code could not be saved. Your current editor is unchanged.');return;
+    }
+    delete builderDrafts[key];render();notify('User-supplied in-game code saved for exact build; not independently verified.');
   }catch(error){notify('Cannot save code: '+String(error.message||error));}
   return;
 }
@@ -702,21 +735,79 @@ if(action==='copy-game-code'&&w){
   if(code)copyText(code);else notify('No matching in-game code saved for these attachments');
   return;
 }
-if(action==='save-build'&&w){const b=collectBuild(w);if(Object.keys(b.slots).length>5){notify('Maximum five standard attachments');return;}const old=getBuild(w);if(old?.gameCode&&savedGameCode(w,{...b,gameCode:old.gameCode,gameFingerprint:old.gameFingerprint})){b.gameCode=old.gameCode;b.gameFingerprint=old.gameFingerprint;}state.builds[buildKey(w)]=b;for(const key of Object.keys(state.reviewedPatches))if(key.startsWith(buildKey(w)+'|'))delete state.reviewedPatches[key];if(activeGoal(w)==='Balanced')delete state.builds[goalId(w)];delete builderDrafts[buildKey(w)];if(persist()){render();notify(w.name+' loadout saved for '+state.mode);}return;}
-if(action==='restore-seed'&&w){const seed=getSeed(w,state.mode);if(!seed)return;if(getBuild(w)&&!confirm('Replace your saved custom build with the published example?'))return;delete state.builds[buildKey(w)];delete state.builds[goalId(w)];delete builderDrafts[buildKey(w)];state.activeGoals[goalId(w)]='Balanced';persist();render();notify('Published example restored');return;}
+if(action==='save-build'&&w){
+ const b=collectBuild(w),key=buildKey(w),legacyKey=goalId(w);
+ if(Object.keys(b.slots).length>5){notify('Maximum five standard attachments');return;}
+ const hadOld=Object.hasOwn(state.builds,key),oldBuild=state.builds[key];
+ const hadLegacy=Object.hasOwn(state.builds,legacyKey),oldLegacy=state.builds[legacyKey];
+ const oldReviews=state.reviewedPatches;
+ const original=getBuild(w);
+ if(original?.gameCode&&savedGameCode(w,{...b,gameCode:original.gameCode,gameFingerprint:original.gameFingerprint})){b.gameCode=original.gameCode;b.gameFingerprint=original.gameFingerprint;}
+ state.builds[key]=b;
+ state.reviewedPatches=Object.fromEntries(Object.entries(oldReviews).filter(([k])=>!k.startsWith(key+'|')));
+ if(activeGoal(w)==='Balanced')delete state.builds[legacyKey];
+ if(!persist()){
+   if(hadOld)state.builds[key]=oldBuild;else delete state.builds[key];
+   if(hadLegacy)state.builds[legacyKey]=oldLegacy;else delete state.builds[legacyKey];
+   state.reviewedPatches=oldReviews;
+   builderDrafts[key]={...b,userSaved:false};
+   notify('Blueprint not saved. Your draft is preserved for another attempt.');return;
+ }
+ delete builderDrafts[key];render();notify(w.name+' loadout saved for '+state.mode);return;
+}
+if(action==='restore-seed'&&w){
+ const seed=getSeed(w,state.mode);if(!seed)return;
+ if(getBuild(w)&&!confirm('Replace your saved custom build with the published example?'))return;
+ const key=buildKey(w),legacyKey=goalId(w);
+ const hadKey=Object.hasOwn(state.builds,key),oldBuild=state.builds[key];
+ const hadLegacy=Object.hasOwn(state.builds,legacyKey),oldLegacy=state.builds[legacyKey];
+ const oldGoal=state.activeGoals[legacyKey],hadGoal=Object.hasOwn(state.activeGoals,legacyKey);
+ delete state.builds[key];delete state.builds[legacyKey];state.activeGoals[legacyKey]='Balanced';
+ if(!persist()){
+   if(hadKey)state.builds[key]=oldBuild;else delete state.builds[key];
+   if(hadLegacy)state.builds[legacyKey]=oldLegacy;else delete state.builds[legacyKey];
+   if(hadGoal)state.activeGoals[legacyKey]=oldGoal;else delete state.activeGoals[legacyKey];
+   notify('Example restoration not saved; your blueprint is unchanged.');return;
+ }
+ delete builderDrafts[key];render();notify('Published example restored');return;
+}
 if(action==='gs-add'&&w){const b=collectBuild(w),free=availableTypes(w,b.apex,b.apexName).filter(t=>!Object.hasOwn(b.slots,t));if(Object.keys(b.slots).length>=5||!free.length){notify('Maximum five standard attachments');return;}b.slots[free[0]]='';builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();return;}
 if(action==='gs-remove'&&w){const b=collectBuild(w),index=Number(btn.dataset.index),type=Object.keys(b.slots)[index];if(type)delete b.slots[type];builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();return;}
 if(action==='gs-clear'&&w){const b=collectBuild(w);b.slots={};builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();notify('Standard attachment slots cleared');return;}
 if(action==='gs-generate'&&w){const b=collectBuild(w);b.slots=generateSlots(w,activeGoal(w),b.apex,b.apexName);builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();notify(Object.keys(b.slots).length?'Generated '+activeGoal(w)+' suggestions — review before saving':'No verified attachment choices yet for this weapon');return;}
 if(action==='copy-build'&&w){const b=collectBuild(w);const data=[b.name,w.name+' ('+state.mode+' · '+activeGoal(w)+')',b.apex?'Apex: '+(activeApex(w,b)?.name||'Unknown'):'',...Object.entries(b.slots).filter(x=>x[1]).map(([k,v])=>k+': '+v),b.perks?'Perks: '+b.perks:'',b.tactical?'Tactical: '+b.tactical:'',b.lethal?'Lethal: '+b.lethal:'',b.notes?'Notes: '+b.notes:''].filter(Boolean).join('\n');copyText(data);return;}
-if(action==='open-saved'){let [weapon,mode,goal='Balanced']=String(btn.dataset.key||'').split('|');if(!WEAPONS.some(x=>x.id===weapon)||!['MW4','Warzone','DMZ'].includes(mode)||!Object.hasOwn(TEMPLATES,goal))return;state.mode=mode;state.activeGoals[weapon+'|'+mode]=goal;persist();location.hash='#/build/'+weapon;render();return;}
+if(action==='open-saved'){
+ const [weapon,mode,goal='Balanced']=String(btn.dataset.key||'').split('|');
+ if(!WEAPONS.some(x=>x.id===weapon)||!['MW4','Warzone','DMZ'].includes(mode)||!Object.hasOwn(TEMPLATES,goal))return;
+ const draftKey=weapon+'|'+mode+'|'+goal;
+ if(Object.hasOwn(builderDrafts,draftKey)&&!confirm('Discard this unsaved draft and open the saved blueprint?'))return;
+ delete builderDrafts[draftKey];
+ state.mode=mode;state.activeGoals[weapon+'|'+mode]=goal;persist();
+ location.hash='#/build/'+weapon;render();return;
+}
 if(action==='copy-saved-code'){const key=btn.dataset.key,build=Object.hasOwn(state.builds,key)?state.builds[key]:null,[weapon,mode,goal='Balanced']=String(key||'').split('|');if(!build||!WEAPONS.some(w=>w.id===weapon)||!['MW4','Warzone','DMZ'].includes(mode)||!Object.hasOwn(TEMPLATES,goal)){notify('Saved blueprint is unavailable');return;}try{const code=window.MW4_SHARE.encode({weapon,mode,goal,apex:!!build.apex,apexName:build.apexName||'',slots:build.slots||{}});void copyText(code);}catch(error){notify('Website code unavailable: '+String(error.message||error));}return;}
- if(action==='delete-build'){let key=btn.dataset.key;if(!Object.hasOwn(state.builds,key))return;if(confirm('Delete this saved blueprint?')){delete state.builds[key];persist();render();notify('Blueprint deleted');}return;}
+ if(action==='delete-build'){
+ const key=btn.dataset.key;if(!Object.hasOwn(state.builds,key))return;
+ if(confirm('Delete this saved blueprint?')){
+   const previous=state.builds[key],previousReviews=state.reviewedPatches;
+   delete state.builds[key];
+   state.reviewedPatches=Object.fromEntries(Object.entries(previousReviews).filter(([k])=>!k.startsWith(key+'|')));
+   if(!persist()){state.builds[key]=previous;state.reviewedPatches=previousReviews;notify('Blueprint deletion not saved; original remains available.');return;}
+   delete builderDrafts[key];render();notify('Blueprint deleted');
+ }return;
+}
 if(action==='patch-filter'){patchFilter=btn.dataset.filter;render();return;}
 if(action==='mode'){setMode(btn.dataset.mode);return;}
 if(action==='export'){download('mw4camo-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(state,null,2));notify('Backup exported');return;}
 if(action==='copy-json'){copyText(JSON.stringify(state));return;}
-if(action==='clear'){if(confirm('Delete ALL local MW4Camo progress and saved loadouts? Export a backup first.')){state=defaultState();for(const key of Object.keys(classDrafts))delete classDrafts[key];for(const key of Object.keys(builderDrafts))delete builderDrafts[key];for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];persist();render();notify('Local progress reset');}return;}
+if(action==='clear'){if(confirm('Delete ALL local MW4Camo progress and saved loadouts? Export a backup first.')){
+ const previous=state;state=defaultState();
+ if(!persist()){state=previous;render();notify('Reset cancelled: browser storage refused the change. Your data is preserved.');return;}
+ for(const key of Object.keys(classDrafts))delete classDrafts[key];
+ for(const key of Object.keys(builderDrafts))delete builderDrafts[key];
+ for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];
+ render();notify('Local progress reset');
+ }return;}
 });
 app.addEventListener('input',event=>{
  if(event.target.id==='blueprintSearch'){blueprintQuery=event.target.value;updateBlueprintList();return;}
@@ -765,7 +856,14 @@ if(event.target.dataset.counter){let w=WEAPONS.find(w=>w.id===event.target.datas
 if(event.target.id==='statusFilter'){filter.status=event.target.value;render();return;}
 if(event.target.id==='loadoutWeaponSelect'){if(event.target.value)location.hash='#/build/'+event.target.value;return;}
 if(event.target.id==='weaponLevel'){let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){state.levels[w.id]=Math.min(999,Math.max(0,Number(event.target.value)||0));persist();}return;}
-if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace your local tracker with the selected backup?')){state=data;for(const key of Object.keys(classDrafts))delete classDrafts[key];for(const key of Object.keys(builderDrafts))delete builderDrafts[key];for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];persist();render();notify('Backup imported successfully');}}catch(e){notify('Import failed: '+e.message);}return;}
+if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace your local tracker with the selected backup?')){
+ const previous=state;state=data;
+ if(!persist()){state=previous;render();notify('Import cancelled: browser storage refused the backup. Your data is preserved.');return;}
+ for(const key of Object.keys(classDrafts))delete classDrafts[key];
+ for(const key of Object.keys(builderDrafts))delete builderDrafts[key];
+ for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];
+ render();notify('Backup imported successfully');
+ }}catch(e){notify('Import failed: '+e.message);}return;}
 });
 document.getElementById('modeButton').addEventListener('click',()=>{let modes=['Warzone','MW4','DMZ'];setMode(modes[(modes.indexOf(state.mode)+1)%modes.length]);});
 const sidebar=document.getElementById('sidebar');
