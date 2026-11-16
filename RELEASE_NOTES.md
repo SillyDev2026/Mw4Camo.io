@@ -1,3 +1,9 @@
+# v1.9.2 — Reliability and Backup Guardrails (2026-11-16)
+
+Phase 1: saved-blueprint keys are validated, keeping legacy two-segment and modern three-segment entries. Null backup fields are rejected early. Legacy clipboard copy failures are handled. App and service worker cache versions are aligned. CI runs the complete Python unittest suite, website share-code tests, and JavaScript syntax checks. The browser storage key stays `mw4camo-io-v1`; no catalogs or known-working workflows are removed.
+
+---
+
 # v1.6.1 — Full Reliability Patch (2026-11-11)
 
 A focused, backwards-compatible bugfix release for the existing Operator Hub, Camo Assistant, Gunsmith, Weapon Compare, Complete Loadouts, Patch Doctor, and mobile navigation.

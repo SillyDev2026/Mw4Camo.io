@@ -13,6 +13,9 @@ on:
       - 'tests/test_movement_lab_v19.py'
       - 'tests/test_multi_apex_v191.py'
       - 'ui-v9.css'
+      - 'refresh-settings.js'
+      - 'tests/test_upgrade_phases.py'
+      - 'RELEASE_NOTES.md'
       - '.github/workflows/share-code-tests.yml'
   pull_request:
     paths:
@@ -27,6 +30,9 @@ on:
       - 'tests/test_movement_lab_v19.py'
       - 'tests/test_multi_apex_v191.py'
       - 'ui-v9.css'
+      - 'refresh-settings.js'
+      - 'tests/test_upgrade_phases.py'
+      - 'RELEASE_NOTES.md'
 permissions:
   contents: read
 jobs:
@@ -42,6 +48,11 @@ jobs:
         run: |
           node --check app.js
           node --check share-codes.js
+      - name: Check all application JavaScript syntax
+        run: |
+          for file in app.js share-codes.js refresh-settings.js ui-experience.js service-worker.js; do node --check "$file"; done
+      - name: Full Python regression suite
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
       - name: Test website share codes and game-code separation
         run: node tests/test_share_codes.js
       - name: Validate movement lab and measured-data safeguards
