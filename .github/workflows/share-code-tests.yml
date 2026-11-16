@@ -75,7 +75,7 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_multi_apex_v191.py'
 
   browser-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: verify-sharing
     timeout-minutes: 12
     steps:
