@@ -551,7 +551,7 @@ function setMode(mode){
  if(!['Warzone','MW4','DMZ'].includes(mode)||state.mode===mode)return;
  const path=currentPath().split('/');
  if(path[0]==='build'){const w=WEAPONS.find(w=>w.id===path[1]);if(w)stashDraft(w);}if(path[0]==='class-builder')preserveClassDraft();
- state.mode=mode;persist();render();notify('Mode changed to '+mode);
+ const before=state.mode;state.mode=mode;if(!persist()){state.mode=before;return;}render();notify('Mode changed to '+mode);
 }
 function valueById(id){let el=document.getElementById(id);return el?el.value.trim():'';}
 function collectBuild(w){const apexName=valueById('gsApexSelect'),apex=!!apexName,slots={};app.querySelectorAll('[data-slot-row]').forEach(row=>{const type=row.querySelector('.gs-type')?.value,value=row.querySelector('.gs-item')?.value||'';if(type&&availableTypes(w,apex,apexName).includes(type)&&!Object.hasOwn(slots,type)&&Object.keys(slots).length<5)slots[type]=value;});return {name:valueById('buildName')||w.name+' custom',template:activeGoal(w),slots,apex,apexName,perks:valueById('buildPerks'),tactical:valueById('buildTactical'),lethal:valueById('buildLethal'),notes:valueById('buildNotes'),userSaved:true,savedAt:new Date().toISOString()};}
@@ -672,9 +672,9 @@ if(action==='save-measures'){
   }
   updates[w.id+'|'+state.mode]=values;
  }
- Object.assign(state.weaponMeasurements,updates);
- for(const key of Object.keys(updates))delete measurementDrafts[key];
- persist();render();notify('Personal measurements saved for '+state.mode);return;
+ const previous=state.weaponMeasurements;state.weaponMeasurements={...previous,...updates};
+ 
+ if(!persist()){state.weaponMeasurements=previous;notify('Measurement save failed; unsaved results are preserved.');return;}for(const key of Object.keys(updates))delete measurementDrafts[key];render();notify('Personal measurements saved for '+state.mode);return;
 }
 if(action==='copy-compare'){
  const a=WEAPONS.find(w=>w.id===compareIds[0]),b=WEAPONS.find(w=>w.id===compareIds[1]);if(!a||!b)return;
@@ -683,9 +683,9 @@ if(action==='copy-compare'){
 }
 
 if(action==='swap-compare'){compareIds=[compareIds[1],compareIds[0]];render();return;}
-if(action==='focus'&&w){state.focusWeapon=state.focusWeapon===w.id?null:w.id;persist();render();notify(state.focusWeapon?'Focus set to '+w.name:'Focus cleared');return;}
+if(action==='focus'&&w){const before=state.focusWeapon;state.focusWeapon=before===w.id?null:w.id;if(!persist()){state.focusWeapon=before;return;}render();notify(state.focusWeapon?'Focus set to '+w.name:'Focus cleared');return;}
 if(action==='mission-filter'){missionFilter=btn.dataset.filter;render();return;}
-if(action==='favorite'&&w){state.favorites=favorite(w)?state.favorites.filter(x=>x!==w.id):[...state.favorites,w.id];persist();if(currentPath()==='weapons')updateWeaponGrid();else render();return;}
+if(action==='favorite'&&w){const before=state.favorites;state.favorites=favorite(w)?before.filter(x=>x!==w.id):[...before,w.id];if(!persist()){state.favorites=before;return;}if(currentPath()==='weapons')updateWeaponGrid();else render();return;}
 if(action==='camo'&&w){
  let key=w.id+'|'+btn.dataset.camo,previous=Boolean(state.completed[key]);
  if(!commitValue(state.completed,key,!previous))return;render();
@@ -699,10 +699,10 @@ if(action==='account'){
 if(action==='favorites'){filter.fav=!filter.fav;render();return;}
 if(action==='category'){filter.category=btn.dataset.category;render();return;}
 if(action==='set-class'){filter.category=btn.dataset.category;filter.search='';filter.status='All';filter.fav=false;location.hash='#/weapons';return;}
-if(action==='sync-level'&&w){let level=Math.min(w.maxLevel||999,Math.max(0,Number(valueById('weaponLevel'))||0));state.levels[w.id]=level;persist();render();notify('Weapon level saved. Only mark camo challenges once earned in-game.');return;}
-if(action==='save-build-test'&&w){const b=collectBuild(w),values={};for(const f of PERFORMANCE_FIELDS){const input=app.querySelector('[data-performance="'+f.id+'"]'),raw=input?.value.trim()||'';if(!raw)continue;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>f.max){notify(f.label+' must be 0–'+f.max);input?.focus();return;}values[f.id]=n;}if(!Object.keys(values).length){notify('Enter at least one measured value');return;}state.buildTests[buildKey(w)]={signature:performanceSignature(w,b),values,updatedAt:new Date().toISOString()};if(persist()){rerenderPreservePosition();notify('Measured build performance saved');}return;}
-if(action==='clear-build-test'&&w){delete state.buildTests[buildKey(w)];persist();rerenderPreservePosition();notify('Build measurements cleared');return;}
-if(action==='goal'&&w){const goal=btn.dataset.goal;if(!Object.hasOwn(TEMPLATES,goal))return;if(currentPath().startsWith('build/')&&activeGoal(w)!==goal)stashDraft(w);state.activeGoals[goalId(w)]=goal;persist();render();notify('Tactical profile: '+goal);return;}
+if(action==='sync-level'&&w){let level=Math.min(w.maxLevel||999,Math.max(0,Number(valueById('weaponLevel'))||0));if(!commitValue(state.levels,w.id,level))return;render();notify('Weapon level saved. Only mark camo challenges once earned in-game.');return;}
+if(action==='save-build-test'&&w){const b=collectBuild(w),values={};for(const f of PERFORMANCE_FIELDS){const input=app.querySelector('[data-performance="'+f.id+'"]'),raw=input?.value.trim()||'';if(!raw)continue;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>f.max){notify(f.label+' must be 0–'+f.max);input?.focus();return;}values[f.id]=n;}if(!Object.keys(values).length){notify('Enter at least one measured value');return;}if(commitValue(state.buildTests,buildKey(w),{signature:performanceSignature(w,b),values,updatedAt:new Date().toISOString()})){rerenderPreservePosition();notify('Measured build performance saved');}return;}
+if(action==='clear-build-test'&&w){if(!commitValue(state.buildTests,buildKey(w),undefined))return;rerenderPreservePosition();notify('Build measurements cleared');return;}
+if(action==='goal'&&w){const goal=btn.dataset.goal;if(!Object.hasOwn(TEMPLATES,goal))return;if(currentPath().startsWith('build/')&&activeGoal(w)!==goal)stashDraft(w);if(!commitValue(state.activeGoals,goalId(w),goal))return;render();notify('Tactical profile: '+goal);return;}
 
 if(action==='import-share'){
   try{importSharedBuild(valueById('shareImportInput'));}catch(error){notify('Import failed: '+String(error.message||error));}
@@ -824,17 +824,17 @@ app.addEventListener('change',async event=>{
  if(event.target.id==='blueprintSort'){blueprintSort=['recent','weapon'].includes(event.target.value)?event.target.value:'recent';render();return;}
 if(event.target.closest('.v16-class-editor')&&event.target.id!=='classPrimary')preserveClassDraft();
 if(event.target.id==='doctorView'){doctorView=event.target.value==='All'?'All':'Pending';render();return;}
-if(event.target.id==='assistantWeapon'){state.focusWeapon=WEAPONS.some(w=>w.id===event.target.value)?event.target.value:null;persist();render();return;}
+if(event.target.id==='assistantWeapon'){const before=state.focusWeapon;state.focusWeapon=WEAPONS.some(w=>w.id===event.target.value)?event.target.value:null;if(!persist()){state.focusWeapon=before;event.target.value=before||'';return;}render();return;}
 if(event.target.id==='classSelect'){
  const mode=state.mode,id=event.target.value;
  if(id!==''&&!classList(mode).some(x=>x.id===id))return;
- state.activeClassIds[mode]=id;delete classDrafts[mode];persist();render();return;
+ const before=state.activeClassIds[mode];state.activeClassIds[mode]=id;if(!persist()){state.activeClassIds[mode]=before;event.target.value=before||'';return;}delete classDrafts[mode];render();return;
 }
 if(event.target.matches('[data-task-counter]')){
  const w=WEAPONS.find(w=>w.id===event.target.dataset.weapon),c=CAMOS.find(c=>c.id===event.target.dataset.camo);if(!w||!c)return;
  const key=w.id+'|'+c.id,old=counter(w,c.id),field=event.target.dataset.taskCounter;
  const amount=Math.max(0,Math.min(100000,Math.floor(Number(event.target.value)||0)));
- state.counters[key]={...old,[field]:amount};persist();render();notify('Challenge '+field+' updated');return;
+ if(!commitValue(state.counters,key,{...old,[field]:amount})){event.target.value=String(old[field]);return;}render();notify('Challenge '+field+' updated');return;
 }
 if(event.target.id==='assistantSize'){assistantSize=[2,3,5].includes(Number(event.target.value))?Number(event.target.value):3;render();return;}
 if(event.target.id==='compareA'||event.target.id==='compareB'){const idx=event.target.id==='compareA'?0:1;const other=compareIds[1-idx];if(event.target.value===other){notify('Choose two different weapons to compare');event.target.value=compareIds[idx];return;}compareIds[idx]=event.target.value;render();return;}
@@ -853,10 +853,10 @@ if(event.target.id==='classPrimary'){const secondary=document.getElementById('cl
  builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();return;
 }
 if(event.target.id==='compareGoal'){comparisonGoal=Object.hasOwn(TEMPLATES,event.target.value)?event.target.value:'Balanced';let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){let el=document.getElementById('comparisonBody');if(el)el.innerHTML=renderGoalComparison(activeGoal(w),comparisonGoal);}return;}
-if(event.target.dataset.counter){let w=WEAPONS.find(w=>w.id===event.target.dataset.weapon);let camo=CAMOS.find(c=>c.id===event.target.dataset.camo);if(!w||!camo)return;let key=w.id+'|'+camo.id,previous=counter(w,camo.id),part=event.target.dataset.counter;previous[part]=Math.min(100000,Math.max(0,Math.floor(Number(event.target.value)||0)));state.counters[key]=previous;persist();render();notify('Challenge progress saved');return;}if(event.target.id==='categoryFilter'){filter.category=event.target.value;render();return;}
+if(event.target.dataset.counter){let w=WEAPONS.find(w=>w.id===event.target.dataset.weapon);let camo=CAMOS.find(c=>c.id===event.target.dataset.camo);if(!w||!camo)return;let key=w.id+'|'+camo.id,previous=counter(w,camo.id),part=event.target.dataset.counter;previous[part]=Math.min(100000,Math.max(0,Math.floor(Number(event.target.value)||0)));if(!commitValue(state.counters,key,previous))return;render();notify('Challenge progress saved');return;}if(event.target.id==='categoryFilter'){filter.category=event.target.value;render();return;}
 if(event.target.id==='statusFilter'){filter.status=event.target.value;render();return;}
 if(event.target.id==='loadoutWeaponSelect'){if(event.target.value)location.hash='#/build/'+event.target.value;return;}
-if(event.target.id==='weaponLevel'){let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){state.levels[w.id]=Math.min(999,Math.max(0,Number(event.target.value)||0));persist();}return;}
+if(event.target.id==='weaponLevel'){let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){const next=Math.min(w.maxLevel||999,Math.max(0,Number(event.target.value)||0));if(!commitValue(state.levels,w.id,next))event.target.value=String(state.levels[w.id]||0);}return;}
 if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace your local tracker with the selected backup?')){
  const previous=state;state=data;
  if(!persist()){state=previous;render();notify('Import cancelled: browser storage refused the backup. Your data is preserved.');return;}
