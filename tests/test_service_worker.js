@@ -12,7 +12,7 @@ const caches={open:async()=>cache,keys:async()=>[],delete:async()=>true,match:as
 const result={ok:true,type:'basic',clone(){return this;}};
 let network=0;
 vm.runInNewContext(source,{self,caches,URL,Set,fetch:async()=>{network++;return result;},Response:{error:()=>({offline:true})}});
-assert.match(source,/mw4camo-v2\.1\.0/);
+assert.match(source,/mw4camo-v2\.2\.0/);
 assert.match(source,/ui-v10\.css/);
 function request(url,{mode='same-origin',method='GET'}={}){
   let response;const tasks=[];

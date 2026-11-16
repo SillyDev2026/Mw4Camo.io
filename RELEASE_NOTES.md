@@ -1,3 +1,11 @@
+# v2.2.0 — Class Library and Blueprint Workflow Hardening (2026-11-16)
+
+Phase 3 of the second upgrade. Complete Loadouts preserves earlier class data and current editor fields when saving, duplicating or deleting fails due to unavailable/full browser storage. New/clear class actions avoid phantom state updates. Saved Blueprint deletion and restoring published examples are transactional, retaining old data after failed writes. Opening a saved blueprint detects a lingering unsaved Gunsmith draft and asks before discarding it, ensuring **Edit** loads the actual saved version rather than an old draft. Browser tests cover failed writes and successful retries.
+
+Second full release sequence: **v2.0.1 → v2.1.0 → v2.2.0**. Existing player progress, weapon catalogs, patch sources, publisher workflows and website share-code compatibility remain unchanged. Browser data is still stored under `mw4camo-io-v1`.
+
+---
+
 # v2.1.0 — Patch Feed Integrity Guard (2026-11-16)
 
 Phase 2 of the second upgrade. Reject malformed publisher articles (invalid sections/points, duplicate IDs, non-official source links, invalid dates) and inconsistent timestamps or record counts before applying live patch snapshots. An incomplete publisher archive cannot remove already known patch records. Existing data stays usable on a rejected refresh. The independent guard has Node unit tests and Chromium checks for malformed network responses; the existing per-device refresh schedule and official source automation are unchanged.

@@ -20,6 +20,8 @@ on:
       - 'tests/browser_feed_guard.py'
       - 'tests/test_upgrade_phases.py'
       - 'tests/test_save_safety.py'
+      - 'tests/test_class_recovery.py'
+      - 'tests/browser_class_recovery.py'
       - 'tests/browser_save_safety.py'
       - 'tests/test_service_worker.js'
       - 'tests/browser_v2_smoke.py'
@@ -46,6 +48,8 @@ on:
       - 'tests/browser_feed_guard.py'
       - 'tests/test_upgrade_phases.py'
       - 'tests/test_save_safety.py'
+      - 'tests/test_class_recovery.py'
+      - 'tests/browser_class_recovery.py'
       - 'tests/browser_save_safety.py'
       - 'tests/test_service_worker.js'
       - 'tests/browser_v2_smoke.py'
@@ -104,3 +108,4 @@ jobs:
           python tests/browser_v2_smoke.py
           python tests/browser_save_safety.py
           python tests/browser_feed_guard.py
+          python tests/browser_class_recovery.py
