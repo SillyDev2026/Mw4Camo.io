@@ -26,12 +26,14 @@ def run():
         assert page.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).builds['m4|Warzone|Balanced'].name",KEY)=="Save-safe draft"
         new_state={**stored,"builds":{},"focusWeapon":None}
         page.locator("#importFile").set_input_files({"name":"safe.json","mimeType":"application/json","buffer":json.dumps(new_state).encode()})
+        page.wait_for_function("document.querySelector('#toast').textContent.toLowerCase().includes('import cancelled')")
         assert "import cancelled" in page.locator("#toast").inner_text().lower()
         page.evaluate("location.hash='#/my-builds'")
         assert page.locator('[data-blueprint-card]').count()==1
         page.evaluate("localStorage.setItem=window.__setItem")
         page.evaluate("location.hash='#/settings'")
         page.locator("#importFile").set_input_files({"name":"safe.json","mimeType":"application/json","buffer":json.dumps(new_state).encode()})
+        page.wait_for_function("(key)=>Object.keys(JSON.parse(localStorage.getItem(key)).builds).length===0",arg=KEY)
         assert page.evaluate("(key)=>Object.keys(JSON.parse(localStorage.getItem(key)).builds).length",KEY)==0
         assert not errors,errors
         print("PASS transactional blueprint save, reset, import, retry")
