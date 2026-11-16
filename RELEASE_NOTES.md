@@ -1,3 +1,11 @@
+# v2.0.0 — Offline and End-to-End Release Hardening (2026-11-16)
+
+Phase 3: PWA caching is constrained to the declared app-shell assets rather than every same-origin GET. Publisher refreshes carrying `_fresh` bypass all caches; query-string share links can still fall back to the offline application shell without generating unbounded cache keys. Active navigation exposes `aria-current=page` to assistive technology. Added simulated service-worker unit tests and Chromium end-to-end checks for Blueprint Vault search, mode filters, sorting, sharing, viewport overflow and page errors.
+
+Version sequence: **v1.9.2 → v1.9.3 → v2.0.0**, each validated before work on the next phase. The browser data key remains `mw4camo-io-v1`. No live weapon metadata was invented or altered, and website share codes are not in-game MW4 Gunsmith codes.
+
+---
+
 # v1.9.3 — Searchable Blueprint Vault (2026-11-16)
 
 Phase 2: Saved Blueprints includes instant search across weapon, saved name, mode, and goal; mode filtering, newest-first/weapon-name sorting, and matching counts. Compatible builds offer one-click **Copy Website Code**; unverified or mismatched attachments are never fabricated as game codes. Responsive Vault controls support narrow devices. The v1 local save key and all previously saved configurations remain intact.

@@ -25,9 +25,16 @@ class UpgradePhaseTests(unittest.TestCase):
         self.assertIn("window.MW4_SHARE.encode({weapon,mode,goal",app)
         self.assertIn("ui-v10.css",read("index.html"))
         self.assertIn("./ui-v10.css",read("service-worker.js"))
+    def test_v2_offline_scope_and_navigation(self):
+        worker=read("service-worker.js")
+        app=read("app.js")
+        self.assertIn("STATIC_PATHS.has(requestUrl.pathname)",worker)
+        self.assertIn("requestUrl.searchParams.has('_fresh')",worker)
+        self.assertIn("if(requestUrl.search && !navigation)return;",worker)
+        self.assertIn("x.setAttribute('aria-current','page')",app)
     def test_cache_and_assets(self):
-        self.assertIn("mw4camo-v1.9.3",read("service-worker.js"))
-        self.assertIn("No login required · v1.9.3",read("index.html"))
+        self.assertIn("mw4camo-v2.0.0",read("service-worker.js"))
+        self.assertIn("No login required · v2.0.0",read("index.html"))
         for name in ("data/weapons.js","data/patches.js","data/attachments.js","share-codes.js","ui-v9.css"):
             self.assertIn("./"+name,read("service-worker.js"))
 if __name__=="__main__": unittest.main()
