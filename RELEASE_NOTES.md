@@ -1,3 +1,9 @@
+# v2.0.1 — Transactional Save Recovery (2026-11-16)
+
+Phase 1 of the second three-version upgrade. Failed browser storage writes no longer produce false successful resets or imports; the previous tracker state survives. Failed blueprint writes restore prior saved configuration, patch-review acknowledgments and legacy data, while keeping the unsaved editor draft. User-supplied game-code writes also roll back on quota failure. Chromium regression tests simulate quota failures for save, reset, and import and verify successful retry. Storage key remains `mw4camo-io-v1`.
+
+---
+
 # v2.0.0 — Offline and End-to-End Release Hardening (2026-11-16)
 
 Phase 3: PWA caching is constrained to the declared app-shell assets rather than every same-origin GET. Publisher refreshes carrying `_fresh` bypass all caches; query-string share links can still fall back to the offline application shell without generating unbounded cache keys. Active navigation exposes `aria-current=page` to assistive technology. Added simulated service-worker unit tests and Chromium end-to-end checks for Blueprint Vault search, mode filters, sorting, sharing, viewport overflow and page errors.

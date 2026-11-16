@@ -16,6 +16,8 @@ on:
       - 'ui-v10.css'
       - 'refresh-settings.js'
       - 'tests/test_upgrade_phases.py'
+      - 'tests/test_save_safety.py'
+      - 'tests/browser_save_safety.py'
       - 'tests/test_service_worker.js'
       - 'tests/browser_v2_smoke.py'
       - 'tests/browser_v15_smoke.py'
@@ -37,6 +39,8 @@ on:
       - 'ui-v10.css'
       - 'refresh-settings.js'
       - 'tests/test_upgrade_phases.py'
+      - 'tests/test_save_safety.py'
+      - 'tests/browser_save_safety.py'
       - 'tests/test_service_worker.js'
       - 'tests/browser_v2_smoke.py'
       - 'tests/browser_v15_smoke.py'
@@ -88,4 +92,6 @@ jobs:
           python -m pip install playwright==1.56.0
           python -m playwright install --with-deps chromium
       - name: Test four responsive viewports and Blueprint Vault interactions
-        run: python tests/browser_v2_smoke.py
+        run: |
+          python tests/browser_v2_smoke.py
+          python tests/browser_save_safety.py
