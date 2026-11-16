@@ -1,3 +1,11 @@
+# v2.5.0 — Cross-Tab Draft Recovery and Mobile Accessibility (2026-11-16)
+
+Patch 3 of the third sequential upgrade. Another browser tab's storage updates no longer erase unsaved Gunsmith draft changes, Complete Loadout class edits, or personal weapon comparison drafts. The currently edited Gunsmith form is compared to the prior selected build so unmodified pages do not create false dirty drafts. Saved blueprints have larger touch targets and responsive 2-column/1-column action buttons on phone screens. The keyboard Quick Jump now exposes combobox/listbox semantics, selection to screen readers and correct open/close state. Added CSS v11 to HTML and offline cache, responsive browser tests at 320px and 390px, cross-tab sync tests and accessibility assertions.
+
+**Third release series: v2.3.0 → v2.4.0 → v2.5.0.** Existing camo progress, loadouts, patches, attachments, share-code compatibility and `mw4camo-io-v1` data remain preserved. Publisher automation remains unchanged.
+
+---
+
 # v2.4.0 — Safer Imports and Shareable Blueprint Vault (2026-11-16)
 
 Third phased upgrade, patch 2. Backup import now rejects phantom blueprint records with extra key segments, unknown goals, unrecognized weapon IDs, invalid modes, and non-object slots. Legacy 2-segment keys still import. Active-goal and measured-build key validation is strengthened. Backup confirmation shows the actual imported camo, blueprint, and class counts. Saved Blueprints now provide **COPY SHARE LINK**, derived only from the existing verified MW4C2 website encoder. This is a website sharing link, not an in-game MW4 import code. Added browser and Python regression tests. Existing local storage keys and working features remain unchanged.

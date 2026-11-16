@@ -1,0 +1,17 @@
+/* v2.5.0: responsive blueprint controls and keyboard focus visibility */
+:where(.build-preset .build-actions .btn, .blueprint-tools .field, .quick-result, .quick-search-row input, #quickClose){min-height:44px;box-sizing:border-box}
+:where(.build-preset .build-actions .btn, .blueprint-tools .field, .quick-result, #quickOpen, #quickClose, .mobile-menu, .mode-button):focus-visible{outline:3px solid var(--accent,#b8fd45);outline-offset:3px}
+.build-preset .build-actions .btn{white-space:normal;line-height:1.25;overflow-wrap:anywhere}
+@media(max-width:620px){
+ .build-preset .build-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+ .build-preset .build-actions .btn{width:100%;justify-content:center;padding:10px 7px}
+ .build-preset{min-width:0}
+ .blueprint-tools{align-items:stretch}
+ .blueprint-tools output{white-space:normal}
+}
+@media(max-width:360px){
+ .build-preset .build-actions{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+ .build-preset .build-actions .btn,.quick-result{transition:none!important;animation:none!important}
+}

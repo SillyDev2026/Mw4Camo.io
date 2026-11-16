@@ -14,6 +14,7 @@ on:
       - 'tests/test_multi_apex_v191.py'
       - 'ui-v9.css'
       - 'ui-v10.css'
+      - 'ui-v11.css'
       - 'refresh-settings.js'
       - 'feed-guard.js'
       - 'tests/test_feed_guard.js'
@@ -23,6 +24,8 @@ on:
       - 'tests/test_class_recovery.py'
       - 'tests/test_progress_recovery.py'
       - 'tests/test_vault_import_v24.py'
+      - 'tests/test_mobile_v25.py'
+      - 'tests/browser_mobile_v25.py'
       - 'tests/browser_vault_import_v24.py'
       - 'tests/browser_progress_recovery.py'
       - 'tests/browser_class_recovery.py'
@@ -46,6 +49,7 @@ on:
       - 'tests/test_multi_apex_v191.py'
       - 'ui-v9.css'
       - 'ui-v10.css'
+      - 'ui-v11.css'
       - 'refresh-settings.js'
       - 'feed-guard.js'
       - 'tests/test_feed_guard.js'
@@ -55,6 +59,8 @@ on:
       - 'tests/test_class_recovery.py'
       - 'tests/test_progress_recovery.py'
       - 'tests/test_vault_import_v24.py'
+      - 'tests/test_mobile_v25.py'
+      - 'tests/browser_mobile_v25.py'
       - 'tests/browser_vault_import_v24.py'
       - 'tests/browser_progress_recovery.py'
       - 'tests/browser_class_recovery.py'
@@ -119,3 +125,4 @@ jobs:
           python tests/browser_class_recovery.py
           python tests/browser_progress_recovery.py
           python tests/browser_vault_import_v24.py
+          python tests/browser_mobile_v25.py

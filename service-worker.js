@@ -1,6 +1,6 @@
-/* MW4Camo v2.0.0: bounded offline shell; live publisher snapshots bypass cache. */
-const CACHE = 'mw4camo-v2.4.0-offline';
-const ASSETS = ['./','./index.html','./styles.css','./ui-v2.css','./ui-v3.css','./ui-v4.css','./ui-v5.css','./ui-v6.css','./ui-v7.css','./ui-v8.css','./ui-v9.css','./ui-v10.css','./share-codes.js','./app.js','./refresh-settings.js','./feed-guard.js','./ui-experience.js','./data/intel-v15.js','./data/weapons.js','./data/patches.js','./data/attachments.js','./data/attachment-expansion.js','./data/update-status.js','./manifest.webmanifest','./assets/favicon.svg'];
+/* MW4Camo v2.5.0: bounded offline shell; live publisher snapshots bypass cache. */
+const CACHE = 'mw4camo-v2.5.0-offline';
+const ASSETS = ['./','./index.html','./styles.css','./ui-v2.css','./ui-v3.css','./ui-v4.css','./ui-v5.css','./ui-v6.css','./ui-v7.css','./ui-v8.css','./ui-v9.css','./ui-v10.css','./ui-v11.css','./share-codes.js','./app.js','./refresh-settings.js','./feed-guard.js','./ui-experience.js','./data/intel-v15.js','./data/weapons.js','./data/patches.js','./data/attachments.js','./data/attachment-expansion.js','./data/update-status.js','./manifest.webmanifest','./assets/favicon.svg'];
 const STATIC_PATHS = new Set(ASSETS.map(path=>new URL(path,self.registration.scope).pathname));
 const SCOPE_PATH = new URL('./',self.registration.scope).pathname;
 self.addEventListener('install',event=>{
