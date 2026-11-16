@@ -1,3 +1,9 @@
+# v1.9.3 — Searchable Blueprint Vault (2026-11-16)
+
+Phase 2: Saved Blueprints includes instant search across weapon, saved name, mode, and goal; mode filtering, newest-first/weapon-name sorting, and matching counts. Compatible builds offer one-click **Copy Website Code**; unverified or mismatched attachments are never fabricated as game codes. Responsive Vault controls support narrow devices. The v1 local save key and all previously saved configurations remain intact.
+
+---
+
 # v1.9.2 — Reliability and Backup Guardrails (2026-11-16)
 
 Phase 1: saved-blueprint keys are validated, keeping legacy two-segment and modern three-segment entries. Null backup fields are rejected early. Legacy clipboard copy failures are handled. App and service worker cache versions are aligned. CI runs the complete Python unittest suite, website share-code tests, and JavaScript syntax checks. The browser storage key stays `mw4camo-io-v1`; no catalogs or known-working workflows are removed.

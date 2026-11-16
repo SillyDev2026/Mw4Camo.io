@@ -18,9 +18,16 @@ class UpgradePhaseTests(unittest.TestCase):
         app=read("app.js")
         self.assertIn("!isRecord(data.completed)||!isRecord(data.accounts)||!isRecord(data.levels)",app)
         self.assertIn("finally{el.remove();}",app)
+    def test_v193_blueprint_vault(self):
+        app=read("app.js")
+        for marker in ("blueprintSearch","blueprintMode","blueprintSort","blueprintResults","data-blueprint-card","updateBlueprintList","copy-saved-code"):
+            self.assertIn(marker,app)
+        self.assertIn("window.MW4_SHARE.encode({weapon,mode,goal",app)
+        self.assertIn("ui-v10.css",read("index.html"))
+        self.assertIn("./ui-v10.css",read("service-worker.js"))
     def test_cache_and_assets(self):
-        self.assertIn("mw4camo-v1.9.2",read("service-worker.js"))
-        self.assertIn("No login required · v1.9.2",read("index.html"))
+        self.assertIn("mw4camo-v1.9.3",read("service-worker.js"))
+        self.assertIn("No login required · v1.9.3",read("index.html"))
         for name in ("data/weapons.js","data/patches.js","data/attachments.js","share-codes.js","ui-v9.css"):
             self.assertIn("./"+name,read("service-worker.js"))
 if __name__=="__main__": unittest.main()

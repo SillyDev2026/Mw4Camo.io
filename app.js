@@ -155,6 +155,9 @@ let state = loadState();
 let filter={search:'',category:'All',status:'All',fav:false};
 let patchFilter='All';
 let patchQuery='';
+let blueprintQuery='';
+let blueprintMode='All';
+let blueprintSort='recent';
 let missionFilter='Recommended';
 let comparisonGoal='Low Recoil';
 let compareIds=['han-86','rezi-12'];
@@ -439,10 +442,26 @@ function renderCompare(){const a=WEAPONS.find(w=>w.id===compareIds[0])||WEAPONS[
  <div class="note">All user-entered numbers are personal measurements, not official stats. TTK varies by mode, armor, range, hit location and patch. For complete verified numerical comparison more official or carefully tested data is needed.</div>`;
 }
 function renderMyBuilds(){
-  let items=Object.entries(state.builds).map(([key,b])=>{let [id,mode,goal='Balanced']=key.split('|');return {key,b,w:WEAPONS.find(x=>x.id===id),mode,goal};}).filter(x=>x.w);
+  const items=Object.entries(state.builds).map(([key,b])=>{const [id,mode,goal='Balanced']=key.split('|');return {key,b,w:WEAPONS.find(w=>w.id===id),mode,goal};}).filter(x=>x.w);
+  items.sort((a,b)=>blueprintSort==='weapon'?a.w.name.localeCompare(b.w.name)||a.goal.localeCompare(b.goal):(Date.parse(b.b.savedAt||'')||0)-(Date.parse(a.b.savedAt||'')||0)||a.w.name.localeCompare(b.w.name));
+  const rows=items.map(x=>{
+    const search=(x.w.name+' '+x.b.name+' '+x.goal+' '+x.mode).toLowerCase();
+    const date=Date.parse(x.b.savedAt||'');
+    const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Imported build';
+    return `<article class="build-preset" data-blueprint-card data-mode="${esc(x.mode)}" data-search="${esc(search)}"><div>${tag(x.mode,'blue')} ${tag(x.goal,'lime')}<strong>${esc(x.w.name)} / ${esc(x.b.name)}</strong><small>${Object.values(x.b.slots||{}).filter(Boolean).length} filled attachment slots · ${esc(when)}</small></div><div class="build-actions"><button class="btn btn-outline small" data-action="open-saved" data-key="${esc(x.key)}">EDIT ↗</button><button class="btn btn-outline small" data-action="copy-saved-code" data-key="${esc(x.key)}">COPY WEBSITE CODE</button><button class="btn btn-danger small" data-action="delete-build" data-key="${esc(x.key)}">DELETE</button></div></article>`;
+  }).join('');
+  const controls=`<div class="blueprint-tools"><label>FIND BLUEPRINTS<input class="field" id="blueprintSearch" type="search" maxlength="120" autocomplete="off" placeholder="Search weapon, name or goal" value="${esc(blueprintQuery)}"></label><label>GAME MODE<select class="field" id="blueprintMode">${['All','MW4','Warzone','DMZ'].map(m=>`<option value="${m}" ${blueprintMode===m?'selected':''}>${m==='All'?'All modes':m}</option>`).join('')}</select></label><label>SORT BY<select class="field" id="blueprintSort"><option value="recent" ${blueprintSort==='recent'?'selected':''}>Recently saved</option><option value="weapon" ${blueprintSort==='weapon'?'selected':''}>Weapon name</option></select></label><output id="blueprintResults" aria-live="polite">${items.length} of ${items.length} shown</output></div>`;
   return `${intro('VAULT / USER BLUEPRINTS','MY <em>BLUEPRINTS.</em>','Your saved blueprints live in this browser. Edit compatible attachments using dropdowns; previous manual entries are preserved as legacy selections.')}
   <div class="command-banner"><div><h2>${items.length} SAVED CONFIGURATIONS</h2><p>MW4 and Warzone builds are stored separately, including each performance goal.</p></div><a class="btn btn-primary" href="#/loadouts">+ CREATE NEW BUILD</a></div>
-  ${items.length?`<div class="build-archive">${items.map(x=>`<article class="build-preset"><div>${tag(x.mode,'blue')} ${tag(x.goal,'lime')}<strong>${esc(x.w.name)} / ${esc(x.b.name)}</strong><small>${Object.values(x.b.slots||{}).filter(Boolean).length} filled attachment slots · ${x.b.savedAt?esc(new Date(x.b.savedAt).toLocaleDateString()):'Imported build'}</small></div><div class="build-actions"><button class="btn btn-outline small" data-action="open-saved" data-key="${esc(x.key)}">EDIT ↗</button><button class="btn btn-danger small" data-action="delete-build" data-key="${esc(x.key)}">DELETE</button></div></article>`).join('')}</div>`:'<div class="empty section">You have not saved a blueprint yet. Pick a weapon in the Loadout Lab and select a performance goal.</div>'}`;
+  ${items.length?controls+'<div class="build-archive">'+rows+'</div><div class="empty blueprint-empty" id="blueprintEmpty" hidden>No saved blueprints match these filters.</div>':'<div class="empty section">You have not saved a blueprint yet. Pick a weapon in the Loadout Lab and select a performance goal.</div>'}`;
+}
+function updateBlueprintList(){
+  const query=blueprintQuery.trim().toLowerCase();
+  const cards=[...app.querySelectorAll('[data-blueprint-card]')];
+  let visible=0;
+  for(const card of cards){const matches=(!query||card.dataset.search.includes(query))&&(blueprintMode==='All'||card.dataset.mode===blueprintMode);card.hidden=!matches;if(matches)visible++;}
+  const count=document.getElementById('blueprintResults');if(count)count.textContent=visible+' of '+cards.length+' shown';
+  const empty=document.getElementById('blueprintEmpty');if(empty)empty.hidden=visible!==0;
 }
 function renderGoalComparison(goal,other){const a=GOAL_METRICS[goal],b=GOAL_METRICS[other];return `<div class="compare-columns"><div><span class="smallcaps">CURRENT PROFILE</span><h3>${esc(goal)}</h3></div><div><span class="smallcaps">COMPARE WITH</span><h3>${esc(other)}</h3></div></div><div class="compare-metrics">${GOAL_LABELS.map((label,i)=>`<div class="compare-row"><span>${esc(label)}</span><div class="compare-duo"><span class="compare-bar primary"><i style="width:${a[i]*20}%"></i></span><b>${a[i]}</b><span class="compare-bar secondary"><i style="width:${b[i]*20}%"></i></span><b>${b[i]}</b></div></div>`).join('')}</div><p class="micro">Priority estimates are editorial strategy weights (1–5), not measured in-game weapon stats. Your actual recoil and damage depend on the selected attachments and current patch.</p>`;}
 
@@ -515,12 +534,12 @@ function renderSettings(){return `${intro('LOCAL VAULT / OWN YOUR DATA','DATA & 
 <div class="section settings-grid"><section class="card"><h2 class="card-title">EXPORT YOUR PROGRESS</h2><p>Download a JSON backup containing every checked camo, challenge counter, focus weapon, account mastery item, weapon level, favorite, game mode, and custom loadout.</p><button class="btn btn-primary" data-action="export">↓ DOWNLOAD BACKUP</button><button class="btn" data-action="copy-json" style="margin:7px 0 0">▢ COPY JSON</button><div class="note">Exports include your saved data but no Activision login, game account or credentials. Data is not synced with official Call of Duty servers.</div></section>
 <section class="card"><h2 class="card-title">IMPORT A BACKUP</h2><p>Load a previous MW4Camo.io v1 backup. This replaces progress on the current device. Export your current save first.</p><label class="btn upload">↑ SELECT JSON FILE <input id="importFile" type="file" accept=".json,application/json"></label><div class="divider"></div><h3 class="card-title">RESET EVERYTHING</h3><p>Remove local progress and custom loadouts from this browser. This cannot be undone without a backup.</p><button class="btn btn-danger" data-action="clear">RESET LOCAL DATA</button></section>
 <section class="card"><h2 class="card-title">GAME MODE</h2><p>Mode changes which published requirements are shown on weapon pages and which loadout is edited. Completed camos remain shared across games.</p><div class="filter-chips">${['Warzone','MW4','DMZ'].map(m=>`<button class="chip ${state.mode===m?'active':''}" data-action="mode" data-mode="${m}">${m}</button>`).join('')}</div><div class="smallcaps">LOCAL STORAGE KEY</div><code class="setting-code">${STORE_KEY}</code></section>
-<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v1.9.2 · multi-Apex Gunsmith · local-first storage · Offline support after first HTTP(S) visit</p></section></div>`;}
+<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v1.9.3 · searchable Blueprint Vault · multi-Apex Gunsmith · local-first storage · Offline support after first HTTP(S) visit</p></section></div>`;}
 function renderNotFound(){return `<div class="empty"><h2 class="section-title">PAGE NOT FOUND</h2><p>That weapon or update is not in this version of MW4Camo.io.</p><a class="btn btn-primary" href="#/dashboard">RETURN TO DASHBOARD</a></div>`;}
 function render(){let path=currentPath(),[route,param]=path.split('/');let heading=route==='weapon'?'WEAPON / CAMOS':route==='build'?'WEAPON / GUNSMITH':route==='patch'?'PATCH / DETAIL':(route||'dashboard').toUpperCase();document.getElementById('breadcrumb').innerHTML='MW4CAMO <span>/</span> '+esc(heading);document.getElementById('modeText').textContent=state.mode.toUpperCase();document.querySelectorAll('[data-route]').forEach(x=>x.classList.toggle('active',x.dataset.route===route || (route==='weapon'&&x.dataset.route==='weapons')||(route==='build'&&x.dataset.route==='loadouts')||(route==='patch'&&x.dataset.route==='patches')));
 let w=WEAPONS.find(w=>w.id===param),p=PATCHES.find(p=>p.id===param);
 app.innerHTML=route==='dashboard'||!route?renderDashboard():route==='weapons'?renderWeapons():route==='weapon'?renderWeapon(w):route==='mastery'?renderMastery():route==='planner'?renderPlanner():route==='loadouts'?renderLoadouts():route==='hub'?renderCommandHub():route==='class-builder'?renderClassBuilder():route==='compare'?renderCompare():route==='assistant'?renderCamoAssistant():route==='doctor'?renderDoctor():route==='my-builds'?renderMyBuilds():route==='build'?renderBuild(w):route==='patches'?renderPatches():route==='patch'?renderPatch(p):route==='settings'?renderSettings():renderNotFound();
-if(route==='weapons')updateWeaponGrid();if(route==='patches')updatePatchGrid();
+if(route==='weapons')updateWeaponGrid();if(route==='patches')updatePatchGrid();if(route==='my-builds')updateBlueprintList();
 const isNewRoute=path!==lastRenderedPath;lastRenderedPath=path;
 app.classList.remove('page-enter');
 if(isNewRoute){void app.offsetWidth;app.classList.add('page-enter');}
@@ -691,7 +710,8 @@ if(action==='gs-clear'&&w){const b=collectBuild(w);b.slots={};builderDrafts[buil
 if(action==='gs-generate'&&w){const b=collectBuild(w);b.slots=generateSlots(w,activeGoal(w),b.apex,b.apexName);builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();notify(Object.keys(b.slots).length?'Generated '+activeGoal(w)+' suggestions — review before saving':'No verified attachment choices yet for this weapon');return;}
 if(action==='copy-build'&&w){const b=collectBuild(w);const data=[b.name,w.name+' ('+state.mode+' · '+activeGoal(w)+')',b.apex?'Apex: '+(activeApex(w,b)?.name||'Unknown'):'',...Object.entries(b.slots).filter(x=>x[1]).map(([k,v])=>k+': '+v),b.perks?'Perks: '+b.perks:'',b.tactical?'Tactical: '+b.tactical:'',b.lethal?'Lethal: '+b.lethal:'',b.notes?'Notes: '+b.notes:''].filter(Boolean).join('\n');copyText(data);return;}
 if(action==='open-saved'){let [weapon,mode,goal='Balanced']=String(btn.dataset.key||'').split('|');if(!WEAPONS.some(x=>x.id===weapon)||!['MW4','Warzone','DMZ'].includes(mode)||!Object.hasOwn(TEMPLATES,goal))return;state.mode=mode;state.activeGoals[weapon+'|'+mode]=goal;persist();location.hash='#/build/'+weapon;render();return;}
-if(action==='delete-build'){let key=btn.dataset.key;if(!Object.hasOwn(state.builds,key))return;if(confirm('Delete this saved blueprint?')){delete state.builds[key];persist();render();notify('Blueprint deleted');}return;}
+if(action==='copy-saved-code'){const key=btn.dataset.key,build=Object.hasOwn(state.builds,key)?state.builds[key]:null,[weapon,mode,goal='Balanced']=String(key||'').split('|');if(!build||!WEAPONS.some(w=>w.id===weapon)||!['MW4','Warzone','DMZ'].includes(mode)||!Object.hasOwn(TEMPLATES,goal)){notify('Saved blueprint is unavailable');return;}try{const code=window.MW4_SHARE.encode({weapon,mode,goal,apex:!!build.apex,apexName:build.apexName||'',slots:build.slots||{}});void copyText(code);}catch(error){notify('Website code unavailable: '+String(error.message||error));}return;}
+ if(action==='delete-build'){let key=btn.dataset.key;if(!Object.hasOwn(state.builds,key))return;if(confirm('Delete this saved blueprint?')){delete state.builds[key];persist();render();notify('Blueprint deleted');}return;}
 if(action==='patch-filter'){patchFilter=btn.dataset.filter;render();return;}
 if(action==='mode'){setMode(btn.dataset.mode);return;}
 if(action==='export'){download('mw4camo-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(state,null,2));notify('Backup exported');return;}
@@ -699,6 +719,7 @@ if(action==='copy-json'){copyText(JSON.stringify(state));return;}
 if(action==='clear'){if(confirm('Delete ALL local MW4Camo progress and saved loadouts? Export a backup first.')){state=defaultState();for(const key of Object.keys(classDrafts))delete classDrafts[key];for(const key of Object.keys(builderDrafts))delete builderDrafts[key];for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];persist();render();notify('Local progress reset');}return;}
 });
 app.addEventListener('input',event=>{
+ if(event.target.id==='blueprintSearch'){blueprintQuery=event.target.value;updateBlueprintList();return;}
  if(event.target.closest('.v16-class-editor'))preserveClassDraft();
  if(event.target.matches('[data-measure]')){
   const key=event.target.dataset.weapon+'|'+state.mode;
@@ -707,6 +728,8 @@ app.addEventListener('input',event=>{
  }
 if(event.target.id==='weaponSearch'){filter.search=event.target.value;updateWeaponGrid();}if(event.target.id==='patchSearch'){patchQuery=event.target.value;updatePatchGrid();}});
 app.addEventListener('change',async event=>{
+ if(event.target.id==='blueprintMode'){blueprintMode=['All','MW4','Warzone','DMZ'].includes(event.target.value)?event.target.value:'All';updateBlueprintList();return;}
+ if(event.target.id==='blueprintSort'){blueprintSort=['recent','weapon'].includes(event.target.value)?event.target.value:'recent';render();return;}
 if(event.target.closest('.v16-class-editor')&&event.target.id!=='classPrimary')preserveClassDraft();
 if(event.target.id==='doctorView'){doctorView=event.target.value==='All'?'All':'Pending';render();return;}
 if(event.target.id==='assistantWeapon'){state.focusWeapon=WEAPONS.some(w=>w.id===event.target.value)?event.target.value:null;persist();render();return;}
