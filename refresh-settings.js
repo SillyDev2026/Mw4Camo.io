@@ -76,11 +76,13 @@ async function checkNow(manual=false){
       freshJson('./data/update-status.json'),
       freshJson('./data/attachments-community.json')
     ]);
-    const validPatch = results[0].status==='fulfilled' && Array.isArray(results[0].value) && results[0].value.length > 0 && results[0].value.every(item=>item && typeof item.id==='string' && typeof item.date==='string' && Array.isArray(item.sections) && (item.game==='MW4'||item.game==='Warzone'));
-    const validStatus = results[1].status==='fulfilled' && results[1].value && typeof results[1].value.lastCheckedAt==='string' && typeof results[1].value.lastSuccessfulAt==='string';
-    const consistent = !validStatus || !Number.isInteger(results[1].value.patchCount) || results[1].value.patchCount===results[0]?.value?.length;
-    if(validPatch && validStatus && consistent && window.MW4CamoFeed){
-      const existing = window.MW4CamoFeed.current();
+    const guard=window.MW4_FEED_GUARD;
+    const validPatch=results[0].status==='fulfilled' && guard?.patchArchive(results[0].value)===true;
+    const validStatus=results[1].status==='fulfilled' && guard?.status(results[1].value,results[0]?.value)===true;
+    const consistent=results[1].status!=='fulfilled' || !Number.isInteger(results[1].value.patchCount) || results[1].value.patchCount===results[0]?.value?.length;
+    const existing=window.MW4CamoFeed?.current();
+    const archiveSafe=validPatch && existing && guard.preservesArchive(existing.patches,results[0].value);
+    if(validPatch && validStatus && consistent && archiveSafe && window.MW4CamoFeed){
       const oldTime = Date.parse(existing.status?.lastCheckedAt || '') || 0;
       const freshTime = Date.parse(results[1].value.lastCheckedAt) || 0;
       if(freshTime>=oldTime){
@@ -99,7 +101,7 @@ async function checkNow(manual=false){
     outcome=success===2?'ok':success===1?'partial':'error';
     const lastPublished = Date.parse(window.MW4CamoFeed?.current()?.status?.lastSuccessfulAt||'');
     const delayed = !Number.isFinite(lastPublished) || Date.now()-lastPublished>3*3600000;
-    detail=!consistent?'Publisher snapshots are temporarily out of sync. Try again shortly; saved data was kept.':outcome==='ok'?(changes?(added?added+' new patch record(s) loaded.':'Revised patch information loaded.'):delayed?'No newer published notes. Publisher sync is delayed; latest verified: '+readableTime(lastPublished)+'.':'No changes since the last published patch sync.'):outcome==='partial'?'One source could not be refreshed. Existing saved data was kept.':'Could not verify the published sources. Existing saved data was kept.';
+    detail=!consistent?'Publisher snapshots are temporarily out of sync. Try again shortly; saved data was kept.':validPatch&&!archiveSafe?'Published patch archive appears incomplete; existing verified notes were kept.':outcome==='ok'?(changes?(added?added+' new patch record(s) loaded.':'Revised patch information loaded.'):delayed?'No newer published notes. Publisher sync is delayed; latest verified: '+readableTime(lastPublished)+'.':'No changes since the last published patch sync.'):outcome==='partial'?'One source could not be refreshed. Existing saved data was kept.':'Could not verify the published sources. Existing saved data was kept.';
     if(manual && root && typeof window.MW4CamoFeed?.message==='function')window.MW4CamoFeed.message(detail);
   } catch {
     lastChecked=Date.now();outcome='error';

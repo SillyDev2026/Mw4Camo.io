@@ -15,6 +15,9 @@ on:
       - 'ui-v9.css'
       - 'ui-v10.css'
       - 'refresh-settings.js'
+      - 'feed-guard.js'
+      - 'tests/test_feed_guard.js'
+      - 'tests/browser_feed_guard.py'
       - 'tests/test_upgrade_phases.py'
       - 'tests/test_save_safety.py'
       - 'tests/browser_save_safety.py'
@@ -38,6 +41,9 @@ on:
       - 'ui-v9.css'
       - 'ui-v10.css'
       - 'refresh-settings.js'
+      - 'feed-guard.js'
+      - 'tests/test_feed_guard.js'
+      - 'tests/browser_feed_guard.py'
       - 'tests/test_upgrade_phases.py'
       - 'tests/test_save_safety.py'
       - 'tests/browser_save_safety.py'
@@ -71,6 +77,8 @@ jobs:
         run: python3 -m pytest tests/test_reliability_v161.py -q
       - name: Verify service-worker cache behavior
         run: node tests/test_service_worker.js
+      - name: Test publisher feed validation
+        run: node tests/test_feed_guard.js
       - name: Test website share codes and game-code separation
         run: node tests/test_share_codes.js
       - name: Validate movement lab and measured-data safeguards
@@ -95,3 +103,4 @@ jobs:
         run: |
           python tests/browser_v2_smoke.py
           python tests/browser_save_safety.py
+          python tests/browser_feed_guard.py

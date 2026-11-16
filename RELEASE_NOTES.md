@@ -1,3 +1,9 @@
+# v2.1.0 — Patch Feed Integrity Guard (2026-11-16)
+
+Phase 2 of the second upgrade. Reject malformed publisher articles (invalid sections/points, duplicate IDs, non-official source links, invalid dates) and inconsistent timestamps or record counts before applying live patch snapshots. An incomplete publisher archive cannot remove already known patch records. Existing data stays usable on a rejected refresh. The independent guard has Node unit tests and Chromium checks for malformed network responses; the existing per-device refresh schedule and official source automation are unchanged.
+
+---
+
 # v2.0.1 — Transactional Save Recovery (2026-11-16)
 
 Phase 1 of the second three-version upgrade. Failed browser storage writes no longer produce false successful resets or imports; the previous tracker state survives. Failed blueprint writes restore prior saved configuration, patch-review acknowledgments and legacy data, while keeping the unsaved editor draft. User-supplied game-code writes also roll back on quota failure. Chromium regression tests simulate quota failures for save, reset, and import and verify successful retry. Storage key remains `mw4camo-io-v1`.

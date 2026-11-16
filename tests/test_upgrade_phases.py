@@ -33,8 +33,8 @@ class UpgradePhaseTests(unittest.TestCase):
         self.assertIn("if(requestUrl.search && !navigation)return;",worker)
         self.assertIn("x.setAttribute('aria-current','page')",app)
     def test_cache_and_assets(self):
-        self.assertIn("mw4camo-v2.0.1",read("service-worker.js"))
-        self.assertIn("No login required · v2.0.1",read("index.html"))
+        self.assertIn("mw4camo-v2.1.0",read("service-worker.js"))
+        self.assertIn("No login required · v2.1.0",read("index.html"))
         for name in ("data/weapons.js","data/patches.js","data/attachments.js","share-codes.js","ui-v9.css"):
             self.assertIn("./"+name,read("service-worker.js"))
 if __name__=="__main__": unittest.main()
