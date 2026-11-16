@@ -1,3 +1,9 @@
+# v2.3.0 — Progress Write Protection (2026-11-16)
+
+Third phased upgrade, patch 1. Camo completion and Undo, mastery, assistant counters, focus, favorites, weapon levels, tested build metrics, weapon comparison results, class selection, patch-review flags and mode switching now roll back in-memory changes when browser storage fails. Undo cannot report success after a rejected write. Comparison measurement drafts survive quota failures. Added Chromium failure/retry/undo coverage and Python regression checks. Storage key and existing features are preserved.
+
+---
+
 # v2.2.0 — Class Library and Blueprint Workflow Hardening (2026-11-16)
 
 Phase 3 of the second upgrade. Complete Loadouts preserves earlier class data and current editor fields when saving, duplicating or deleting fails due to unavailable/full browser storage. New/clear class actions avoid phantom state updates. Saved Blueprint deletion and restoring published examples are transactional, retaining old data after failed writes. Opening a saved blueprint detects a lingering unsaved Gunsmith draft and asks before discarding it, ensuring **Edit** loads the actual saved version rather than an old draft. Browser tests cover failed writes and successful retries.
