@@ -176,11 +176,12 @@ function notifyUndo(message, callback){
   const label=document.createElement('span');label.textContent=message;
   const button=document.createElement('button');button.type='button';button.className='toast-undo';button.textContent='UNDO';
   button.setAttribute('aria-label','Undo the last progress change');
-  button.addEventListener('click',()=>{callback();notify('Last change undone');},{once:true});
+  button.addEventListener('click',()=>{if(callback()!==false)notify('Last change undone');},{once:true});
   toastBox.append(label,button);toastBox.classList.add('show');
   toastTimer=setTimeout(()=>toastBox.classList.remove('show'),6500);
 }
 function persist(){const warning=document.getElementById('storageWarning');try{localStorage.setItem(STORE_KEY,JSON.stringify(state));if(warning)warning.hidden=true;return true;}catch{if(warning)warning.hidden=false;notify('Storage full or blocked. Export a backup to avoid losing your changes.');return false;}}
+function commitValue(table,key,value){const had=Object.hasOwn(table,key),before=table[key];if(value===undefined)delete table[key];else table[key]=value;if(persist())return true;if(had)table[key]=before;else delete table[key];return false;}
 function notify(msg){toastBox.textContent=msg;toastBox.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastBox.classList.remove('show'),3500);}
 function link(path){return '#/'+path;}
 function currentPath(){try{return decodeURIComponent((location.hash||'#/dashboard').replace(/^#\/?/,''));}catch{return 'dashboard';}}
@@ -577,13 +578,13 @@ if(action==='review-patch'){
 if((action==='quick-count'||action==='quick-decrease')&&w){
  const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
  const key=w.id+'|'+camo.id,prior=counter(w,camo.id);
- state.counters[key]={...prior,value:Math.max(0,Math.min(100000,prior.value+(action==='quick-decrease'?-1:1)))};persist();rerenderPreservePosition();
- notifyUndo('Updated '+camo.name+' progress',()=>{state.counters[key]=prior;persist();rerenderPreservePosition();});return;
+ if(!commitValue(state.counters,key,{...prior,value:Math.max(0,Math.min(100000,prior.value+(action==='quick-decrease'?-1:1)))}))return;rerenderPreservePosition();
+ notifyUndo('Updated '+camo.name+' progress',()=>{if(!commitValue(state.counters,key,prior))return false;rerenderPreservePosition();});return;
 }
 if(action==='assistant-complete'&&w){
  const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
- const key=w.id+'|'+camo.id,prior=Boolean(state.completed[key]);state.completed[key]=true;persist();render();
- notifyUndo('Camo marked unlocked',()=>{state.completed[key]=prior;persist();render();});return;
+ const key=w.id+'|'+camo.id,prior=Boolean(state.completed[key]);if(!commitValue(state.completed,key,true))return;render();
+ notifyUndo('Camo marked unlocked',()=>{if(!commitValue(state.completed,key,prior))return false;render();});return;
 }
 if(action==='class-preset'){
  if(state.mode!=='Warzone')return;
@@ -687,13 +688,13 @@ if(action==='mission-filter'){missionFilter=btn.dataset.filter;render();return;}
 if(action==='favorite'&&w){state.favorites=favorite(w)?state.favorites.filter(x=>x!==w.id):[...state.favorites,w.id];persist();if(currentPath()==='weapons')updateWeaponGrid();else render();return;}
 if(action==='camo'&&w){
  let key=w.id+'|'+btn.dataset.camo,previous=Boolean(state.completed[key]);
- state.completed[key]=!previous;persist();render();
- notifyUndo((previous?'Unchecked ':'Completed ')+w.name+' camo',()=>{state.completed[key]=previous;persist();render();});return;
+ if(!commitValue(state.completed,key,!previous))return;render();
+ notifyUndo((previous?'Unchecked ':'Completed ')+w.name+' camo',()=>{if(!commitValue(state.completed,key,previous))return false;render();});return;
 }
 if(action==='account'){
  let key=btn.dataset.camo,previous=Boolean(state.accounts[key]);
- state.accounts[key]=!previous;persist();render();
- notifyUndo(previous?'Mastery unmarked':'Mastery marked complete',()=>{state.accounts[key]=previous;persist();render();});return;
+ if(!commitValue(state.accounts,key,!previous))return;render();
+ notifyUndo(previous?'Mastery unmarked':'Mastery marked complete',()=>{if(!commitValue(state.accounts,key,previous))return false;render();});return;
 }
 if(action==='favorites'){filter.fav=!filter.fav;render();return;}
 if(action==='category'){filter.category=btn.dataset.category;render();return;}
