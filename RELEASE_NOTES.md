@@ -1,3 +1,9 @@
+# v2.4.0 — Safer Imports and Shareable Blueprint Vault (2026-11-16)
+
+Third phased upgrade, patch 2. Backup import now rejects phantom blueprint records with extra key segments, unknown goals, unrecognized weapon IDs, invalid modes, and non-object slots. Legacy 2-segment keys still import. Active-goal and measured-build key validation is strengthened. Backup confirmation shows the actual imported camo, blueprint, and class counts. Saved Blueprints now provide **COPY SHARE LINK**, derived only from the existing verified MW4C2 website encoder. This is a website sharing link, not an in-game MW4 import code. Added browser and Python regression tests. Existing local storage keys and working features remain unchanged.
+
+---
+
 # v2.3.0 — Progress Write Protection (2026-11-16)
 
 Third phased upgrade, patch 1. Camo completion and Undo, mastery, assistant counters, focus, favorites, weapon levels, tested build metrics, weapon comparison results, class selection, patch-review flags and mode switching now roll back in-memory changes when browser storage fails. Undo cannot report success after a rejected write. Comparison measurement drafts survive quota failures. Added Chromium failure/retry/undo coverage and Python regression checks. Storage key and existing features are preserved.
