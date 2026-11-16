@@ -5,7 +5,7 @@ from browser_v15_smoke import page_with_site
 def run():
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True, args=['--no-sandbox','--disable-dev-shm-usage'])
-        for width in (360,390,768,1440):
+        for width in (320,390,768,1440):
             page,errors=page_with_site(browser,width)
             page.evaluate("location.hash='#/build/m4'")
             page.locator('#buildName').fill('Vault regression rifle')
@@ -29,9 +29,20 @@ def run():
             page.wait_for_function("typeof window.__copiedCode==='string'")
             assert page.evaluate("window.__copiedCode.startsWith('MW4C2-')")
             assert page.locator('[data-route="my-builds"]').get_attribute('aria-current')=='page'
-            assert not page.evaluate('document.documentElement.scrollWidth>innerWidth+2'),width
-            assert not errors,(width,errors)
-            print('PASS',width,'vault search, mode, sort, copy, navigation',flush=True)
+            routes=('dashboard','weapons','planner','mastery','loadouts','hub','class-builder','compare','assistant','doctor','my-builds','patches','settings','build/m4','weapon/m4')
+            for route in routes:
+                page.evaluate("(route)=>location.hash='#/'+route",route)
+                page.wait_for_timeout(45)
+                assert page.locator('#app h1').count(),(width,route,'blank heading')
+                assert page.locator('[aria-current="page"]').count(),(width,route,'active navigation missing')
+                assert not page.evaluate('document.documentElement.scrollWidth>innerWidth+2'),(width,route,'horizontal overflow')
+                assert not errors,(width,route,errors)
+            if width<=900:
+                page.locator('#menuToggle').click()
+                assert 'open' in page.locator('#sidebar').get_attribute('class')
+                page.locator('#menuClose').click()
+                assert 'open' not in page.locator('#sidebar').get_attribute('class')
+            print('PASS',width,'vault workflows and 15 full application routes',flush=True)
             page.close()
         browser.close()
 
