@@ -3,7 +3,7 @@ import re
 from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 SCRIPTS=['data/weapons.js','data/patches.js','data/attachments.js','data/attachment-expansion.js','data/update-status.js','data/intel-v15.js','share-codes.js','app.js','feed-guard.js','refresh-settings.js','ui-experience.js']
-CSS=['styles.css','ui-v2.css','ui-v3.css','ui-v4.css','ui-v5.css','ui-v6.css','ui-v7.css','ui-v8.css','ui-v9.css','ui-v10.css']
+CSS=['styles.css','ui-v2.css','ui-v3.css','ui-v4.css','ui-v5.css','ui-v6.css','ui-v7.css','ui-v8.css','ui-v9.css','ui-v10.css','ui-v11.css']
 def page_with_site(browser,width=390):
     page=browser.new_page(viewport={'width':width,'height':820},device_scale_factor=1)
     page.set_default_timeout(2500)

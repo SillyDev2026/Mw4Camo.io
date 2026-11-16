@@ -13,6 +13,11 @@ const quickClose=document.getElementById('quickClose');
 const quickOverlay=document.getElementById('quickOverlay');
 const quickSearch=document.getElementById('quickSearch');
 const quickResults=document.getElementById('quickResults');
+quickSearch.setAttribute('role','combobox');
+quickSearch.setAttribute('aria-controls','quickResults');
+quickSearch.setAttribute('aria-haspopup','listbox');
+quickSearch.setAttribute('aria-autocomplete','list');
+quickSearch.setAttribute('aria-expanded','false');
 const backTop=document.getElementById('backTop');
 const pageLinks=[
   ['Overview','dashboard','Command center and progress'],
@@ -93,10 +98,10 @@ function makeItems(term){
   return matches.filter((item,index)=>matches.findIndex(prev=>prev.path===item.path)===index).slice(0,termLC?14:12);
 }
 function drawResults(){
-  items=makeItems(quickSearch.value);selection=Math.min(selection,Math.max(0,items.length-1));quickResults.replaceChildren();
+  items=makeItems(quickSearch.value);selection=Math.min(selection,Math.max(0,items.length-1));quickResults.replaceChildren();quickSearch.setAttribute('aria-activedescendant',items.length?'quick-option-'+selection:'');
   if(!items.length){const empty=document.createElement('p');empty.className='quick-empty';empty.textContent='No matches. Try a weapon name, camo page, or patch keyword.';quickResults.append(empty);return;}
   for(const [i,item] of items.entries()){
-    const btn=document.createElement('button');btn.type='button';btn.role='option';btn.className='quick-result';btn.dataset.index=String(i);btn.setAttribute('aria-selected',String(i===selection));
+    const btn=document.createElement('button');btn.type='button';btn.role='option';btn.id='quick-option-'+i;btn.className='quick-result';btn.dataset.index=String(i);btn.setAttribute('aria-selected',String(i===selection));
     const copy=document.createElement('span');const name=document.createElement('strong');name.textContent=item.title;
     const subtitle=document.createElement('small');subtitle.textContent=item.subtitle;copy.append(name,subtitle);
     const kind=document.createElement('b');kind.textContent=item.kind;btn.append(copy,kind);
@@ -104,8 +109,8 @@ function drawResults(){
     btn.addEventListener('click',()=>choose(i));quickResults.append(btn);
   }
 }
-function openQuick(){if(!quickOverlay.hidden)return;priorFocus=document.activeElement;quickOverlay.hidden=false;document.body.classList.add('quick-open');selection=0;quickSearch.value='';drawResults();quickSearch.focus();}
-function closeQuick(){if(quickOverlay.hidden)return;quickOverlay.hidden=true;document.body.classList.remove('quick-open');priorFocus?.isConnected&&priorFocus.focus({preventScroll:true});}
+function openQuick(){if(!quickOverlay.hidden)return;priorFocus=document.activeElement;quickOverlay.hidden=false;quickSearch.setAttribute('aria-expanded','true');document.body.classList.add('quick-open');selection=0;quickSearch.value='';drawResults();quickSearch.focus();}
+function closeQuick(){if(quickOverlay.hidden)return;quickOverlay.hidden=true;quickSearch.setAttribute('aria-expanded','false');quickSearch.removeAttribute('aria-activedescendant');document.body.classList.remove('quick-open');priorFocus?.isConnected&&priorFocus.focus({preventScroll:true});}
 function choose(i){const item=items[i];if(!item)return;closeQuick();location.hash='#/'+item.path;}
 quickOpen.addEventListener('click',openQuick);
 quickClose.addEventListener('click',closeQuick);

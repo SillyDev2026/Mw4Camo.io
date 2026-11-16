@@ -176,11 +176,12 @@ function notifyUndo(message, callback){
   const label=document.createElement('span');label.textContent=message;
   const button=document.createElement('button');button.type='button';button.className='toast-undo';button.textContent='UNDO';
   button.setAttribute('aria-label','Undo the last progress change');
-  button.addEventListener('click',()=>{callback();notify('Last change undone');},{once:true});
+  button.addEventListener('click',()=>{if(callback()!==false)notify('Last change undone');},{once:true});
   toastBox.append(label,button);toastBox.classList.add('show');
   toastTimer=setTimeout(()=>toastBox.classList.remove('show'),6500);
 }
 function persist(){const warning=document.getElementById('storageWarning');try{localStorage.setItem(STORE_KEY,JSON.stringify(state));if(warning)warning.hidden=true;return true;}catch{if(warning)warning.hidden=false;notify('Storage full or blocked. Export a backup to avoid losing your changes.');return false;}}
+function commitValue(table,key,value){const had=Object.hasOwn(table,key),before=table[key];if(value===undefined)delete table[key];else table[key]=value;if(persist())return true;if(had)table[key]=before;else delete table[key];return false;}
 function notify(msg){toastBox.textContent=msg;toastBox.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastBox.classList.remove('show'),3500);}
 function link(path){return '#/'+path;}
 function currentPath(){try{return decodeURIComponent((location.hash||'#/dashboard').replace(/^#\/?/,''));}catch{return 'dashboard';}}
@@ -448,7 +449,7 @@ function renderMyBuilds(){
     const search=(x.w.name+' '+x.b.name+' '+x.goal+' '+x.mode).toLowerCase();
     const date=Date.parse(x.b.savedAt||'');
     const when=Number.isFinite(date)?new Date(date).toLocaleDateString():'Imported build';
-    return `<article class="build-preset" data-blueprint-card data-mode="${esc(x.mode)}" data-search="${esc(search)}"><div>${tag(x.mode,'blue')} ${tag(x.goal,'lime')}<strong>${esc(x.w.name)} / ${esc(x.b.name)}</strong><small>${Object.values(x.b.slots||{}).filter(Boolean).length} filled attachment slots · ${esc(when)}</small></div><div class="build-actions"><button class="btn btn-outline small" data-action="open-saved" data-key="${esc(x.key)}">EDIT ↗</button><button class="btn btn-outline small" data-action="copy-saved-code" data-key="${esc(x.key)}">COPY WEBSITE CODE</button><button class="btn btn-danger small" data-action="delete-build" data-key="${esc(x.key)}">DELETE</button></div></article>`;
+    return `<article class="build-preset" data-blueprint-card data-mode="${esc(x.mode)}" data-search="${esc(search)}"><div>${tag(x.mode,'blue')} ${tag(x.goal,'lime')}<strong>${esc(x.w.name)} / ${esc(x.b.name)}</strong><small>${Object.values(x.b.slots||{}).filter(Boolean).length} filled attachment slots · ${esc(when)}</small></div><div class="build-actions"><button class="btn btn-outline small" data-action="open-saved" data-key="${esc(x.key)}">EDIT ↗</button><button class="btn btn-outline small" data-action="copy-saved-code" data-key="${esc(x.key)}">COPY WEBSITE CODE</button><button class="btn btn-outline small" data-action="copy-saved-link" data-key="${esc(x.key)}">COPY SHARE LINK</button><button class="btn btn-danger small" data-action="delete-build" data-key="${esc(x.key)}">DELETE</button></div></article>`;
   }).join('');
   const controls=`<div class="blueprint-tools"><label>FIND BLUEPRINTS<input class="field" id="blueprintSearch" type="search" maxlength="120" autocomplete="off" placeholder="Search weapon, name or goal" value="${esc(blueprintQuery)}"></label><label>GAME MODE<select class="field" id="blueprintMode">${['All','MW4','Warzone','DMZ'].map(m=>`<option value="${m}" ${blueprintMode===m?'selected':''}>${m==='All'?'All modes':m}</option>`).join('')}</select></label><label>SORT BY<select class="field" id="blueprintSort"><option value="recent" ${blueprintSort==='recent'?'selected':''}>Recently saved</option><option value="weapon" ${blueprintSort==='weapon'?'selected':''}>Weapon name</option></select></label><output id="blueprintResults" aria-live="polite">${items.length} of ${items.length} shown</output></div>`;
   return `${intro('VAULT / USER BLUEPRINTS','MY <em>BLUEPRINTS.</em>','Your saved blueprints live in this browser. Edit compatible attachments using dropdowns; previous manual entries are preserved as legacy selections.')}
@@ -534,7 +535,7 @@ function renderSettings(){return `${intro('LOCAL VAULT / OWN YOUR DATA','DATA & 
 <div class="section settings-grid"><section class="card"><h2 class="card-title">EXPORT YOUR PROGRESS</h2><p>Download a JSON backup containing every checked camo, challenge counter, focus weapon, account mastery item, weapon level, favorite, game mode, and custom loadout.</p><button class="btn btn-primary" data-action="export">↓ DOWNLOAD BACKUP</button><button class="btn" data-action="copy-json" style="margin:7px 0 0">▢ COPY JSON</button><div class="note">Exports include your saved data but no Activision login, game account or credentials. Data is not synced with official Call of Duty servers.</div></section>
 <section class="card"><h2 class="card-title">IMPORT A BACKUP</h2><p>Load a previous MW4Camo.io v1 backup. This replaces progress on the current device. Export your current save first.</p><label class="btn upload">↑ SELECT JSON FILE <input id="importFile" type="file" accept=".json,application/json"></label><div class="divider"></div><h3 class="card-title">RESET EVERYTHING</h3><p>Remove local progress and custom loadouts from this browser. This cannot be undone without a backup.</p><button class="btn btn-danger" data-action="clear">RESET LOCAL DATA</button></section>
 <section class="card"><h2 class="card-title">GAME MODE</h2><p>Mode changes which published requirements are shown on weapon pages and which loadout is edited. Completed camos remain shared across games.</p><div class="filter-chips">${['Warzone','MW4','DMZ'].map(m=>`<button class="chip ${state.mode===m?'active':''}" data-action="mode" data-mode="${m}">${m}</button>`).join('')}</div><div class="smallcaps">LOCAL STORAGE KEY</div><code class="setting-code">${STORE_KEY}</code></section>
-<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v2.2.0 · reliable classes and blueprints · verified patch snapshots · safer local saves · searchable Blueprint Vault · multi-Apex Gunsmith · local-first storage · Offline support after first HTTP(S) visit</p></section></div>`;}
+<section class="card"><h2 class="card-title">DATA TRANSPARENCY</h2><p>Roster and camo progression rules are based on official Call of Duty publications. Community-sourced Special camo challenges are explicitly labelled and may change. Season 1 camo requirements that have not been verified remain blank.</p><a class="source-link" target="_blank" rel="noopener" href="https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige">Official camo guide ↗</a><br><a class="source-link" target="_blank" rel="noopener" href="https://mw4camotracker.com/data">Community camo data (CC BY 4.0) ↗</a><p class="micro">v2.5.0 · cross-tab draft recovery · mobile UX · vault share links · validated imports · progress save protection · reliable classes and blueprints · verified patch snapshots · safer local saves · searchable Blueprint Vault · multi-Apex Gunsmith · local-first storage · Offline support after first HTTP(S) visit</p></section></div>`;}
 function renderNotFound(){return `<div class="empty"><h2 class="section-title">PAGE NOT FOUND</h2><p>That weapon or update is not in this version of MW4Camo.io.</p><a class="btn btn-primary" href="#/dashboard">RETURN TO DASHBOARD</a></div>`;}
 function render(){let path=currentPath(),[route,param]=path.split('/');let heading=route==='weapon'?'WEAPON / CAMOS':route==='build'?'WEAPON / GUNSMITH':route==='patch'?'PATCH / DETAIL':(route||'dashboard').toUpperCase();document.getElementById('breadcrumb').innerHTML='MW4CAMO <span>/</span> '+esc(heading);document.getElementById('modeText').textContent=state.mode.toUpperCase();document.querySelectorAll('[data-route]').forEach(x=>{const active=x.dataset.route===route||(route==='weapon'&&x.dataset.route==='weapons')||(route==='build'&&x.dataset.route==='loadouts')||(route==='patch'&&x.dataset.route==='patches');x.classList.toggle('active',active);if(active)x.setAttribute('aria-current','page');else x.removeAttribute('aria-current');});
 let w=WEAPONS.find(w=>w.id===param),p=PATCHES.find(p=>p.id===param);
@@ -550,40 +551,40 @@ function setMode(mode){
  if(!['Warzone','MW4','DMZ'].includes(mode)||state.mode===mode)return;
  const path=currentPath().split('/');
  if(path[0]==='build'){const w=WEAPONS.find(w=>w.id===path[1]);if(w)stashDraft(w);}if(path[0]==='class-builder')preserveClassDraft();
- state.mode=mode;persist();render();notify('Mode changed to '+mode);
+ const before=state.mode;state.mode=mode;if(!persist()){state.mode=before;return;}render();notify('Mode changed to '+mode);
 }
 function valueById(id){let el=document.getElementById(id);return el?el.value.trim():'';}
 function collectBuild(w){const apexName=valueById('gsApexSelect'),apex=!!apexName,slots={};app.querySelectorAll('[data-slot-row]').forEach(row=>{const type=row.querySelector('.gs-type')?.value,value=row.querySelector('.gs-item')?.value||'';if(type&&availableTypes(w,apex,apexName).includes(type)&&!Object.hasOwn(slots,type)&&Object.keys(slots).length<5)slots[type]=value;});return {name:valueById('buildName')||w.name+' custom',template:activeGoal(w),slots,apex,apexName,perks:valueById('buildPerks'),tactical:valueById('buildTactical'),lethal:valueById('buildLethal'),notes:valueById('buildNotes'),userSaved:true,savedAt:new Date().toISOString()};}
 async function copyText(text){try{await navigator.clipboard.writeText(text);notify('Copied to clipboard');}catch{let el=document.createElement('textarea');el.value=text;el.style.position='fixed';el.style.opacity='0';document.body.appendChild(el);el.select();let ok=false;try{ok=document.execCommand('copy');}catch{}finally{el.remove();}notify(ok?'Copied to clipboard':'Clipboard unavailable; use Export instead');}}
 function download(name,text){let blob=new Blob([text],{type:'application/json;charset=utf-8'});let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}
-function validatedImport(data){if(!data || data.version!==1 || !isRecord(data.completed)||!isRecord(data.accounts)||!isRecord(data.levels)||!Array.isArray(data.favorites)||!isRecord(data.builds))throw Error('Not a MW4Camo v1 backup');let validKeys=new Set(WEAPONS.flatMap(w=>CAMOS.map(c=>w.id+'|'+c.id)));let validAcc=new Set(ACCOUNT.map(c=>c.id));let validIds=new Set(WEAPONS.map(w=>w.id));let completed=Object.fromEntries(Object.entries(data.completed).filter(([k])=>validKeys.has(k)).map(([k,v])=>[k,v===true]));let accounts=Object.fromEntries(Object.entries(data.accounts).filter(([k])=>validAcc.has(k)).map(([k,v])=>[k,v===true]));let levels=Object.fromEntries(Object.entries(data.levels).filter(([k,v])=>validIds.has(k)&&Number.isFinite(Number(v))).map(([k,v])=>[k,Math.min(999,Math.max(0,Number(v)))]));let builds=Object.fromEntries(Object.entries(data.builds).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&v&&typeof v==='object'&&v.slots&&typeof v.slots==='object').map(([k,v])=>[k,{name:String(v.name||'Custom').slice(0,100),template:Object.hasOwn(TEMPLATES,String(v.template))?String(v.template):'Balanced',slots:Object.fromEntries(Object.entries(v.slots).slice(0,10).map(([key,val])=>[String(key).slice(0,50),String(val||'').slice(0,90)])),perks:String(v.perks||'').slice(0,300),tactical:String(v.tactical||'').slice(0,150),lethal:String(v.lethal||'').slice(0,150),notes:String(v.notes||'').slice(0,5000),apex:v.apex===true,apexName:v.apex===true?String(v.apexName||GUNSMITH.specs[k.split('|')[0]]?.apex||'').slice(0,120):'',gameCode:window.MW4_SHARE.gameCodeLooksPlausible(v.gameCode)?String(v.gameCode).toUpperCase():'',gameFingerprint:/^[A-F0-9]{8}$/.test(String(v.gameFingerprint||''))?v.gameFingerprint:'',userSaved:true,savedAt:Number.isFinite(Date.parse(v.savedAt))?String(v.savedAt).slice(0,40):''}]));let activeGoals=Object.fromEntries(Object.entries(data.activeGoals||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&Object.hasOwn(TEMPLATES,v)));let counters=Object.fromEntries(Object.entries(data.counters||{}).filter(([k,v])=>validKeys.has(k)&&v&&typeof v==='object').map(([k,v])=>[k,{value:Math.min(100000,Math.max(0,Math.floor(Number(v.value)||0))),target:Math.min(100000,Math.max(0,Math.floor(Number(v.target)||0)))}]));const classLibrary={};for(const mode of ['MW4','Warzone','DMZ']){
+function validatedImport(data){if(!data || data.version!==1 || !isRecord(data.completed)||!isRecord(data.accounts)||!isRecord(data.levels)||!Array.isArray(data.favorites)||!isRecord(data.builds))throw Error('Not a MW4Camo v1 backup');let validKeys=new Set(WEAPONS.flatMap(w=>CAMOS.map(c=>w.id+'|'+c.id)));let validAcc=new Set(ACCOUNT.map(c=>c.id));let validIds=new Set(WEAPONS.map(w=>w.id));let completed=Object.fromEntries(Object.entries(data.completed).filter(([k])=>validKeys.has(k)).map(([k,v])=>[k,v===true]));let accounts=Object.fromEntries(Object.entries(data.accounts).filter(([k])=>validAcc.has(k)).map(([k,v])=>[k,v===true]));let levels=Object.fromEntries(Object.entries(data.levels).filter(([k,v])=>validIds.has(k)&&Number.isFinite(Number(v))).map(([k,v])=>[k,Math.min(999,Math.max(0,Number(v)))]));let builds=Object.fromEntries(Object.entries(data.builds).filter(([k,v])=>{const parts=k.split('|');return (parts.length===2||(parts.length===3&&Object.hasOwn(TEMPLATES,parts[2])))&&validIds.has(parts[0])&&['MW4','Warzone','DMZ'].includes(parts[1])&&isRecord(v)&&isRecord(v.slots);}).map(([k,v])=>[k,{name:String(v.name||'Custom').slice(0,100),template:Object.hasOwn(TEMPLATES,String(v.template))?String(v.template):'Balanced',slots:Object.fromEntries(Object.entries(v.slots).slice(0,10).map(([key,val])=>[String(key).slice(0,50),String(val||'').slice(0,90)])),perks:String(v.perks||'').slice(0,300),tactical:String(v.tactical||'').slice(0,150),lethal:String(v.lethal||'').slice(0,150),notes:String(v.notes||'').slice(0,5000),apex:v.apex===true,apexName:v.apex===true?String(v.apexName||GUNSMITH.specs[k.split('|')[0]]?.apex||'').slice(0,120):'',gameCode:window.MW4_SHARE.gameCodeLooksPlausible(v.gameCode)?String(v.gameCode).toUpperCase():'',gameFingerprint:/^[A-F0-9]{8}$/.test(String(v.gameFingerprint||''))?v.gameFingerprint:'',userSaved:true,savedAt:Number.isFinite(Date.parse(v.savedAt))?String(v.savedAt).slice(0,40):''}]));let activeGoals=Object.fromEntries(Object.entries(data.activeGoals||{}).filter(([k,v])=>k.split('|').length===2&&validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&Object.hasOwn(TEMPLATES,v)));let counters=Object.fromEntries(Object.entries(data.counters||{}).filter(([k,v])=>validKeys.has(k)&&v&&typeof v==='object').map(([k,v])=>[k,{value:Math.min(100000,Math.max(0,Math.floor(Number(v.value)||0))),target:Math.min(100000,Math.max(0,Math.floor(Number(v.target)||0)))}]));const classLibrary={};for(const mode of ['MW4','Warzone','DMZ']){
  const list=Array.isArray(data.classLibrary?.[mode])?data.classLibrary[mode].slice(0,40):[];
  classLibrary[mode]=list.filter(x=>x&&typeof x==='object'&&typeof x.id==='string'&&x.id.length<=80).map(x=>Object.fromEntries(['id','name','primary','secondary','perk1','perk2','perk3','tactical','lethal','field','notes','savedAt'].map(key=>[key,String(x[key]||'').slice(0,key==='notes'?500:150)]))).filter(x=>validIds.has(x.primary)&&(!x.secondary||validIds.has(x.secondary))&&x.primary!==x.secondary);
  }
  const activeClassIds=Object.fromEntries(Object.entries(data.activeClassIds||{}).filter(([mode,id])=>['MW4','Warzone','DMZ'].includes(mode)&&typeof id==='string'&&(id===''||classLibrary[mode].some(x=>x.id===id))));
- return {...defaultState(),classLibrary,activeClassIds,completed,accounts,levels,builds,activeGoals,counters,focusWeapon:validIds.has(data.focusWeapon)?data.focusWeapon:null,favorites:data.favorites.filter(k=>validIds.has(k)),mode:['MW4','Warzone','DMZ'].includes(data.mode)?data.mode:'Warzone',classConfigs:Object.fromEntries(Object.entries(data.classConfigs||{}).filter(([k,v])=>['MW4','Warzone','DMZ'].includes(k)&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['name','primary','secondary','perk1','perk2','perk3','tactical','lethal','field','savedAt'].map(f=>[f,String(v[f]||'').slice(0,150)]))])),buildTests:Object.fromEntries(Object.entries(data.buildTests||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&Object.hasOwn(TEMPLATES,k.split('|')[2])&&cleanPerformance(v)).slice(0,1000).map(([k,v])=>[k,cleanPerformance(v)])),reviewedPatches:Object.fromEntries(Object.entries(data.reviewedPatches||{}).slice(0,1500).filter(([k,v])=>typeof k==='string'&&k.length<200&&v===true)),weaponMeasurements:Object.fromEntries(Object.entries(data.weaponMeasurements||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(f=>[f,Number.isFinite(Number(v[f]))&&v[f]!==null&&v[f]!==''?Math.min(f==='recoil'?10:100000,Math.max(0,Number(v[f]))):null]))]))};}
+ return {...defaultState(),classLibrary,activeClassIds,completed,accounts,levels,builds,activeGoals,counters,focusWeapon:validIds.has(data.focusWeapon)?data.focusWeapon:null,favorites:data.favorites.filter(k=>validIds.has(k)),mode:['MW4','Warzone','DMZ'].includes(data.mode)?data.mode:'Warzone',classConfigs:Object.fromEntries(Object.entries(data.classConfigs||{}).filter(([k,v])=>['MW4','Warzone','DMZ'].includes(k)&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['name','primary','secondary','perk1','perk2','perk3','tactical','lethal','field','savedAt'].map(f=>[f,String(v[f]||'').slice(0,150)]))])),buildTests:Object.fromEntries(Object.entries(data.buildTests||{}).filter(([k,v])=>k.split('|').length===3&&validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&Object.hasOwn(TEMPLATES,k.split('|')[2])&&cleanPerformance(v)).slice(0,1000).map(([k,v])=>[k,cleanPerformance(v)])),reviewedPatches:Object.fromEntries(Object.entries(data.reviewedPatches||{}).slice(0,1500).filter(([k,v])=>typeof k==='string'&&k.length<200&&v===true)),weaponMeasurements:Object.fromEntries(Object.entries(data.weaponMeasurements||{}).filter(([k,v])=>validIds.has(k.split('|')[0])&&['MW4','Warzone','DMZ'].includes(k.split('|')[1])&&v&&typeof v==='object').map(([k,v])=>[k,Object.fromEntries(['ttkMs','adsMs','recoil','rangeM'].map(f=>[f,Number.isFinite(Number(v[f]))&&v[f]!==null&&v[f]!==''?Math.min(f==='recoil'?10:100000,Math.max(0,Number(v[f]))):null]))]))};}
 app.addEventListener('click',event=>{let btn=event.target.closest('[data-action]');if(!btn)return;let action=btn.dataset.action,w=WEAPONS.find(w=>w.id===btn.dataset.weapon);if(action==='doctor-mode'){doctorModeFilter=['All','Warzone','MW4','DMZ'].includes(btn.dataset.mode)?btn.dataset.mode:'All';render();return;}
 if(action==='review-all'){
  const key=btn.dataset.key,build=state.builds[key],w=WEAPONS.find(w=>w.id===key?.split('|')[0]);if(!build||!w)return;
  const keys=pendingReviews(key,w,build).map(p=>reviewKey(key,p));if(!keys.length)return;
- for(const k of keys)state.reviewedPatches[k]=true;persist();render();
- notifyUndo(keys.length+' updates marked reviewed',()=>{for(const k of keys)delete state.reviewedPatches[k];persist();render();});return;
+ const before=state.reviewedPatches;state.reviewedPatches={...before};for(const k of keys)state.reviewedPatches[k]=true;if(!persist()){state.reviewedPatches=before;return;}render();
+ notifyUndo(keys.length+' updates marked reviewed',()=>{const now=state.reviewedPatches;state.reviewedPatches={...now};for(const k of keys){if(Object.hasOwn(before,k))state.reviewedPatches[k]=before[k];else delete state.reviewedPatches[k];}if(!persist()){state.reviewedPatches=now;return false;}render();});return;
 }
 if(action==='review-patch'){
  const key=btn.dataset.key,patch=PATCHES.find(p=>p.id===btn.dataset.patch);
  if(!Object.hasOwn(state.builds,key)||!patch)return;
- const rev=reviewKey(key,patch);state.reviewedPatches[rev]=true;persist();render();notifyUndo('Patch marked reviewed',()=>{delete state.reviewedPatches[rev];persist();render();});return;
+ const rev=reviewKey(key,patch),had=Object.hasOwn(state.reviewedPatches,rev),before=state.reviewedPatches[rev];if(!commitValue(state.reviewedPatches,rev,true))return;render();notifyUndo('Patch marked reviewed',()=>{if(!commitValue(state.reviewedPatches,rev,had?before:undefined))return false;render();});return;
 }
 if((action==='quick-count'||action==='quick-decrease')&&w){
  const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
  const key=w.id+'|'+camo.id,prior=counter(w,camo.id);
- state.counters[key]={...prior,value:Math.max(0,Math.min(100000,prior.value+(action==='quick-decrease'?-1:1)))};persist();rerenderPreservePosition();
- notifyUndo('Updated '+camo.name+' progress',()=>{state.counters[key]=prior;persist();rerenderPreservePosition();});return;
+ if(!commitValue(state.counters,key,{...prior,value:Math.max(0,Math.min(100000,prior.value+(action==='quick-decrease'?-1:1)))}))return;rerenderPreservePosition();
+ notifyUndo('Updated '+camo.name+' progress',()=>{if(!commitValue(state.counters,key,prior))return false;rerenderPreservePosition();});return;
 }
 if(action==='assistant-complete'&&w){
  const camo=CAMOS.find(c=>c.id===btn.dataset.camo);if(!camo)return;
- const key=w.id+'|'+camo.id,prior=Boolean(state.completed[key]);state.completed[key]=true;persist();render();
- notifyUndo('Camo marked unlocked',()=>{state.completed[key]=prior;persist();render();});return;
+ const key=w.id+'|'+camo.id,prior=Boolean(state.completed[key]);if(!commitValue(state.completed,key,true))return;render();
+ notifyUndo('Camo marked unlocked',()=>{if(!commitValue(state.completed,key,prior))return false;render();});return;
 }
 if(action==='class-preset'){
  if(state.mode!=='Warzone')return;
@@ -671,9 +672,9 @@ if(action==='save-measures'){
   }
   updates[w.id+'|'+state.mode]=values;
  }
- Object.assign(state.weaponMeasurements,updates);
- for(const key of Object.keys(updates))delete measurementDrafts[key];
- persist();render();notify('Personal measurements saved for '+state.mode);return;
+ const previous=state.weaponMeasurements;state.weaponMeasurements={...previous,...updates};
+ 
+ if(!persist()){state.weaponMeasurements=previous;notify('Measurement save failed; unsaved results are preserved.');return;}for(const key of Object.keys(updates))delete measurementDrafts[key];render();notify('Personal measurements saved for '+state.mode);return;
 }
 if(action==='copy-compare'){
  const a=WEAPONS.find(w=>w.id===compareIds[0]),b=WEAPONS.find(w=>w.id===compareIds[1]);if(!a||!b)return;
@@ -682,26 +683,26 @@ if(action==='copy-compare'){
 }
 
 if(action==='swap-compare'){compareIds=[compareIds[1],compareIds[0]];render();return;}
-if(action==='focus'&&w){state.focusWeapon=state.focusWeapon===w.id?null:w.id;persist();render();notify(state.focusWeapon?'Focus set to '+w.name:'Focus cleared');return;}
+if(action==='focus'&&w){const before=state.focusWeapon;state.focusWeapon=before===w.id?null:w.id;if(!persist()){state.focusWeapon=before;return;}render();notify(state.focusWeapon?'Focus set to '+w.name:'Focus cleared');return;}
 if(action==='mission-filter'){missionFilter=btn.dataset.filter;render();return;}
-if(action==='favorite'&&w){state.favorites=favorite(w)?state.favorites.filter(x=>x!==w.id):[...state.favorites,w.id];persist();if(currentPath()==='weapons')updateWeaponGrid();else render();return;}
+if(action==='favorite'&&w){const before=state.favorites;state.favorites=favorite(w)?before.filter(x=>x!==w.id):[...before,w.id];if(!persist()){state.favorites=before;return;}if(currentPath()==='weapons')updateWeaponGrid();else render();return;}
 if(action==='camo'&&w){
  let key=w.id+'|'+btn.dataset.camo,previous=Boolean(state.completed[key]);
- state.completed[key]=!previous;persist();render();
- notifyUndo((previous?'Unchecked ':'Completed ')+w.name+' camo',()=>{state.completed[key]=previous;persist();render();});return;
+ if(!commitValue(state.completed,key,!previous))return;render();
+ notifyUndo((previous?'Unchecked ':'Completed ')+w.name+' camo',()=>{if(!commitValue(state.completed,key,previous))return false;render();});return;
 }
 if(action==='account'){
  let key=btn.dataset.camo,previous=Boolean(state.accounts[key]);
- state.accounts[key]=!previous;persist();render();
- notifyUndo(previous?'Mastery unmarked':'Mastery marked complete',()=>{state.accounts[key]=previous;persist();render();});return;
+ if(!commitValue(state.accounts,key,!previous))return;render();
+ notifyUndo(previous?'Mastery unmarked':'Mastery marked complete',()=>{if(!commitValue(state.accounts,key,previous))return false;render();});return;
 }
 if(action==='favorites'){filter.fav=!filter.fav;render();return;}
 if(action==='category'){filter.category=btn.dataset.category;render();return;}
 if(action==='set-class'){filter.category=btn.dataset.category;filter.search='';filter.status='All';filter.fav=false;location.hash='#/weapons';return;}
-if(action==='sync-level'&&w){let level=Math.min(w.maxLevel||999,Math.max(0,Number(valueById('weaponLevel'))||0));state.levels[w.id]=level;persist();render();notify('Weapon level saved. Only mark camo challenges once earned in-game.');return;}
-if(action==='save-build-test'&&w){const b=collectBuild(w),values={};for(const f of PERFORMANCE_FIELDS){const input=app.querySelector('[data-performance="'+f.id+'"]'),raw=input?.value.trim()||'';if(!raw)continue;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>f.max){notify(f.label+' must be 0–'+f.max);input?.focus();return;}values[f.id]=n;}if(!Object.keys(values).length){notify('Enter at least one measured value');return;}state.buildTests[buildKey(w)]={signature:performanceSignature(w,b),values,updatedAt:new Date().toISOString()};if(persist()){rerenderPreservePosition();notify('Measured build performance saved');}return;}
-if(action==='clear-build-test'&&w){delete state.buildTests[buildKey(w)];persist();rerenderPreservePosition();notify('Build measurements cleared');return;}
-if(action==='goal'&&w){const goal=btn.dataset.goal;if(!Object.hasOwn(TEMPLATES,goal))return;if(currentPath().startsWith('build/')&&activeGoal(w)!==goal)stashDraft(w);state.activeGoals[goalId(w)]=goal;persist();render();notify('Tactical profile: '+goal);return;}
+if(action==='sync-level'&&w){let level=Math.min(w.maxLevel||999,Math.max(0,Number(valueById('weaponLevel'))||0));if(!commitValue(state.levels,w.id,level))return;render();notify('Weapon level saved. Only mark camo challenges once earned in-game.');return;}
+if(action==='save-build-test'&&w){const b=collectBuild(w),values={};for(const f of PERFORMANCE_FIELDS){const input=app.querySelector('[data-performance="'+f.id+'"]'),raw=input?.value.trim()||'';if(!raw)continue;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>f.max){notify(f.label+' must be 0–'+f.max);input?.focus();return;}values[f.id]=n;}if(!Object.keys(values).length){notify('Enter at least one measured value');return;}if(commitValue(state.buildTests,buildKey(w),{signature:performanceSignature(w,b),values,updatedAt:new Date().toISOString()})){rerenderPreservePosition();notify('Measured build performance saved');}return;}
+if(action==='clear-build-test'&&w){if(!commitValue(state.buildTests,buildKey(w),undefined))return;rerenderPreservePosition();notify('Build measurements cleared');return;}
+if(action==='goal'&&w){const goal=btn.dataset.goal;if(!Object.hasOwn(TEMPLATES,goal))return;if(currentPath().startsWith('build/')&&activeGoal(w)!==goal)stashDraft(w);if(!commitValue(state.activeGoals,goalId(w),goal))return;render();notify('Tactical profile: '+goal);return;}
 
 if(action==='import-share'){
   try{importSharedBuild(valueById('shareImportInput'));}catch(error){notify('Import failed: '+String(error.message||error));}
@@ -785,7 +786,7 @@ if(action==='open-saved'){
  state.mode=mode;state.activeGoals[weapon+'|'+mode]=goal;persist();
  location.hash='#/build/'+weapon;render();return;
 }
-if(action==='copy-saved-code'){const key=btn.dataset.key,build=Object.hasOwn(state.builds,key)?state.builds[key]:null,[weapon,mode,goal='Balanced']=String(key||'').split('|');if(!build||!WEAPONS.some(w=>w.id===weapon)||!['MW4','Warzone','DMZ'].includes(mode)||!Object.hasOwn(TEMPLATES,goal)){notify('Saved blueprint is unavailable');return;}try{const code=window.MW4_SHARE.encode({weapon,mode,goal,apex:!!build.apex,apexName:build.apexName||'',slots:build.slots||{}});void copyText(code);}catch(error){notify('Website code unavailable: '+String(error.message||error));}return;}
+if(action==='copy-saved-code'||action==='copy-saved-link'){const key=btn.dataset.key,build=Object.hasOwn(state.builds,key)?state.builds[key]:null,[weapon,mode,goal='Balanced']=String(key||'').split('|');if(!build||!WEAPONS.some(w=>w.id===weapon)||!['MW4','Warzone','DMZ'].includes(mode)||!Object.hasOwn(TEMPLATES,goal)){notify('Saved blueprint is unavailable');return;}try{const code=window.MW4_SHARE.encode({weapon,mode,goal,apex:!!build.apex,apexName:build.apexName||'',slots:build.slots||{}});void copyText(action==='copy-saved-link'?shareLinkFor(code):code);}catch(error){notify('Website code unavailable: '+String(error.message||error));}return;}
  if(action==='delete-build'){
  const key=btn.dataset.key;if(!Object.hasOwn(state.builds,key))return;
  if(confirm('Delete this saved blueprint?')){
@@ -823,17 +824,17 @@ app.addEventListener('change',async event=>{
  if(event.target.id==='blueprintSort'){blueprintSort=['recent','weapon'].includes(event.target.value)?event.target.value:'recent';render();return;}
 if(event.target.closest('.v16-class-editor')&&event.target.id!=='classPrimary')preserveClassDraft();
 if(event.target.id==='doctorView'){doctorView=event.target.value==='All'?'All':'Pending';render();return;}
-if(event.target.id==='assistantWeapon'){state.focusWeapon=WEAPONS.some(w=>w.id===event.target.value)?event.target.value:null;persist();render();return;}
+if(event.target.id==='assistantWeapon'){const before=state.focusWeapon;state.focusWeapon=WEAPONS.some(w=>w.id===event.target.value)?event.target.value:null;if(!persist()){state.focusWeapon=before;event.target.value=before||'';return;}render();return;}
 if(event.target.id==='classSelect'){
  const mode=state.mode,id=event.target.value;
  if(id!==''&&!classList(mode).some(x=>x.id===id))return;
- state.activeClassIds[mode]=id;delete classDrafts[mode];persist();render();return;
+ const before=state.activeClassIds[mode];state.activeClassIds[mode]=id;if(!persist()){state.activeClassIds[mode]=before;event.target.value=before||'';return;}delete classDrafts[mode];render();return;
 }
 if(event.target.matches('[data-task-counter]')){
  const w=WEAPONS.find(w=>w.id===event.target.dataset.weapon),c=CAMOS.find(c=>c.id===event.target.dataset.camo);if(!w||!c)return;
  const key=w.id+'|'+c.id,old=counter(w,c.id),field=event.target.dataset.taskCounter;
  const amount=Math.max(0,Math.min(100000,Math.floor(Number(event.target.value)||0)));
- state.counters[key]={...old,[field]:amount};persist();render();notify('Challenge '+field+' updated');return;
+ if(!commitValue(state.counters,key,{...old,[field]:amount})){event.target.value=String(old[field]);return;}render();notify('Challenge '+field+' updated');return;
 }
 if(event.target.id==='assistantSize'){assistantSize=[2,3,5].includes(Number(event.target.value))?Number(event.target.value):3;render();return;}
 if(event.target.id==='compareA'||event.target.id==='compareB'){const idx=event.target.id==='compareA'?0:1;const other=compareIds[1-idx];if(event.target.value===other){notify('Choose two different weapons to compare');event.target.value=compareIds[idx];return;}compareIds[idx]=event.target.value;render();return;}
@@ -852,11 +853,11 @@ if(event.target.id==='classPrimary'){const secondary=document.getElementById('cl
  builderDrafts[buildKey(w)]={...b,userSaved:false};rerenderBuilderPreservePosition();return;
 }
 if(event.target.id==='compareGoal'){comparisonGoal=Object.hasOwn(TEMPLATES,event.target.value)?event.target.value:'Balanced';let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){let el=document.getElementById('comparisonBody');if(el)el.innerHTML=renderGoalComparison(activeGoal(w),comparisonGoal);}return;}
-if(event.target.dataset.counter){let w=WEAPONS.find(w=>w.id===event.target.dataset.weapon);let camo=CAMOS.find(c=>c.id===event.target.dataset.camo);if(!w||!camo)return;let key=w.id+'|'+camo.id,previous=counter(w,camo.id),part=event.target.dataset.counter;previous[part]=Math.min(100000,Math.max(0,Math.floor(Number(event.target.value)||0)));state.counters[key]=previous;persist();render();notify('Challenge progress saved');return;}if(event.target.id==='categoryFilter'){filter.category=event.target.value;render();return;}
+if(event.target.dataset.counter){let w=WEAPONS.find(w=>w.id===event.target.dataset.weapon);let camo=CAMOS.find(c=>c.id===event.target.dataset.camo);if(!w||!camo)return;let key=w.id+'|'+camo.id,previous=counter(w,camo.id),part=event.target.dataset.counter;previous[part]=Math.min(100000,Math.max(0,Math.floor(Number(event.target.value)||0)));if(!commitValue(state.counters,key,previous))return;render();notify('Challenge progress saved');return;}if(event.target.id==='categoryFilter'){filter.category=event.target.value;render();return;}
 if(event.target.id==='statusFilter'){filter.status=event.target.value;render();return;}
 if(event.target.id==='loadoutWeaponSelect'){if(event.target.value)location.hash='#/build/'+event.target.value;return;}
-if(event.target.id==='weaponLevel'){let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){state.levels[w.id]=Math.min(999,Math.max(0,Number(event.target.value)||0));persist();}return;}
-if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace your local tracker with the selected backup?')){
+if(event.target.id==='weaponLevel'){let w=WEAPONS.find(w=>w.id===currentPath().split('/')[1]);if(w){const next=Math.min(w.maxLevel||999,Math.max(0,Number(event.target.value)||0));if(!commitValue(state.levels,w.id,next))event.target.value=String(state.levels[w.id]||0);}return;}
+if(event.target.id==='importFile'){let file=event.target.files[0];if(!file)return;if(file.size>2*1024*1024){notify('Backup too large (2 MB maximum)');return;}try{let data=validatedImport(JSON.parse(await file.text()));if(confirm('Replace existing tracker data with backup: '+Object.values(data.completed).filter(Boolean).length+' completed camo items, '+Object.keys(data.builds).length+' blueprints and '+['MW4','Warzone','DMZ'].reduce((n,mode)=>n+(data.classLibrary[mode]?.length||0),0)+' saved classes? Export your current progress first.')){
  const previous=state;state=data;
  if(!persist()){state=previous;render();notify('Import cancelled: browser storage refused the backup. Your data is preserved.');return;}
  for(const key of Object.keys(classDrafts))delete classDrafts[key];
@@ -935,7 +936,21 @@ window.MW4CamoFeed = Object.freeze({
  },
  message:notify
 });
-window.addEventListener('storage',event=>{if(event.key===STORE_KEY){state=loadState();for(const key of Object.keys(classDrafts))delete classDrafts[key];for(const key of Object.keys(builderDrafts))delete builderDrafts[key];for(const key of Object.keys(measurementDrafts))delete measurementDrafts[key];render();notify('Progress updated from another tab');}});
+window.addEventListener('storage',event=>{
+ if(event.key!==STORE_KEY)return;
+ const route=currentPath().split('/');
+ if(route[0]==='build'){
+   const weapon=WEAPONS.find(w=>w.id===route[1]);
+   if(weapon&&document.getElementById('buildName')){
+     const edited=collectBuild(weapon),baseline=currentBuild(weapon);
+     const fields=['name','template','slots','apex','apexName','perks','tactical','lethal','notes'];
+     if(fields.some(field=>JSON.stringify(edited[field])!==JSON.stringify(baseline[field])))builderDrafts[buildKey(weapon)]={...edited,userSaved:false};
+   }
+ }
+ if(route[0]==='class-builder')preserveClassDraft();
+ state=loadState();render();
+ notify('Progress synced from another tab. Unsaved editor changes were kept.');
+});
 const incomingShare=new URLSearchParams(location.search).get('share');
 if(incomingShare){
   try{importSharedBuild(incomingShare);}catch(error){notify('Share link rejected: '+String(error.message||error));}
