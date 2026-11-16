@@ -1,5 +1,126 @@
 [
   {
+    "id": "official-warzone-2026-11-16-0210e81",
+    "game": "Warzone",
+    "date": "2026-11-16",
+    "title": "Official Warzone update · 2026-11-16",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+    "verified": true,
+    "auto": true,
+    "updatedAt": "2026-11-16T20:22:30+00:00",
+    "sections": [
+      {
+        "title": "Bug Fixes",
+        "points": [
+          "Fixed an issue where the Win Streaks did not track correctly in Grinding for Royalty",
+          "Fixed an issue where the final circles could close over open water in Hajin",
+          "Fixed an issue where reward notifications didn't appear when leveling up during a match"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "official-mw4-2026-11-16-4fb5ba8",
+    "game": "MW4",
+    "date": "2026-11-16",
+    "title": "Official MW4 update · 2026-11-16",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
+    "verified": true,
+    "auto": true,
+    "updatedAt": "2026-11-16T20:22:30+00:00",
+    "sections": [
+      {
+        "title": "General",
+        "points": [
+          "Happy Monday! We're back with a fresh round of fixes and improvements across Multiplayer and DMZ"
+        ]
+      },
+      {
+        "title": "Stability",
+        "points": [
+          "Fixed several stability issues for a better experience"
+        ]
+      },
+      {
+        "title": "Events",
+        "points": [
+          "Fixed an issue where the Joint Fire event displayed an incorrect end time. Joint Fire will run for 24 hours every Friday through Season 1",
+          "Joint Fire will run for 24 hours every Friday through Season 1"
+        ]
+      },
+      {
+        "title": "Operators",
+        "points": [
+          "Fixed an issue where execution previews were missing some elements in DMZ or Warzone"
+        ]
+      },
+      {
+        "title": "Ui/Ux",
+        "points": [
+          "Fixed an issue where some preview images could display low resolution on certain platforms"
+        ]
+      },
+      {
+        "title": "Gameplay",
+        "points": [
+          "Decreased Drill Charge impact damage at range by 75%. Close range damage is not impacted by this change",
+          "Updated the Crossfire targeting tablet so the indicated strike direction matches the incoming strafe run",
+          "Fixed an issue where banks in Grind could appear floating above the ground"
+        ]
+      },
+      {
+        "title": "Ui/Ux",
+        "points": [
+          "Fixed an issue where Special Camos challenges were not displayed in the Pause Menu",
+          "Increased speed of claim sequence to claim Battle Pass Tiers",
+          "Fixed an issue where incorrect match-end text could appear in Private Matches"
+        ]
+      },
+      {
+        "title": "Progression",
+        "points": [
+          "Fixed an issue where Perks could remain locked in Loadouts after entering Classic Prestige with Random Operator settings enabled"
+        ]
+      },
+      {
+        "title": "Traits",
+        "points": [
+          "Fixed an issue where stacked Plate Pouch and Plate Organization Traits could show a stack of nine plates instead of the expected ten",
+          "Fixed an issue where the Wheelson in X01 could target players protected by the Viper Sense Trait"
+        ]
+      },
+      {
+        "title": "Gameplay",
+        "points": [
+          "Updated Lieutenant Dog Tag cash rewards to be awarded to all squad members",
+          "Reduced the Minimap zoom-out effect of UAV Upgrade Pro Trait from 3x to 1.5x",
+          "Fixed an issue where loot from destroyed Death Stalker wreckage could not be pinged"
+        ]
+      },
+      {
+        "title": "Ui/Ux",
+        "points": [
+          "Fixed an issue where weapon stats could be hidden in DMZ Gunsmith and weapon-select screens",
+          "Fixed an issue where certain weapon Blueprints could display the wrong Blueprint name in the Backpack",
+          "Fixed an issue where Operators could briefly appear to fall out of the Exfil Helicopter during the transition to the After Action Report"
+        ]
+      },
+      {
+        "title": "Progression",
+        "points": [
+          "Fixed an issue where the “Chained” camo challenge displayed an incorrect zero-kill requirement"
+        ]
+      },
+      {
+        "title": "Live Issues",
+        "points": [
+          "Over the weekend we shared an update that entering Wager Matches was sometimes causing Loadouts to reset. However we have also had many reports a…",
+          "We’ll be updating our Trello board today to reflect incoming issues"
+        ]
+      }
+    ]
+  },
+  {
     "id": "mw4-2026-11-13",
     "game": "MW4",
     "date": "2026-11-13",
