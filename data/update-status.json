@@ -1,12 +1,12 @@
 {
-  "lastCheckedAt": "2026-11-16T20:22:30+00:00",
-  "lastSuccessfulAt": "2026-11-16T20:22:30+00:00",
+  "lastCheckedAt": "2026-11-17T03:46:28+00:00",
+  "lastSuccessfulAt": "2026-11-17T03:46:28+00:00",
   "activeSourcesHealthy": true,
   "latestPatchDate": "2026-11-16",
   "patchCount": 64,
   "hubChecked": true,
   "discoveredSources": 12,
-  "newEntries": 2,
+  "newEntries": 0,
   "sources": [
     {
       "game": "MW4",
