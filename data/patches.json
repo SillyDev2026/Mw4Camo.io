@@ -1,5 +1,85 @@
 [
   {
+    "id": "official-warzone-2026-11-19-0210e81",
+    "game": "Warzone",
+    "date": "2026-11-19",
+    "title": "Official Warzone update · 2026-11-19",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+    "verified": true,
+    "auto": true,
+    "updatedAt": "2026-11-19T21:26:26+00:00",
+    "sections": [
+      {
+        "title": "Performance",
+        "points": [
+          "Implemented some performance improvements for overall stability and gameplay experience for players on Steam"
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "points": [
+          "Fixed an issue where players couldn't use or cook Lethal Equipment while inside vehicles",
+          "Fixed an issue where the Locus PX3 Canted Optic did not list Sniper Glint as a drawback in Gunsmith",
+          "Fixed an issue where the ZLR Swordfish Optic did have the intended Sniper Glint"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "official-mw4-2026-11-19-4fb5ba8",
+    "game": "MW4",
+    "date": "2026-11-19",
+    "title": "Official MW4 update · 2026-11-19",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
+    "verified": true,
+    "auto": true,
+    "updatedAt": "2026-11-19T21:26:26+00:00",
+    "sections": [
+      {
+        "title": "Live Events",
+        "points": [
+          "War Chest - DMZ (New today) Open containers and safes during DMZ deployments to earn points and climb the Leaderboard. Earn 5 points for opening…",
+          "Open containers and safes during DMZ deployments to earn points and climb the Leaderboard",
+          "Earn 5 points for opening regular containers and 50 points for opening safes"
+        ]
+      },
+      {
+        "title": "Stability",
+        "points": [
+          "Fixed several stability issues for a better experience"
+        ]
+      },
+      {
+        "title": "Ui/Ux",
+        "points": [
+          "Fixed an issue where the “Tracked and Near Complete” tab could incorrectly show as complete prior to all Camo Challenges actually being completed…",
+          "Fixed an issue where completing Natural Concealment Challenges did not consistently display completion notifications during matches or in the Eve…",
+          "Fixed an issue where the studio intro animation could play again after opening the settings menu for some players"
+        ]
+      },
+      {
+        "title": "Events",
+        "points": [
+          "Increased Weapon, Player and Match Bonus XP in all Wager Match modes and Ground War: Combat Outpost",
+          "Enemies killed by multiple players will now drop additional Wager Match trophies"
+        ]
+      },
+      {
+        "title": "Type 73 Weapon Adjustments",
+        "points": [
+          "Type 73 Assault Appex Attachment Adjustments"
+        ]
+      },
+      {
+        "title": "Rezi 12 Enforcer Apex Attachment Adjustments",
+        "points": [
+          "The below changes only apply to the Explosive Slug Round",
+          "Muzzle Velocity increased from 220 M/s to 245 M/s"
+        ]
+      }
+    ]
+  },
+  {
     "id": "official-warzone-2026-11-16-0210e81",
     "game": "Warzone",
     "date": "2026-11-16",

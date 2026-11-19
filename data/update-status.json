@@ -1,24 +1,24 @@
 {
-  "lastCheckedAt": "2026-11-19T12:55:13+00:00",
-  "lastSuccessfulAt": "2026-11-19T12:55:13+00:00",
+  "lastCheckedAt": "2026-11-19T21:26:26+00:00",
+  "lastSuccessfulAt": "2026-11-19T21:26:26+00:00",
   "activeSourcesHealthy": true,
-  "latestPatchDate": "2026-11-16",
-  "patchCount": 64,
+  "latestPatchDate": "2026-11-19",
+  "patchCount": 66,
   "hubChecked": true,
   "discoveredSources": 12,
-  "newEntries": 0,
+  "newEntries": 2,
   "sources": [
     {
       "game": "MW4",
       "url": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
       "status": "ok",
-      "datedSections": 8
+      "datedSections": 9
     },
     {
       "game": "Warzone",
       "url": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
       "status": "ok",
-      "datedSections": 6
+      "datedSections": 7
     },
     {
       "game": "MW4",
