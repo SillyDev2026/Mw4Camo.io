@@ -1,26 +1,68 @@
 [
   {
-    "id": "official-warzone-2026-11-19-0210e81",
-    "game": "Warzone",
-    "date": "2026-11-19",
-    "title": "Official Warzone update · 2026-11-19",
-    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+    "id": "official-mw4-2026-11-23-4fb5ba8",
+    "game": "MW4",
+    "date": "2026-11-23",
+    "title": "Official MW4 update · 2026-11-23",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
     "verified": true,
     "auto": true,
-    "updatedAt": "2026-11-19T21:26:26+00:00",
+    "updatedAt": "2026-11-23T21:15:20+00:00",
     "sections": [
       {
-        "title": "Performance",
+        "title": "Events",
         "points": [
-          "Implemented some performance improvements for overall stability and gameplay experience for players on Steam"
+          "Thanksgiving Duty Roster Event (New Today) Get kills across any game mode to earn points and climb the Leaderboard. Earn 10 points for each MP ki…",
+          "Get kills across any game mode to earn points and climb the Leaderboard",
+          "Earn 10 points for each MP kill, 20 points for each Warzone kill, and 2 points for each DMZ kill"
         ]
       },
       {
-        "title": "Bug Fixes",
+        "title": "Stability",
         "points": [
-          "Fixed an issue where players couldn't use or cook Lethal Equipment while inside vehicles",
-          "Fixed an issue where the Locus PX3 Canted Optic did not list Sniper Glint as a drawback in Gunsmith",
-          "Fixed an issue where the ZLR Swordfish Optic did have the intended Sniper Glint"
+          "Fixed several issues for a better experience"
+        ]
+      },
+      {
+        "title": "Ui/Ux",
+        "points": [
+          "Fixed an issue where event Leaderboard profiles could show incomplete player data",
+          "Fixed an issue where the Diresteel Ultra bundle logo was labeled “Tracer Pack” even though the bundle did not include Tracer effects. The bundle…",
+          "Fixed an issue where, after an update, the UI could auto-navigate to the Battle Pass menu instead of explaining the catch-up rewards you have ear…"
+        ]
+      },
+      {
+        "title": "Gameplay",
+        "points": [
+          "Adjusted Ground War: Combat Outpost player count to 24v24"
+        ]
+      },
+      {
+        "title": "Events",
+        "points": [
+          "We’ve doubled all rewards for Wager Match: Gauntlet 1v1. Each consecutive win adds 10 trophies to the next match wager. Your 1st win locks-in 40…",
+          "Each consecutive win adds 10 trophies to the next match wager. Your 1st win locks-in 40 trophies. 2nd consecutive win locks in 50 more. 3rd locks…",
+          "Fixed an issue where players could sometimes spawn outside the map and become stuck during Wager Match Gun Game"
+        ]
+      },
+      {
+        "title": "Gameplay",
+        "points": [
+          "Closed several exploits",
+          "Fixed an issue where the Operation Iron Citadel keycard objective could become stuck if another team picked up the keycard",
+          "Fixed an issue where players could use a vehicle mantle to breach through a ceiling"
+        ]
+      },
+      {
+        "title": "Traits",
+        "points": [
+          "Fixed an issue where Possum and Possum Pro Traits could stack"
+        ]
+      },
+      {
+        "title": "Ui/Ux",
+        "points": [
+          "Fixed an issue where interacting with Lieutenant Dog Tags could mark a player on the map even when a full Backpack prevented pickup"
         ]
       }
     ]
@@ -33,7 +75,7 @@
     "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
     "verified": true,
     "auto": true,
-    "updatedAt": "2026-11-19T21:26:26+00:00",
+    "updatedAt": "2026-11-23T21:15:20+00:00",
     "sections": [
       {
         "title": "Live Events",
@@ -75,6 +117,61 @@
         "points": [
           "The below changes only apply to the Explosive Slug Round",
           "Muzzle Velocity increased from 220 M/s to 245 M/s"
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "points": [
+          "Fixed an issue where reticle color selection could default to the incorrect color",
+          "Fixed an issue where the Patriot XMR Volt Apex Attachment shock effect did not activate on some weapons",
+          "Fixed an issue where the Locus PX3 Canted Optic did not list Sniper Glint as a drawback in Gunsmith"
+        ]
+      },
+      {
+        "title": "Gameplay",
+        "points": [
+          "Fixed an issue where the bomb model could disappear after being planted in Collateral",
+          "Fixed a rare issue where receiving more than 100 damage while spawning (such as being run over by a Wheelson) could cause the player to become im…"
+        ]
+      },
+      {
+        "title": "Ui/Ux",
+        "points": [
+          "Added autosave when editing attachments in Gunsmith",
+          "Fixed an issue where pinging the Seeker Drone did not update the Equipment Feed",
+          "Fixed an issue where the Dark Ichor camo unlock notification could display a placeholder image"
+        ]
+      },
+      {
+        "title": "Gameplay",
+        "points": [
+          "Fixed an issue where players could not use lethal equipment while riding in a vehicle"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "official-warzone-2026-11-19-0210e81",
+    "game": "Warzone",
+    "date": "2026-11-19",
+    "title": "Official Warzone update · 2026-11-19",
+    "source": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+    "verified": true,
+    "auto": true,
+    "updatedAt": "2026-11-19T21:26:26+00:00",
+    "sections": [
+      {
+        "title": "Performance",
+        "points": [
+          "Implemented some performance improvements for overall stability and gameplay experience for players on Steam"
+        ]
+      },
+      {
+        "title": "Bug Fixes",
+        "points": [
+          "Fixed an issue where players couldn't use or cook Lethal Equipment while inside vehicles",
+          "Fixed an issue where the Locus PX3 Canted Optic did not list Sniper Glint as a drawback in Gunsmith",
+          "Fixed an issue where the ZLR Swordfish Optic did have the intended Sniper Glint"
         ]
       }
     ]
